@@ -150,8 +150,9 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
                 "leadConversion": round(lead_conversion, 1),
                 "stops": activity["total"],
                 "stopSplit": f'{activity["prospect"]}P / {activity["existing"]}A',
-                "avgDay": f'{activity["avg_hours"]:.1f}h',
-                "activeDays": f'{activity["active_days"]} / {_business_days_elapsed(through_date)}',
+                "avgDay": _format_h_mm(activity["avg_hours"]),
+                "activeDays": f'{activity["active_days"]} / {activity["total_visited"]}',
+                "stopEfficiency": round(activity["efficiency"], 1),
                 "mix": activity["mix"],
                 "insight": _build_insight(code, rep, attainment, new_merchants, activity, lead_conversion),
             }
@@ -229,8 +230,11 @@ def _enrollments_by_rep(rows: list[dict]) -> Counter:
     return counts
 
 
+SHORT_NOTE_THRESHOLD = 18  # comments shorter than this default to No Contact
+
+
 def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
-    """Match the dashboard's field_activity dedup: key by (rep, stop, date), keep the longest comment."""
+    """Dedup by (rep, stop_name, date) keeping longest comment, then classify stops via _classify_stop."""
     roster = set(TERRITORY_MAP.values())
     deduped: dict[tuple[str, str, date], dict] = {}
 
@@ -258,8 +262,14 @@ def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
                 "is_existing": is_existing,
             }
 
-    by_rep = defaultdict(
-        lambda: {"total": 0, "existing": 0, "prospect": 0, "dates": set(), "timestamps": defaultdict(list), "comments": []}
+    by_rep: dict[str, dict] = defaultdict(
+        lambda: {
+            "total": 0,
+            "existing": 0,
+            "prospect": 0,
+            "timestamps_by_date": defaultdict(list),
+            "classifications": [],
+        }
     )
     for stop in deduped.values():
         rep = stop["rep"]
@@ -267,43 +277,88 @@ def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
         bucket = by_rep[rep]
         bucket["total"] += 1
         bucket["existing" if stop["is_existing"] else "prospect"] += 1
-        bucket["dates"].add(dt.date())
-        bucket["timestamps"][dt.date()].append(dt)
-        bucket["comments"].append(stop["comment"])
+        bucket["timestamps_by_date"][dt.date()].append(dt)
+        bucket["classifications"].append(_classify_stop(stop["comment"]))
 
     result = {}
     for rep, item in by_rep.items():
+        active_days, avg_hours = _active_metrics(item["timestamps_by_date"])
         result[rep] = {
             "total": item["total"],
             "existing": item["existing"],
             "prospect": item["prospect"],
-            "active_days": len(item["dates"]),
-            "avg_hours": _avg_field_hours(item["timestamps"]),
-            "mix": _activity_mix(item),
+            "active_days": active_days,
+            "total_visited": len(item["timestamps_by_date"]),
+            "avg_hours": avg_hours,
+            "efficiency": _stop_efficiency(item["classifications"], item["total"]),
+            "mix": _build_card_mix(item["classifications"], item["total"]),
         }
     return result
 
 
-def _activity_mix(item: dict) -> dict[str, int]:
-    total = max(item["total"], 1)
-    comments = item["comments"]
-    no_contact = sum(1 for c in comments if _has_any(c, ("closed", "not in", "not available", "no one", "left card", "no contact")))
-    training = sum(1 for c in comments if _has_any(c, ("training", "demo", "portal", "login", "onboarding", "qr", "pop", "reward")))
-    not_int = sum(1 for c in comments if _has_any(c, ("not interested", "declined", "no opportunity", "not a fit", "does not use financing")))
+def _classify_stop(comment: str) -> str:
+    """Classify a single stop into one of 8 outcome buckets. Precedence: friction first, defaults last."""
+    text = comment.strip().lower()
 
-    enrolled = 0
-    rel_checkin = item["existing"]
-    int_fu = max(item["prospect"] - no_contact - training - not_int, 0)
+    if len(text) < SHORT_NOTE_THRESHOLD:
+        return "No Contact"
+    if _has_any(text, ("closed", "locked", "not in", "not available", "no one", "left card", "no contact", "drop off", "drop-off", "owner not present", "owner not in", "too busy")):
+        return "No Contact"
 
-    raw = {
-        "No Contact": no_contact,
-        "Int/FU": int_fu,
-        "Rel. Check-In": rel_checkin,
-        "Training": training,
-        "Enrolled": enrolled,
-        "Not Int.": not_int,
-    }
-    return _normalize_percent_mix(raw, total)
+    if _has_any(text, ("complaint", "system error", "system issue", "audit", "escalat", "broken", "refund issue", "issue with")):
+        return "Issue"
+
+    if _has_any(text, ("not interested", "declined", "won't use", "wont use", "cash only", "cash business", "no financing", "not a fit", "no opportunity", "does not use financing")):
+        return "Not Int."
+
+    if _has_any(text, ("snap finance", "uses snap", "koalafi", "koala fi", "affirm", "synchrony", "klarna", "afterpay", "sema financing", "uses aff ", "competitor")):
+        return "Competitor"
+
+    if _has_any(text, ("enrolled", "signed up", "sign up", "application submitted", "sent enrollment", "got them set", "completed enrollment", "submitted app")):
+        return "Enrolled"
+
+    if _has_any(text, ("training", "demo", "portal", "login", "onboarding", "walkthrough", "set up account", "account setup", "qr code", "rewards program", "pop materials")):
+        return "Training"
+
+    if _has_any(text, ("interested", "follow up", "follow-up", "return next", "come back", "asked me to return", "asked rep to return", "circle back", "will revisit", "revisit next")):
+        return "Int/FU"
+
+    return "Rel. Check-In"
+
+
+def _stop_efficiency(classifications: list[str], total: int) -> float:
+    """Productive ÷ total × 100. Productive = Int/FU + Enrolled + Training + Rel. Check-In."""
+    if total == 0:
+        return 0.0
+    productive = sum(1 for label in classifications if label in ("Int/FU", "Enrolled", "Training", "Rel. Check-In"))
+    return productive / total * 100
+
+
+def _active_metrics(timestamps_by_date: dict) -> tuple[int, float]:
+    """Active day = 3+ unique merchant stops. Avg hours = mean span(first→last) across active days only."""
+    active_days = 0
+    spans = []
+    for ts in timestamps_by_date.values():
+        if len(ts) < 3:
+            continue
+        active_days += 1
+        sorted_ts = sorted(ts)
+        hours = (sorted_ts[-1] - sorted_ts[0]).total_seconds() / 3600
+        if hours > 0:
+            spans.append(hours)
+    avg_hours = (sum(spans) / len(spans)) if spans else 0.0
+    return active_days, avg_hours
+
+
+def _build_card_mix(classifications: list[str], total: int) -> dict[str, int]:
+    """Cards show 6 buckets; Competitor + Issue collapse into Not Int. for visual simplicity."""
+    raw = {"No Contact": 0, "Int/FU": 0, "Rel. Check-In": 0, "Training": 0, "Enrolled": 0, "Not Int.": 0}
+    for label in classifications:
+        if label in ("Competitor", "Issue"):
+            raw["Not Int."] += 1
+        else:
+            raw[label] = raw.get(label, 0) + 1
+    return _normalize_percent_mix(raw, max(total, 1))
 
 
 def _normalize_percent_mix(raw: dict[str, int], total: int) -> dict[str, int]:
@@ -320,16 +375,21 @@ def _has_any(text: str, needles: tuple[str, ...]) -> bool:
     return any(needle in lower for needle in needles)
 
 
-def _avg_field_hours(day_map: dict[date, list[datetime]]) -> float:
-    spans = []
-    for timestamps in day_map.values():
-        if len(timestamps) < 2:
-            continue
-        timestamps = sorted(timestamps)
-        hours = (timestamps[-1] - timestamps[0]).total_seconds() / 3600
-        if hours > 0:
-            spans.append(hours)
-    return round(sum(spans) / len(spans), 1) if spans else 0.0
+def _format_h_mm(hours: float) -> str:
+    if hours <= 0:
+        return "0:00"
+    total_minutes = int(round(hours * 60))
+    return f"{total_minutes // 60}:{total_minutes % 60:02d}"
+
+
+def _h_mm_to_hours(text: str) -> float:
+    parts = str(text or "").split(":")
+    if len(parts) != 2:
+        return 0.0
+    try:
+        return int(parts[0]) + int(parts[1]) / 60
+    except ValueError:
+        return 0.0
 
 
 def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_path: Path) -> None:
@@ -453,13 +513,14 @@ def _guard_freshness(through_date: date, allow_stale: bool) -> None:
 def _attach_ranks(items: list[dict]) -> None:
     rank_specs = [
         ("attainment", "attainment"),
+        ("efficiency", "stopEfficiency"),
         ("merchants", "newMerchants"),
         ("conversion", "leadConversion"),
         ("stops", "stops"),
         ("avgDay", "avg_hours_sort"),
     ]
     for item in items:
-        item["avg_hours_sort"] = _safe_float(str(item["avgDay"]).replace("h", ""))
+        item["avg_hours_sort"] = _h_mm_to_hours(item["avgDay"])
 
     for rank_name, field in rank_specs:
         sorted_values = sorted({item[field] for item in items}, reverse=True)
@@ -600,7 +661,9 @@ def _empty_activity() -> dict:
         "existing": 0,
         "prospect": 0,
         "active_days": 0,
+        "total_visited": 0,
         "avg_hours": 0.0,
+        "efficiency": 0.0,
         "mix": {
             "No Contact": 0,
             "Int/FU": 0,

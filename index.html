@@ -56,7 +56,7 @@
 
     <section class="controls-band" aria-label="Report controls">
       <div class="section-heading">
-        <h2>Rep Leaderboard</h2>
+        <h2>Territory Cards</h2>
         <span>Rank pills show standing across the selected metrics</span>
       </div>
       <div class="controls">
@@ -73,6 +73,7 @@
           <span>Sort</span>
           <select id="sortSelect">
             <option value="attainment">Attainment</option>
+            <option value="stopEfficiency">Stop efficiency</option>
             <option value="merchants">New merchants</option>
             <option value="stops">Stops</option>
             <option value="leadConversion">Lead conversion</option>
@@ -82,6 +83,106 @@
     </section>
 
     <section class="cards-grid" id="cardsGrid" aria-label="Territory cards"></section>
+
+    <section class="standings-section" aria-labelledby="standings-title">
+      <div class="section-heading">
+        <h2 id="standings-title">Final Standings &mdash; <span id="standingsPeriod">Current Period</span></h2>
+        <span>12-rep roster ranked by the selected metric</span>
+      </div>
+      <div class="controls">
+        <label class="select-box">
+          <span>Sort by</span>
+          <select id="standingsSort">
+            <option value="attainment">Budget %</option>
+            <option value="stopEfficiency">Stop Efficiency</option>
+            <option value="newMerchants">Merchants</option>
+            <option value="leadConversion">Lead Conversion</option>
+            <option value="stops">Stops</option>
+            <option value="avgDay">Avg/Day</option>
+          </select>
+        </label>
+      </div>
+      <div class="standings-table-wrap">
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th class="col-rank">#</th>
+              <th class="col-rep">Territory &middot; Rep</th>
+              <th>Stops</th>
+              <th>Eff.</th>
+              <th>Merchants</th>
+              <th>Lead Conv.</th>
+              <th>Avg/Day</th>
+              <th>Budget %</th>
+            </tr>
+          </thead>
+          <tbody id="standingsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="definitions" aria-labelledby="definitions-title">
+      <h2 id="definitions-title">How These Stats Are Calculated</h2>
+
+      <article>
+        <h3>Budget Attainment %</h3>
+        <p><strong>Formula:</strong> (Monthly actual &divide; monthly budget target) &times; 100</p>
+        <p><strong>Source:</strong> Funded Dollars vs Funded Dollars Quota from the Monthly Quota report in Salesforce, summed across the 12-rep roster. Closed months use Sales Ops authoritative totals from the Commission Reporting workbook.</p>
+        <p><strong>What it measures:</strong> The dollar volume of financing transactions processed through merchants enrolled in that territory. This is NOT enrollment count &mdash; it is actual financing volume flowing through the merchant base.</p>
+        <p><strong>Why it lags enrollments:</strong> When a rep enrolls a new merchant, that merchant must be activated, begin offering EasyPay to customers, have customers apply and get approved, and have transactions settle &mdash; a cycle that typically takes 2&ndash;6 weeks. A strong enrollment month in April will not fully show in April&rsquo;s budget number; it shows in May and June.</p>
+      </article>
+
+      <article>
+        <h3>Stop Efficiency % &amp; Rank</h3>
+        <p><strong>Formula:</strong> (Productive stops &divide; total stops) &times; 100</p>
+        <p><strong>Productive outcomes:</strong> Interested / Follow-Up &middot; Enrolled &middot; Training / Onboarding &middot; Relationship Check-In</p>
+        <p><strong>Not counted:</strong> No Contact &middot; Not Interested &middot; Competitor Discussion &middot; Issue / Concern</p>
+        <p><strong>Rank pill colors:</strong> green = ranks 1&ndash;3 &middot; amber = 4&ndash;6 &middot; gray = 7&ndash;12.</p>
+      </article>
+
+      <article>
+        <h3>How Each Stop Gets Its Color &mdash; The Outcome Classifier</h3>
+        <p>Each stop is classified by reading the <strong>Full Comments</strong> field only. Follow-Up Actions, Purpose of Visit, and Check-In Status are not used &mdash; those often contain generic phrases that don&rsquo;t reflect what happened. When multiple keywords could match, the highest-precedence outcome wins (friction signals are surfaced before warmer outcomes).</p>
+        <ol class="classifier-list">
+          <li><strong>No Contact</strong> &mdash; comment under 18 characters, or keywords like closed, locked, not in, not available, no one, left card, drop-off, owner not present, too busy.</li>
+          <li><strong>Issue / Concern</strong> &mdash; problem, complaint, system error, audit, escalation, refund issue.</li>
+          <li><strong>Not Interested</strong> &mdash; not interested, declined, won&rsquo;t use, cash only, cash business, no financing, not a fit, no opportunity.</li>
+          <li><strong>Competitor Discussion</strong> &mdash; merchant uses Snap, Koalafi, Affirm, Synchrony, Klarna, Afterpay, SEMA, or another named competitor.</li>
+          <li><strong>Enrolled / Deal Closed</strong> &mdash; enrolled, signed up, application submitted, sent enrollment, got them set, completed enrollment.</li>
+          <li><strong>Training / Onboarding</strong> &mdash; portal walkthrough, login, demo, account setup, enrollment link sent, QR code, rewards program.</li>
+          <li><strong>Interested &mdash; Follow-Up Needed</strong> &mdash; genuine interest expressed, follow-up planned, asked rep to return, circle back. &ldquo;Revisit&rdquo; alone does not qualify.</li>
+          <li><strong>Relationship Check-In</strong> &mdash; default for substantive notes that don&rsquo;t match a more specific bucket. Substantive visit with an active satisfied merchant.</li>
+        </ol>
+        <p><em>More detail in Comments = more accurate classification. Vague notes default to Relationship Check-In. Specific notes give the classifier the signal it needs.</em></p>
+      </article>
+
+      <article>
+        <h3>New Merchants Enrolled</h3>
+        <p><strong>Source:</strong> Branch Enrollment Report &mdash; the official system record of completed merchant enrollments. This is the system-of-record count and is the authoritative enrollment figure.</p>
+        <p><strong>Credit field:</strong> Enrollment credit goes to the rep in the &ldquo;OSR Enrollment Credit&rdquo; column specifically &mdash; not the general &ldquo;OSR&rdquo; field. If another rep assisted, credit follows OSR Enrollment Credit.</p>
+        <p><strong>Different from the stop classifier:</strong> The classifier&rsquo;s &ldquo;Enrolled&rdquo; bucket counts stops where the rep noted an application submission in their comments. The Branch Enrollment Report is system confirmation the contract was finalized. These can differ &mdash; a stop may be classified as Enrolled before paperwork completes, or an enrollment may arrive days after the initiating visit.</p>
+        <p><strong>Color coding:</strong> Green &ge; 8 &middot; Blue 4&ndash;7 &middot; Gray 1&ndash;3 &middot; Amber 0.</p>
+      </article>
+
+      <article>
+        <h3>Lead Conversion %</h3>
+        <p><strong>Formula:</strong> (New merchants enrolled &divide; Lead stops) &times; 100</p>
+        <p><strong>Lead stops</strong> = check-ins where the merchant is not yet enrolled (Lead field populated). <strong>Account stops</strong> = check-ins to already-enrolled merchants (Lead field empty). The L/A split on each card shows this breakdown.</p>
+        <p><strong>Why it matters:</strong> High stop efficiency + low lead conversion = great conversations not closing. The pipeline is healthy, the closing step is missing.</p>
+        <p><strong>Color coding:</strong> Green &ge; 20% &middot; Blue 10&ndash;19% &middot; Gray 1&ndash;9% &middot; Amber 0%.</p>
+      </article>
+
+      <article>
+        <h3>Stop Count, Avg Time Per Active Day &amp; Active Days</h3>
+        <p><strong>Stop count:</strong> Total stops in the period, ranked #1&ndash;12. Includes Lead stops (prospecting) and Account stops (existing merchants).</p>
+        <p><strong>Deduplication:</strong> Same rep + same merchant + same day = 1 stop. The entry with the most detailed comment is kept &mdash; this gives the outcome classifier the best signal. Prevents inflated counts from accidental double check-ins.</p>
+        <p><strong>Active day:</strong> A day counts as &ldquo;active&rdquo; only with 3+ unique merchant stops. Days with fewer than 3 stops are visited but not active. Threshold set April 2026.</p>
+        <p><strong>Avg time per active day:</strong> Total field hours on active days &divide; number of active days, shown as <code>H:MM</code> on both cards and the leaderboard. Field hours = span from the first to last check-in on active days only. Days under 3 stops contribute zero time.</p>
+        <p><strong>Why avg per active day, not total hours:</strong> Allows fair comparison regardless of how many active days each rep has in the period. A rep with 10 intense days isn&rsquo;t penalized against one with 13 lighter days.</p>
+        <p><strong>Active days display format:</strong> <code>Active / Total Visited</code>. Total visited = calendar days with any check-in logged. Active = days with 3+ unique merchant stops.</p>
+        <p><strong>Rank pill colors:</strong> green = ranks 1&ndash;3 &middot; amber = 4&ndash;6 &middot; gray = 7&ndash;12.</p>
+      </article>
+    </section>
   </main>
 
   <script src="data/weekly-data.js"></script>

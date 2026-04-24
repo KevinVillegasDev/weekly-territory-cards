@@ -5,7 +5,8 @@
   var state = {
     filter: "all",
     sort: "attainment",
-    query: ""
+    query: "",
+    standingsSort: "attainment"
   };
 
   var mixColors = {
@@ -49,9 +50,13 @@
     setText("executiveNote", report.meta.note);
     setText("totalsNote", report.meta.totalsNote);
 
+    var monthMatch = String(report.meta.updatedThrough || "").match(/^(\w+)/);
+    setText("standingsPeriod", (monthMatch ? monthMatch[1] : "Current") + " MTD");
+
     renderTotals();
     bindControls();
     renderCards();
+    renderStandings();
   }
 
   function renderTotals() {
@@ -83,6 +88,14 @@
       renderCards();
     });
 
+    var standingsSort = document.getElementById("standingsSort");
+    if (standingsSort) {
+      standingsSort.addEventListener("change", function () {
+        state.standingsSort = standingsSort.value;
+        renderStandings();
+      });
+    }
+
     Array.prototype.forEach.call(document.querySelectorAll("[data-filter]"), function (btn) {
       btn.addEventListener("click", function () {
         state.filter = btn.getAttribute("data-filter");
@@ -113,6 +126,7 @@
       if (state.sort === "merchants") return b.newMerchants - a.newMerchants;
       if (state.sort === "stops") return b.stops - a.stops;
       if (state.sort === "leadConversion") return b.leadConversion - a.leadConversion;
+      if (state.sort === "stopEfficiency") return (b.stopEfficiency || 0) - (a.stopEfficiency || 0);
       return b.attainment - a.attainment;
     });
 
@@ -152,8 +166,8 @@
       '</div>',
       '<div class="mini-metrics">',
       miniBlock(item.stops, "field stops", expandStopSplit(item.stopSplit), item.ranks.stops),
-      miniBlock(item.avgDay, "avg field hours/day", "first to last check-in", item.ranks.avgDay),
-      miniBlock(item.activeDays, "active business days", "days with at least one stop", null),
+      miniBlock(item.avgDay, "avg field time/active day", "first to last check-in (H:MM)", item.ranks.avgDay),
+      miniBlock(item.activeDays, "active / total visited days", "active = days with 3+ unique merchant stops", null),
       '</div>',
       '<div class="mix-heading"><span>Activity Mix</span><small>MTD touch profile</small></div>',
       renderMix(item.mix),
@@ -189,6 +203,80 @@
     var match = String(split || "").match(/(\d+)P\s*\/\s*(\d+)A/);
     if (!match) return "prospect / account split";
     return match[1] + " prospect stops / " + match[2] + " existing account stops";
+  }
+
+  function rankTier(rank) {
+    if (!rank) return "";
+    if (rank <= 3) return "tier-top";
+    if (rank <= 6) return "tier-mid";
+    return "tier-bot";
+  }
+
+  function rankPill(rank) {
+    if (!rank) return "";
+    return '<span class="rank-pill ' + rankTier(rank) + '">#' + rank + '</span>';
+  }
+
+  function merchantsClass(value) {
+    if (value === 0) return "val-amber";
+    if (value <= 3) return "val-gray";
+    if (value <= 7) return "val-blue";
+    return "val-green";
+  }
+
+  function leadConversionClass(value) {
+    if (!value) return "val-amber";
+    if (value < 10) return "val-gray";
+    if (value < 20) return "val-blue";
+    return "val-green";
+  }
+
+  function efficiencyClass(rank) {
+    if (!rank) return "";
+    if (rank <= 3) return "val-green";
+    if (rank <= 6) return "val-amber";
+    return "val-gray";
+  }
+
+  function renderStandings() {
+    var body = document.getElementById("standingsBody");
+    if (!body) return;
+    var items = report.territories.slice();
+
+    items.sort(function (a, b) {
+      switch (state.standingsSort) {
+        case "stopEfficiency":   return (b.stopEfficiency || 0) - (a.stopEfficiency || 0);
+        case "newMerchants":     return b.newMerchants - a.newMerchants;
+        case "leadConversion":   return b.leadConversion - a.leadConversion;
+        case "stops":            return b.stops - a.stops;
+        case "avgDay":           return hoursFromHmm(b.avgDay) - hoursFromHmm(a.avgDay);
+        default:                 return b.attainment - a.attainment;
+      }
+    });
+
+    body.innerHTML = items.map(function (item, idx) {
+      var ranks = item.ranks || {};
+      return [
+        '<tr>',
+          '<td class="col-rank">' + (idx + 1) + '</td>',
+          '<td class="col-rep"><span class="terr-code">' + item.code + '</span><span class="rep-name">' + item.rep + '</span></td>',
+          '<td>' + item.stops + ' ' + rankPill(ranks.stops) + '</td>',
+          '<td class="' + efficiencyClass(ranks.efficiency) + '"><b>' + pct(item.stopEfficiency) + '</b></td>',
+          '<td class="' + merchantsClass(item.newMerchants) + '"><b>' + item.newMerchants + '</b></td>',
+          '<td class="' + leadConversionClass(item.leadConversion) + '">' + pct(item.leadConversion) + '</td>',
+          '<td>' + item.avgDay + ' ' + rankPill(ranks.avgDay) + '</td>',
+          '<td class="' + (item.attainment >= 70 ? "val-green" : item.attainment >= 50 ? "val-amber" : "val-red") + '"><b>' + pct(item.attainment) + '</b></td>',
+        '</tr>'
+      ].join("");
+    }).join("");
+  }
+
+  function hoursFromHmm(text) {
+    var parts = String(text || "").split(":");
+    if (parts.length !== 2) return 0;
+    var h = parseInt(parts[0], 10) || 0;
+    var m = parseInt(parts[1], 10) || 0;
+    return h + m / 60;
   }
 
   function renderMix(mix) {
