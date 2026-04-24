@@ -1,0 +1,57 @@
+name: Weekly Territory Cards Refresh
+
+on:
+  schedule:
+    # Mondays at 13:00 UTC = 5:00 AM PST (6:00 AM PDT).
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout weekly-territory-cards
+        uses: actions/checkout@v4
+
+      - name: Checkout osr-enrollmentdash (for snapshot data)
+        uses: actions/checkout@v4
+        with:
+          repository: KevinVillegasDev/osr-enrollmentdash
+          path: _dashboard
+          # Only need the snapshot JSON — shallow clone is fine.
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Regenerate weekly-data.js
+        run: |
+          python automation/generate_weekly_data.py \
+            --dashboard-root _dashboard \
+            --historical data/historical-totals.json \
+            --output data/weekly-data.js
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet data/weekly-data.js; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add data/weekly-data.js
+          git commit -m "Weekly refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push

@@ -1,0 +1,23 @@
+{
+  "_source": "2026 TSR_ISR Commission Reporting Model 3.xlsx - 'TSR Quarterly 2026' sheet. Closed-month company-wide funded $ actuals and budget targets. Update this file when a month closes; the weekly generator uses it instead of roster-summed snapshot data for closed months.",
+  "months": [
+    {
+      "year": 2026,
+      "month": 1,
+      "budget": 11599486,
+      "actual": 11248026
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "budget": 11270725,
+      "actual": 11358338
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "budget": 13358981,
+      "actual": 12618671
+    }
+  ]
+}

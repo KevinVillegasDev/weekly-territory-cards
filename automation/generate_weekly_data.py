@@ -62,11 +62,14 @@ MONTH_NAMES = {
 }
 
 
+MAX_SNAPSHOT_STALENESS_DAYS = 4
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate weekly territory cards data")
     parser.add_argument(
         "--dashboard-root",
-        default=r"C:\Codex\osr-enrollmentdash",
+        default=r"C:\Users\kevin.villegas\OneDrive - Duvera\Claude\osr enrollment dash",
         help="Path to the existing OSR dashboard repo",
     )
     parser.add_argument(
@@ -74,13 +77,24 @@ def main() -> None:
         default="data/weekly-data.js",
         help="Output JS file for this static site",
     )
+    parser.add_argument(
+        "--historical",
+        default="data/historical-totals.json",
+        help="Closed-month company-wide totals (overrides snapshot-derived totals for those months)",
+    )
+    parser.add_argument(
+        "--allow-stale",
+        action="store_true",
+        help="Skip the freshness guard (for backfills or testing only)",
+    )
     args = parser.parse_args()
 
     dashboard_root = Path(args.dashboard_root)
     snapshot_root = dashboard_root / "data" / "snapshots"
     output_path = Path(args.output)
+    historical_path = Path(args.historical)
 
-    report = build_report(snapshot_root)
+    report = build_report(snapshot_root, historical_path, allow_stale=args.allow_stale)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         "window.weeklyTerritoryReport = "
@@ -91,7 +105,7 @@ def main() -> None:
     print(f"Wrote {output_path} from {snapshot_root}")
 
 
-def build_report(snapshot_root: Path) -> dict:
+def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool = False) -> dict:
     current_dir = _latest_snapshot_dir(snapshot_root)
     year, month = _parse_snapshot_name(current_dir.name)
 
@@ -100,6 +114,7 @@ def build_report(snapshot_root: Path) -> dict:
     checkin_rows = _load_json(current_dir / "maps_check_ins.json")
 
     through_date = _latest_activity_date(credited_rows, checkin_rows) or date.today()
+    _guard_freshness(through_date, allow_stale)
     biz_remaining = _business_days_remaining(through_date)
     expected_attainment = _business_days_elapsed(through_date) / max(
         _business_days_in_month(through_date.year, through_date.month),
@@ -147,7 +162,7 @@ def build_report(snapshot_root: Path) -> dict:
     for idx, item in enumerate(territories, start=1):
         item["rank"] = idx
 
-    totals = _build_totals(snapshot_root, through_date)
+    totals = _build_totals(current_dir, historical_path, through_date)
 
     return {
         "meta": {
@@ -296,36 +311,52 @@ def _avg_field_hours(day_map: dict[date, list[datetime]]) -> float:
     return round(sum(spans) / len(spans), 1) if spans else 0.0
 
 
-def _build_totals(snapshot_root: Path, through_date: date) -> list[dict]:
+def _build_totals(current_dir: Path, historical_path: Path, through_date: date) -> list[dict]:
+    """Historical closed months from historical_path, current month from the snapshot (company-wide, no roster filter)."""
     rows = []
-    for snapshot_dir in sorted(p for p in snapshot_root.iterdir() if p.is_dir()):
-        year, month = _parse_snapshot_name(snapshot_dir.name)
-        quota_rows = _load_json(snapshot_dir / "monthly_quota.json")
-        if not quota_rows:
-            continue
-        quota = _quota_by_rep(quota_rows)
-        if not quota:
-            continue
-        actual = sum(item["actual"] for item in quota.values())
-        budget = sum(item["budget"] for item in quota.values())
-        attainment = (actual / budget * 100) if budget else 0.0
-        is_current = year == through_date.year and month == through_date.month
-        rows.append(
-            {
-                "period": f"{MONTH_NAMES[month]} {'MTD' if is_current else year}",
-                "sub": f"Through {_format_date_short(through_date)}" if is_current else "",
-                "actual": round(actual, 2),
-                "budget": round(budget, 2),
-                "attainment": round(attainment, 1),
-            }
-        )
+    historical_months: set[tuple[int, int]] = set()
+
+    if historical_path.exists():
+        payload = json.loads(historical_path.read_text(encoding="utf-8"))
+        for entry in payload.get("months", []):
+            year = int(entry["year"])
+            month = int(entry["month"])
+            actual = float(entry["actual"])
+            budget = float(entry["budget"])
+            attainment = (actual / budget * 100) if budget else 0.0
+            historical_months.add((year, month))
+            rows.append(
+                {
+                    "period": f"{MONTH_NAMES[month]} {year}",
+                    "sub": "",
+                    "actual": round(actual, 2),
+                    "budget": round(budget, 2),
+                    "attainment": round(attainment, 1),
+                }
+            )
+
+    current_year, current_month = _parse_snapshot_name(current_dir.name)
+    if (current_year, current_month) not in historical_months:
+        quota_rows = _load_json(current_dir / "monthly_quota.json")
+        if quota_rows:
+            actual, budget = _company_totals(quota_rows)
+            attainment = (actual / budget * 100) if budget else 0.0
+            rows.append(
+                {
+                    "period": f"{MONTH_NAMES[current_month]} MTD",
+                    "sub": f"Through {_format_date_short(through_date)}",
+                    "actual": round(actual, 2),
+                    "budget": round(budget, 2),
+                    "attainment": round(attainment, 1),
+                }
+            )
 
     if len(rows) >= 2:
         total_actual = sum(row["actual"] for row in rows)
         total_budget = sum(row["budget"] for row in rows)
         rows.append(
             {
-                "period": "Available Snapshot Total",
+                "period": "YTD Total",
                 "actual": round(total_actual, 2),
                 "budget": round(total_budget, 2),
                 "attainment": round((total_actual / total_budget * 100) if total_budget else 0.0, 1),
@@ -333,6 +364,28 @@ def _build_totals(snapshot_root: Path, through_date: date) -> list[dict]:
             }
         )
     return rows
+
+
+def _company_totals(quota_rows: list[dict]) -> tuple[float, float]:
+    """Sum funded $ and budget $ across every row — no roster filter, so uncovered territories count."""
+    actual = 0.0
+    budget = 0.0
+    for row in quota_rows:
+        actual += _currency(row.get("Funded Dollars"))
+        budget += _currency(row.get("Funded Dollars Quota"))
+    return actual, budget
+
+
+def _guard_freshness(through_date: date, allow_stale: bool) -> None:
+    if allow_stale:
+        return
+    staleness = (date.today() - through_date).days
+    if staleness > MAX_SNAPSHOT_STALENESS_DAYS:
+        raise SystemExit(
+            f"ERROR: latest activity date is {through_date} ({staleness} days old). "
+            f"Refusing to generate report older than {MAX_SNAPSHOT_STALENESS_DAYS} days. "
+            f"Run the dashboard refresh first, or pass --allow-stale to override."
+        )
 
 
 def _attach_ranks(items: list[dict]) -> None:
