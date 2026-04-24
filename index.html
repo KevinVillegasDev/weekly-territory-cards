@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weekly Territory Cards - EasyPay Finance</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="report-brief" aria-labelledby="report-title">
+      <div class="title-block">
+        <a class="brand-logo-link" href="https://www.easypayfinance.com" aria-label="EasyPay Finance">
+          <img class="brand-logo" src="https://customerappx.easypayfinance.com/layout/images/EasyPay.png" alt="EasyPay Finance logo">
+        </a>
+        <p class="eyebrow">Weekly TSR Territory Report</p>
+        <h1 id="report-title">Territory Progress Cards</h1>
+        <p class="report-meta">Updated through <span id="updatedThrough">-</span></p>
+      </div>
+      <div class="brief-stats" aria-label="Weekly summary">
+        <span><small>Field Activity</small><strong id="statStops">0</strong><em>stops logged</em></span>
+        <span><small>Enrollment</small><strong id="statMerchants">0</strong><em>new merchants</em></span>
+        <span><small>Month Pace</small><strong id="statDays">0</strong><em>business days remain</em></span>
+      </div>
+    </section>
+
+    <p class="executive-note" id="executiveNote"></p>
+
+    <section class="totals-section" aria-labelledby="totals-title">
+      <div class="section-heading">
+        <h2 id="totals-title">Team Origination Totals</h2>
+        <span>All 12 Territories</span>
+      </div>
+      <div class="totals-table-wrap">
+        <table class="totals-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Actual Originations</th>
+              <th>Budget Target</th>
+              <th>Attainment</th>
+            </tr>
+          </thead>
+          <tbody id="totalsBody"></tbody>
+        </table>
+      </div>
+      <p class="table-note" id="totalsNote"></p>
+    </section>
+
+    <section class="controls-band" aria-label="Report controls">
+      <div class="section-heading">
+        <h2>Rep Leaderboard</h2>
+        <span>Rank pills show standing across the selected metrics</span>
+      </div>
+      <div class="controls">
+        <label class="search-box">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Rep or territory">
+        </label>
+        <div class="segmented" role="group" aria-label="Status filter">
+          <button class="is-active" type="button" data-filter="all">All</button>
+          <button type="button" data-filter="on-track">On Track</button>
+          <button type="button" data-filter="watch">Watch</button>
+        </div>
+        <label class="select-box">
+          <span>Sort</span>
+          <select id="sortSelect">
+            <option value="attainment">Attainment</option>
+            <option value="merchants">New merchants</option>
+            <option value="stops">Stops</option>
+            <option value="leadConversion">Lead conversion</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="cards-grid" id="cardsGrid" aria-label="Territory cards"></section>
+  </main>
+
+  <script src="data/weekly-data.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
