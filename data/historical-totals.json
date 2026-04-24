@@ -1,23 +1,23 @@
 {
-  "_source": "Closed-month totals for the 12-territory roster used by the weekly cards app. Jan/Feb are 11-territory sums from the dashboard's automation/forecast_data.py plus RIC-1 (Cesar Flores) numbers supplied directly. March is the 11-territory monthly_quota.json sum plus RIC-1 supplied directly (monthly_quota.json did not include RIC-1 for Mar). When a month is listed here, the generator uses these values instead of the snapshot sum.",
+  "_source": "Closed-month authoritative totals from Sales Ops. These override any snapshot-derived roster sums. The auto-freeze in generate_weekly_data.py never overwrites entries already listed here.",
   "months": [
     {
       "year": 2026,
       "month": 1,
-      "budget": 7648448,
-      "actual": 7442885
+      "budget": 6953269,
+      "actual": 6796982
     },
     {
       "year": 2026,
       "month": 2,
-      "budget": 7458773,
-      "actual": 7410274
+      "budget": 6792127,
+      "actual": 6782287
     },
     {
       "year": 2026,
       "month": 3,
-      "budget": 8860208,
-      "actual": 7494745
+      "budget": 8860207,
+      "actual": 8427296
     }
   ]
 }
