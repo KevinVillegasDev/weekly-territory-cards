@@ -162,7 +162,9 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
     for idx, item in enumerate(territories, start=1):
         item["rank"] = idx
 
+    _freeze_closed_months(snapshot_root, current_dir, historical_path)
     totals = _build_totals(current_dir, historical_path, through_date)
+    current_row = next((row for row in totals if row.get("period", "").endswith("MTD")), None)
 
     return {
         "meta": {
@@ -173,10 +175,11 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
             "note": _build_executive_note(territories, through_date, biz_remaining),
             "totalsNote": (
                 f"{MONTH_NAMES[month]} MTD is a partial month - "
-                f"{totals[-1]['attainment']:.1f}% attainment through "
-                f"{_format_date_short(through_date)} with business days remaining."
+                f"{current_row['attainment']:.1f}% attainment through "
+                f"{_format_date_short(through_date)} with {biz_remaining} business "
+                f"day{'s' if biz_remaining != 1 else ''} remaining."
             )
-            if totals
+            if current_row
             else "",
         },
         "totals": totals,
@@ -227,37 +230,55 @@ def _enrollments_by_rep(rows: list[dict]) -> Counter:
 
 
 def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
-    by_rep = defaultdict(lambda: {"total": 0, "existing": 0, "prospect": 0, "dates": set(), "timestamps": defaultdict(list), "comments": []})
+    """Match the dashboard's field_activity dedup: key by (rep, stop, date), keep the longest comment."""
+    roster = set(TERRITORY_MAP.values())
+    deduped: dict[tuple[str, str, date], dict] = {}
 
     for row in rows:
         rep = (row.get("_label_Assigned") or "").strip()
-        if rep not in set(TERRITORY_MAP.values()):
+        if rep not in roster:
             continue
 
         dt = _parse_checkin_datetime(row.get("_label_Created Date/Time"))
         if not dt:
             continue
 
+        stop_name = (row.get("_label_Company / Account") or "Unknown").strip()
+        comment = str(row.get("_label_Full Comments") or "")
         lead_val = row.get("Lead")
         is_existing = lead_val in (None, "", "null")
 
+        key = (rep, stop_name, dt.date())
+        existing_entry = deduped.get(key)
+        if existing_entry is None or len(comment) > len(existing_entry["comment"]):
+            deduped[key] = {
+                "rep": rep,
+                "datetime": dt,
+                "comment": comment,
+                "is_existing": is_existing,
+            }
+
+    by_rep = defaultdict(
+        lambda: {"total": 0, "existing": 0, "prospect": 0, "dates": set(), "timestamps": defaultdict(list), "comments": []}
+    )
+    for stop in deduped.values():
+        rep = stop["rep"]
+        dt = stop["datetime"]
         bucket = by_rep[rep]
         bucket["total"] += 1
-        bucket["existing" if is_existing else "prospect"] += 1
+        bucket["existing" if stop["is_existing"] else "prospect"] += 1
         bucket["dates"].add(dt.date())
         bucket["timestamps"][dt.date()].append(dt)
-        bucket["comments"].append(str(row.get("_label_Full Comments") or ""))
+        bucket["comments"].append(stop["comment"])
 
     result = {}
     for rep, item in by_rep.items():
-        active_days = len(item["dates"])
-        avg_hours = _avg_field_hours(item["timestamps"])
         result[rep] = {
             "total": item["total"],
             "existing": item["existing"],
             "prospect": item["prospect"],
-            "active_days": active_days,
-            "avg_hours": avg_hours,
+            "active_days": len(item["dates"]),
+            "avg_hours": _avg_field_hours(item["timestamps"]),
             "mix": _activity_mix(item),
         }
     return result
@@ -311,6 +332,54 @@ def _avg_field_hours(day_map: dict[date, list[datetime]]) -> float:
     return round(sum(spans) / len(spans), 1) if spans else 0.0
 
 
+def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_path: Path) -> None:
+    """For every snapshot older than current_dir, append its roster-sum totals to historical_path if absent.
+
+    Idempotent: existing entries are never overwritten, so user-supplied corrections (e.g. manually
+    folded-in RIC-1 numbers) survive subsequent runs. Preserves the `_source` description.
+    """
+    payload: dict = {}
+    existing_months: set[tuple[int, int]] = set()
+    if historical_path.exists():
+        payload = json.loads(historical_path.read_text(encoding="utf-8"))
+        for entry in payload.get("months", []):
+            existing_months.add((int(entry["year"]), int(entry["month"])))
+
+    current_year, current_month = _parse_snapshot_name(current_dir.name)
+    new_entries: list[dict] = []
+    for snapshot_dir in sorted(p for p in snapshot_root.iterdir() if p.is_dir()):
+        try:
+            year, month = _parse_snapshot_name(snapshot_dir.name)
+        except (ValueError, IndexError):
+            continue
+        if (year, month) >= (current_year, current_month):
+            continue
+        if (year, month) in existing_months:
+            continue
+        quota_rows = _load_json(snapshot_dir / "monthly_quota.json")
+        if not quota_rows:
+            continue
+        quota = _quota_by_rep(quota_rows)
+        actual = sum(item["actual"] for item in quota.values())
+        budget = sum(item["budget"] for item in quota.values())
+        if not (actual or budget):
+            continue
+        new_entries.append({"year": year, "month": month, "budget": round(budget, 2), "actual": round(actual, 2)})
+
+    if not new_entries:
+        return
+
+    months = list(payload.get("months", [])) + new_entries
+    months.sort(key=lambda m: (int(m["year"]), int(m["month"])))
+    payload["months"] = months
+    if "_source" not in payload:
+        payload["_source"] = "Auto-frozen closed-month roster totals. Edit individual months to override with authoritative numbers."
+    historical_path.parent.mkdir(parents=True, exist_ok=True)
+    historical_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    for entry in new_entries:
+        print(f"Froze {MONTH_NAMES[entry['month']]} {entry['year']} into {historical_path}")
+
+
 def _build_totals(current_dir: Path, historical_path: Path, through_date: date) -> list[dict]:
     """Historical closed months from historical_path, current month from the snapshot (company-wide, no roster filter)."""
     rows = []
@@ -339,17 +408,20 @@ def _build_totals(current_dir: Path, historical_path: Path, through_date: date) 
     if (current_year, current_month) not in historical_months:
         quota_rows = _load_json(current_dir / "monthly_quota.json")
         if quota_rows:
-            actual, budget = _company_totals(quota_rows)
-            attainment = (actual / budget * 100) if budget else 0.0
-            rows.append(
-                {
-                    "period": f"{MONTH_NAMES[current_month]} MTD",
-                    "sub": f"Through {_format_date_short(through_date)}",
-                    "actual": round(actual, 2),
-                    "budget": round(budget, 2),
-                    "attainment": round(attainment, 1),
-                }
-            )
+            quota = _quota_by_rep(quota_rows)
+            actual = sum(item["actual"] for item in quota.values())
+            budget = sum(item["budget"] for item in quota.values())
+            if actual or budget:
+                attainment = (actual / budget * 100) if budget else 0.0
+                rows.append(
+                    {
+                        "period": f"{MONTH_NAMES[current_month]} MTD",
+                        "sub": f"Through {_format_date_short(through_date)}",
+                        "actual": round(actual, 2),
+                        "budget": round(budget, 2),
+                        "attainment": round(attainment, 1),
+                    }
+                )
 
     if len(rows) >= 2:
         total_actual = sum(row["actual"] for row in rows)
@@ -364,16 +436,6 @@ def _build_totals(current_dir: Path, historical_path: Path, through_date: date) 
             }
         )
     return rows
-
-
-def _company_totals(quota_rows: list[dict]) -> tuple[float, float]:
-    """Sum funded $ and budget $ across every row — no roster filter, so uncovered territories count."""
-    actual = 0.0
-    budget = 0.0
-    for row in quota_rows:
-        actual += _currency(row.get("Funded Dollars"))
-        budget += _currency(row.get("Funded Dollars Quota"))
-    return actual, budget
 
 
 def _guard_freshness(through_date: date, allow_stale: bool) -> None:

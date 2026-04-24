@@ -41,7 +41,7 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet data/weekly-data.js; then
+          if git diff --quiet data/weekly-data.js data/historical-totals.json; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -52,6 +52,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add data/weekly-data.js
+          git add data/weekly-data.js data/historical-totals.json
           git commit -m "Weekly refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
