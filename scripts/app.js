@@ -5,8 +5,7 @@
   var state = {
     filter: "all",
     sort: "attainment",
-    query: "",
-    standingsSort: "attainment"
+    query: ""
   };
 
   var mixColors = {
@@ -51,12 +50,13 @@
     setText("totalsNote", report.meta.totalsNote);
 
     var monthMatch = String(report.meta.updatedThrough || "").match(/^(\w+)/);
-    setText("standingsPeriod", (monthMatch ? monthMatch[1] : "Current") + " MTD");
+    setText("rankingsPeriod", (monthMatch ? monthMatch[1] : "Current") + " MTD");
+    setText("rankingsThrough", report.meta.updatedThrough || "-");
 
     renderTotals();
     bindControls();
     renderCards();
-    renderStandings();
+    renderRankings();
   }
 
   function renderTotals() {
@@ -87,14 +87,6 @@
       state.sort = sort.value;
       renderCards();
     });
-
-    var standingsSort = document.getElementById("standingsSort");
-    if (standingsSort) {
-      standingsSort.addEventListener("change", function () {
-        state.standingsSort = standingsSort.value;
-        renderStandings();
-      });
-    }
 
     Array.prototype.forEach.call(document.querySelectorAll("[data-filter]"), function (btn) {
       btn.addEventListener("click", function () {
@@ -204,70 +196,80 @@
     return match[1] + " prospect stops / " + match[2] + " existing account stops";
   }
 
-  function rankTier(rank) {
-    if (!rank) return "";
-    if (rank <= 3) return "tier-top";
-    if (rank <= 6) return "tier-mid";
-    return "tier-bot";
-  }
+  function renderRankings() {
+    var grid = document.getElementById("rankingsGrid");
+    if (!grid) return;
 
-  function rankPill(rank) {
-    if (!rank) return "";
-    return '<span class="rank-pill ' + rankTier(rank) + '">#' + rank + '</span>';
-  }
-
-  function merchantsClass(value) {
-    if (value === 0) return "val-amber";
-    if (value <= 3) return "val-gray";
-    if (value <= 7) return "val-blue";
-    return "val-green";
-  }
-
-  function leadConversionClass(value) {
-    if (!value) return "val-amber";
-    if (value < 10) return "val-gray";
-    if (value < 20) return "val-blue";
-    return "val-green";
-  }
-
-  function efficiencyClass(rank) {
-    if (!rank) return "";
-    if (rank <= 3) return "val-green";
-    if (rank <= 6) return "val-amber";
-    return "val-gray";
-  }
-
-  function renderStandings() {
-    var body = document.getElementById("standingsBody");
-    if (!body) return;
-    var items = report.territories.slice();
-
-    items.sort(function (a, b) {
-      switch (state.standingsSort) {
-        case "stopEfficiency":   return (b.stopEfficiency || 0) - (a.stopEfficiency || 0);
-        case "newMerchants":     return b.newMerchants - a.newMerchants;
-        case "leadConversion":   return b.leadConversion - a.leadConversion;
-        case "stops":            return b.stops - a.stops;
-        case "avgDay":           return hoursFromHmm(b.avgDay) - hoursFromHmm(a.avgDay);
-        default:                 return b.attainment - a.attainment;
+    var metrics = [
+      {
+        title: "Budget %",
+        sub: "Attainment vs target",
+        sortValue: function (i) { return i.attainment || 0; },
+        display: function (i) { return pct(i.attainment); }
+      },
+      {
+        title: "New Merchants",
+        sub: "Credited enrollments MTD",
+        sortValue: function (i) { return i.newMerchants || 0; },
+        display: function (i) { return String(i.newMerchants || 0); }
+      },
+      {
+        title: "Lead Conversion",
+        sub: "Enrollments \u00f7 prospect stops",
+        sortValue: function (i) { return i.leadConversion || 0; },
+        display: function (i) { return pct(i.leadConversion); }
+      },
+      {
+        title: "Field Stops",
+        sub: "Total logged stops MTD",
+        sortValue: function (i) { return i.stops || 0; },
+        display: function (i) { return (i.stops || 0).toLocaleString(); }
+      },
+      {
+        title: "Avg Time / Active Day",
+        sub: "First \u2192 last check-in (H:MM)",
+        sortValue: function (i) { return hoursFromHmm(i.avgDay); },
+        display: function (i) { return i.avgDay || "0:00"; }
       }
-    });
+    ];
 
-    body.innerHTML = items.map(function (item, idx) {
-      var ranks = item.ranks || {};
+    grid.innerHTML = metrics.map(renderRankingColumn).join("");
+  }
+
+  function renderRankingColumn(metric) {
+    var entries = report.territories.slice().map(function (item) {
+      return { item: item, value: metric.sortValue(item) };
+    });
+    entries.sort(function (a, b) { return b.value - a.value; });
+
+    var rank = 0;
+    var lastValue = null;
+    var rowsHtml = entries.map(function (e) {
+      if (lastValue === null || e.value !== lastValue) {
+        rank += 1;
+        lastValue = e.value;
+      }
+      var tier = rank === 1 ? "leader" : rank <= 3 ? "top" : "rest";
       return [
-        '<tr>',
-          '<td class="col-rank">' + (idx + 1) + '</td>',
-          '<td class="col-rep"><span class="terr-code">' + item.code + '</span><span class="rep-name">' + item.rep + '</span></td>',
-          '<td>' + item.stops + ' ' + rankPill(ranks.stops) + '</td>',
-          '<td class="' + efficiencyClass(ranks.efficiency) + '"><b>' + pct(item.stopEfficiency) + '</b></td>',
-          '<td class="' + merchantsClass(item.newMerchants) + '"><b>' + item.newMerchants + '</b></td>',
-          '<td class="' + leadConversionClass(item.leadConversion) + '">' + pct(item.leadConversion) + '</td>',
-          '<td>' + item.avgDay + ' ' + rankPill(ranks.avgDay) + '</td>',
-          '<td class="' + (item.attainment >= 70 ? "val-green" : item.attainment >= 50 ? "val-amber" : "val-red") + '"><b>' + pct(item.attainment) + '</b></td>',
-        '</tr>'
+        '<li class="rk-row rk-tier-' + tier + '">',
+          '<span class="rk-num">' + rank + '</span>',
+          '<span class="rk-name">' + e.item.rep,
+          ' <small>' + e.item.code + '</small>',
+          '</span>',
+          '<span class="rk-val">' + metric.display(e.item) + '</span>',
+        '</li>'
       ].join("");
     }).join("");
+
+    return [
+      '<div class="rk-col">',
+        '<div class="rk-head">',
+          '<h3>' + metric.title + '</h3>',
+          '<small>' + metric.sub + '</small>',
+        '</div>',
+        '<ol class="rk-list">' + rowsHtml + '</ol>',
+      '</div>'
+    ].join("");
   }
 
   function hoursFromHmm(text) {

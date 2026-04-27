@@ -84,41 +84,18 @@
 
     <section class="cards-grid" id="cardsGrid" aria-label="Territory cards"></section>
 
-    <section class="standings-section" aria-labelledby="standings-title">
-      <div class="section-heading">
-        <h2 id="standings-title">Final Standings &mdash; <span id="standingsPeriod">Current Period</span></h2>
-        <span>12-rep roster ranked by the selected metric</span>
+    <section class="rankings-section" aria-labelledby="rankings-title">
+      <div class="rankings-header">
+        <h2 id="rankings-title">TSR Competitive Rankings</h2>
+        <p class="rankings-meta"><span id="rankingsPeriod">Current MTD</span> &middot; Through <span id="rankingsThrough">-</span> &middot; 12-rep roster</p>
+        <div class="rankings-legend" aria-label="Tier legend">
+          <span><i class="rk-dot rk-dot-leader" aria-hidden="true"></i>#1 &mdash; Leader</span>
+          <span><i class="rk-dot rk-dot-top" aria-hidden="true"></i>Top 3</span>
+          <span><i class="rk-dot rk-dot-rest" aria-hidden="true"></i>Rest of pack</span>
+        </div>
       </div>
-      <div class="controls">
-        <label class="select-box">
-          <span>Sort by</span>
-          <select id="standingsSort">
-            <option value="attainment">Budget %</option>
-            <option value="stopEfficiency">Stop Efficiency</option>
-            <option value="newMerchants">Merchants</option>
-            <option value="leadConversion">Lead Conversion</option>
-            <option value="stops">Stops</option>
-            <option value="avgDay">Avg/Day</option>
-          </select>
-        </label>
-      </div>
-      <div class="standings-table-wrap">
-        <table class="standings-table">
-          <thead>
-            <tr>
-              <th class="col-rank">#</th>
-              <th class="col-rep">Territory &middot; Rep</th>
-              <th>Stops</th>
-              <th>Eff.</th>
-              <th>Merchants</th>
-              <th>Lead Conv.</th>
-              <th>Avg/Day</th>
-              <th>Budget %</th>
-            </tr>
-          </thead>
-          <tbody id="standingsBody"></tbody>
-        </table>
-      </div>
+      <div class="rankings-grid" id="rankingsGrid"></div>
+      <p class="rankings-foot">Ties shown with shared rank &middot; Ranks reset per stat</p>
     </section>
 
     <section class="definitions" aria-labelledby="definitions-title">
