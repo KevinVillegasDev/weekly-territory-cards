@@ -131,6 +131,7 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
     quota_by_terr = _quota_by_territory(quota_rows)
     enrollments_by_terr = _enrollments_by_territory(credited_rows)
     activity_by_terr = _activity_by_territory(checkin_rows)
+    lead_attribution = _cumulative_lead_attribution(snapshot_root, current_dir)
 
     territories = []
     for code, rep in TERRITORY_MAP.items():
@@ -141,8 +142,8 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
 
         activity = activity_by_terr.get(code, _empty_activity())
         new_merchants = enrollments_by_terr.get(code, 0)
-        prospect_stops = activity["prospect"]
-        lead_conversion = (new_merchants / prospect_stops * 100) if prospect_stops else 0.0
+        attr = lead_attribution.get(code, {"matched_enrollments": 0, "unique_leads": 0, "lead_conversion": 0.0})
+        lead_conversion = attr["lead_conversion"]
 
         territories.append(
             {
@@ -155,6 +156,8 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
                 "budget": round(budget, 2),
                 "newMerchants": new_merchants,
                 "leadConversion": round(lead_conversion, 1),
+                "leadsTracked": attr["unique_leads"],
+                "matchedEnrollments": attr["matched_enrollments"],
                 "stops": activity["total"],
                 "stopSplit": f'{activity["prospect"]}P / {activity["existing"]}A',
                 "avgDay": _format_h_mm(activity["avg_hours"]),
@@ -213,6 +216,10 @@ def _load_json(path: Path) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+LEAD_ATTRIBUTION_WINDOW_MONTHS = 6  # rolling window for cumulative lead conversion
+BUSINESS_SUFFIXES = {"inc", "llc", "ltd", "corp", "co", "company", "incorporated", "lp", "llp"}
+
+
 def _name_to_territory() -> dict[str, str]:
     """Build a name → territory code map, including TERRITORY_ALIASES (transitions)."""
     mapping: dict[str, str] = {}
@@ -221,6 +228,101 @@ def _name_to_territory() -> dict[str, str]:
         for alias in TERRITORY_ALIASES.get(code, []):
             mapping[alias] = code
     return mapping
+
+
+def _normalize_merchant_tokens(name: str | None) -> frozenset[str]:
+    """Lowercase, strip punctuation (incl. smart quotes), drop business suffixes; return token set."""
+    if not name:
+        return frozenset()
+    text = name.lower()
+    # Replace ASCII + unicode punctuation with spaces.
+    for ch in ",.&'\"/-()\u2018\u2019\u201c\u201d":
+        text = text.replace(ch, " ")
+    return frozenset(t for t in text.split() if t and t not in BUSINESS_SUFFIXES)
+
+
+def _normalize_merchant_name(name: str | None) -> str:
+    """String form of the normalized name (used as a stable key for set lookup)."""
+    return " ".join(sorted(_normalize_merchant_tokens(name)))
+
+
+def _cumulative_lead_attribution(snapshot_root: Path, current_dir: Path) -> dict[str, dict]:
+    """Per-territory cumulative lead conversion across the trailing window.
+
+    For each territory:
+      - unique_leads = distinct merchants visited as a Lead (Lead field populated on a Maps row)
+      - matched_enrollments = credited enrollments whose merchant name normalized-matches one of those leads
+      - lead_conversion = matched_enrollments / unique_leads × 100  (capped at 100% by construction)
+
+    A merchant visited multiple times counts once. Lead stops + enrollments are pooled across the
+    primary rep + any TERRITORY_ALIASES so a transition month doesn't reset the metric.
+    """
+    name_to_terr = _name_to_territory()
+    cur_year, cur_month = _parse_snapshot_name(current_dir.name)
+
+    # Compute window cutoff (inclusive) — trailing N months ending at current month.
+    cutoff_year, cutoff_month = cur_year, cur_month - (LEAD_ATTRIBUTION_WINDOW_MONTHS - 1)
+    while cutoff_month <= 0:
+        cutoff_year -= 1
+        cutoff_month += 12
+    cutoff = (cutoff_year, cutoff_month)
+
+    # Per territory: dict mapping normalized merchant key → token set (for token-subset matching).
+    leads_by_terr: dict[str, dict[str, frozenset[str]]] = defaultdict(dict)
+    enrollments_by_terr: dict[str, dict[str, frozenset[str]]] = defaultdict(dict)
+
+    for snapshot_dir in sorted(p for p in snapshot_root.iterdir() if p.is_dir()):
+        try:
+            year, month = _parse_snapshot_name(snapshot_dir.name)
+        except (ValueError, IndexError):
+            continue
+        if (year, month) < cutoff or (year, month) > (cur_year, cur_month):
+            continue
+
+        for row in _load_json(snapshot_dir / "maps_check_ins.json"):
+            lead_val = row.get("Lead")
+            if lead_val in (None, "", "null"):
+                continue
+            code = name_to_terr.get((row.get("_label_Assigned") or "").strip())
+            if not code:
+                continue
+            tokens = _normalize_merchant_tokens(row.get("_label_Company / Account"))
+            if tokens:
+                leads_by_terr[code][" ".join(sorted(tokens))] = tokens
+
+        for row in _load_json(snapshot_dir / "credited_enrollments.json"):
+            code = name_to_terr.get((row.get("OSR Enrollment Credit") or "").strip())
+            if not code:
+                continue
+            tokens = _normalize_merchant_tokens(row.get("_label_Account Name"))
+            if tokens:
+                enrollments_by_terr[code][" ".join(sorted(tokens))] = tokens
+
+    # A lead with <2 tokens is too generic for safe subset matching — counts in the denominator
+    # only if it gets an exact match.
+    MIN_LEAD_TOKENS = 2
+
+    result: dict[str, dict] = {}
+    for code in TERRITORY_MAP:
+        leads = leads_by_terr.get(code, {})
+        enrollments = enrollments_by_terr.get(code, {})
+        matched_keys: set[str] = set()
+        for enroll_key, enroll_tokens in enrollments.items():
+            if enroll_key in leads:
+                matched_keys.add(enroll_key)
+                continue
+            for lead_tokens in leads.values():
+                if len(lead_tokens) >= MIN_LEAD_TOKENS and lead_tokens.issubset(enroll_tokens):
+                    matched_keys.add(enroll_key)
+                    break
+        denominator = len(leads)
+        matched = len(matched_keys)
+        result[code] = {
+            "unique_leads": denominator,
+            "matched_enrollments": matched,
+            "lead_conversion": (matched / denominator * 100) if denominator else 0.0,
+        }
+    return result
 
 
 def _quota_by_territory(rows: list[dict]) -> dict[str, dict]:
