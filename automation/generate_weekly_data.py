@@ -131,7 +131,6 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
     quota_by_terr = _quota_by_territory(quota_rows)
     enrollments_by_terr = _enrollments_by_territory(credited_rows)
     activity_by_terr = _activity_by_territory(checkin_rows)
-    lead_attribution = _cumulative_lead_attribution(snapshot_root, current_dir)
 
     territories = []
     for code, rep in TERRITORY_MAP.items():
@@ -142,8 +141,8 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
 
         activity = activity_by_terr.get(code, _empty_activity())
         new_merchants = enrollments_by_terr.get(code, 0)
-        attr = lead_attribution.get(code, {"matched_enrollments": 0, "unique_leads": 0, "lead_conversion": 0.0})
-        lead_conversion = attr["lead_conversion"]
+        prospect_stops = activity["prospect"]
+        lead_conversion = (new_merchants / prospect_stops * 100) if prospect_stops else 0.0
 
         territories.append(
             {
@@ -156,8 +155,6 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
                 "budget": round(budget, 2),
                 "newMerchants": new_merchants,
                 "leadConversion": round(lead_conversion, 1),
-                "leadsTracked": attr["unique_leads"],
-                "matchedEnrollments": attr["matched_enrollments"],
                 "stops": activity["total"],
                 "stopSplit": f'{activity["prospect"]}P / {activity["existing"]}A',
                 "avgDay": _format_h_mm(activity["avg_hours"]),
@@ -248,7 +245,17 @@ def _normalize_merchant_name(name: str | None) -> str:
 
 
 def _cumulative_lead_attribution(snapshot_root: Path, current_dir: Path) -> dict[str, dict]:
-    """Per-territory cumulative lead conversion across the trailing window.
+    """DORMANT — kept for ad-hoc analysis. Not currently displayed on the report.
+
+    Rationale for dormancy (April 2026): only ~12% of credited enrollments have the SF
+    "Converted from - Lead ID" field populated, so 88% of matches fall back to the
+    token-subset name heuristic. That under-counts real conversions enough that the
+    metric reads more like a data-hygiene scoreboard than a sales metric.
+
+    Re-enable once the populated rate climbs above ~50% (likely needs SF web-enrollment
+    merge process improvements). Wiring is just one call in build_report.
+
+    Per-territory cumulative lead conversion across the trailing window.
 
     For each territory:
       - unique_leads = distinct merchants visited as a Lead (Lead field populated on a Maps row)
