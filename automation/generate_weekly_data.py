@@ -24,11 +24,18 @@ TERRITORY_MAP = {
     "LTO-7": "Stephanie Whitlock",
     "RIC-1": "Cesar Flores",
     "RIC-2": "Claudia Gerhardt",
-    "RIC-4": "Jeremy Moore",
+    "RIC-4": "Richard Herrera",
     "RIC-6": "Phillip Mason",
     "RIC-7": "DeLon Phoenix",
     "RIC-8": "Eric Henderson",
     "RIC-9": "Matthew MacDonald",
+}
+
+# Names whose production should still roll up to a territory during a transition
+# (departed reps, mid-month handoffs). Remove entries after the relevant month
+# is closed in historical-totals.json so the card reflects the new rep cleanly.
+TERRITORY_ALIASES = {
+    "RIC-4": ["Jeremy Moore"],  # Jeremy's April production rolls into RIC-4 through April close
 }
 
 TERRITORY_AREAS = {
@@ -121,19 +128,19 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
         1,
     ) * 100
 
-    quota_by_rep = _quota_by_rep(quota_rows)
-    enrollments_by_rep = _enrollments_by_rep(credited_rows)
-    activity_by_rep = _activity_by_rep(checkin_rows)
+    quota_by_terr = _quota_by_territory(quota_rows)
+    enrollments_by_terr = _enrollments_by_territory(credited_rows)
+    activity_by_terr = _activity_by_territory(checkin_rows)
 
     territories = []
     for code, rep in TERRITORY_MAP.items():
-        quota = quota_by_rep.get(rep, {})
+        quota = quota_by_terr.get(code, {})
         actual = quota.get("actual", 0.0)
         budget = quota.get("budget", 0.0)
         attainment = (actual / budget * 100) if budget else 0.0
 
-        activity = activity_by_rep.get(rep, _empty_activity())
-        new_merchants = enrollments_by_rep.get(rep, 0)
+        activity = activity_by_terr.get(code, _empty_activity())
+        new_merchants = enrollments_by_terr.get(code, 0)
         prospect_stops = activity["prospect"]
         lead_conversion = (new_merchants / prospect_stops * 100) if prospect_stops else 0.0
 
@@ -206,41 +213,78 @@ def _load_json(path: Path) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _quota_by_rep(rows: list[dict]) -> dict[str, dict]:
-    result = {}
-    roster = set(TERRITORY_MAP.values())
+def _name_to_territory() -> dict[str, str]:
+    """Build a name → territory code map, including TERRITORY_ALIASES (transitions)."""
+    mapping: dict[str, str] = {}
+    for code, primary in TERRITORY_MAP.items():
+        mapping[primary] = code
+        for alias in TERRITORY_ALIASES.get(code, []):
+            mapping[alias] = code
+    return mapping
+
+
+def _quota_by_territory(rows: list[dict]) -> dict[str, dict]:
+    """Sum funded $ across primary + alias reps. Budget = the OUTGOING rep's (the alias)
+    when one exists — the territory's monthly plan was set with that rep, so the transition
+    doesn't change the target. Falls back to primary's budget when there's no alias.
+    """
+    primaries = {name: code for code, name in TERRITORY_MAP.items()}
+    alias_lookup = {alias: code for code, names in TERRITORY_ALIASES.items() for alias in names}
+
+    primary_data: dict[str, dict] = {}
+    alias_data: dict[str, dict] = {}
+
     for row in rows:
         rep = (row.get("_label_User") or "").strip()
-        if rep not in roster:
-            continue
-        budget = _currency(row.get("Funded Dollars Quota"))
         actual = _currency(row.get("Funded Dollars"))
         projected = _currency(row.get("Funding Projected"))
-        result[rep] = {"budget": budget, "actual": actual, "projected": projected}
+        budget = _currency(row.get("Funded Dollars Quota"))
+
+        if rep in primaries:
+            bucket = primary_data.setdefault(primaries[rep], {"budget": 0.0, "actual": 0.0, "projected": 0.0})
+        elif rep in alias_lookup:
+            bucket = alias_data.setdefault(alias_lookup[rep], {"budget": 0.0, "actual": 0.0, "projected": 0.0})
+        else:
+            continue
+        bucket["budget"] += budget
+        bucket["actual"] += actual
+        bucket["projected"] += projected
+
+    result: dict[str, dict] = {}
+    for code in set(primary_data) | set(alias_data):
+        p = primary_data.get(code, {"budget": 0.0, "actual": 0.0, "projected": 0.0})
+        a = alias_data.get(code, {"budget": 0.0, "actual": 0.0, "projected": 0.0})
+        result[code] = {
+            "actual": p["actual"] + a["actual"],
+            "projected": p["projected"] + a["projected"],
+            "budget": a["budget"] if a["budget"] > 0 else p["budget"],
+        }
     return result
 
 
-def _enrollments_by_rep(rows: list[dict]) -> Counter:
-    counts = Counter()
-    roster = set(TERRITORY_MAP.values())
+def _enrollments_by_territory(rows: list[dict]) -> Counter:
+    counts: Counter = Counter()
+    name_to_terr = _name_to_territory()
     for row in rows:
         rep = (row.get("OSR Enrollment Credit") or "").strip()
-        if rep in roster:
-            counts[rep] += 1
+        code = name_to_terr.get(rep)
+        if code:
+            counts[code] += 1
     return counts
 
 
 SHORT_NOTE_THRESHOLD = 18  # comments shorter than this default to No Contact
 
 
-def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
-    """Dedup by (rep, stop_name, date) keeping longest comment, then classify stops via _classify_stop."""
-    roster = set(TERRITORY_MAP.values())
+def _activity_by_territory(rows: list[dict]) -> dict[str, dict]:
+    """Dedup by (territory, stop_name, date) so a transition month merges the outgoing + incoming reps."""
+    name_to_terr = _name_to_territory()
     deduped: dict[tuple[str, str, date], dict] = {}
 
     for row in rows:
         rep = (row.get("_label_Assigned") or "").strip()
-        if rep not in roster:
+        code = name_to_terr.get(rep)
+        if not code:
             continue
 
         dt = _parse_checkin_datetime(row.get("_label_Created Date/Time"))
@@ -252,17 +296,17 @@ def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
         lead_val = row.get("Lead")
         is_existing = lead_val in (None, "", "null")
 
-        key = (rep, stop_name, dt.date())
+        key = (code, stop_name, dt.date())
         existing_entry = deduped.get(key)
         if existing_entry is None or len(comment) > len(existing_entry["comment"]):
             deduped[key] = {
-                "rep": rep,
+                "code": code,
                 "datetime": dt,
                 "comment": comment,
                 "is_existing": is_existing,
             }
 
-    by_rep: dict[str, dict] = defaultdict(
+    by_terr: dict[str, dict] = defaultdict(
         lambda: {
             "total": 0,
             "existing": 0,
@@ -272,18 +316,18 @@ def _activity_by_rep(rows: list[dict]) -> dict[str, dict]:
         }
     )
     for stop in deduped.values():
-        rep = stop["rep"]
+        code = stop["code"]
         dt = stop["datetime"]
-        bucket = by_rep[rep]
+        bucket = by_terr[code]
         bucket["total"] += 1
         bucket["existing" if stop["is_existing"] else "prospect"] += 1
         bucket["timestamps_by_date"][dt.date()].append(dt)
         bucket["classifications"].append(_classify_stop(stop["comment"]))
 
     result = {}
-    for rep, item in by_rep.items():
+    for code, item in by_terr.items():
         active_days, avg_hours = _active_metrics(item["timestamps_by_date"])
-        result[rep] = {
+        result[code] = {
             "total": item["total"],
             "existing": item["existing"],
             "prospect": item["prospect"],
@@ -419,7 +463,7 @@ def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_pat
         quota_rows = _load_json(snapshot_dir / "monthly_quota.json")
         if not quota_rows:
             continue
-        quota = _quota_by_rep(quota_rows)
+        quota = _quota_by_territory(quota_rows)
         actual = sum(item["actual"] for item in quota.values())
         budget = sum(item["budget"] for item in quota.values())
         if not (actual or budget):
@@ -468,7 +512,7 @@ def _build_totals(current_dir: Path, historical_path: Path, through_date: date) 
     if (current_year, current_month) not in historical_months:
         quota_rows = _load_json(current_dir / "monthly_quota.json")
         if quota_rows:
-            quota = _quota_by_rep(quota_rows)
+            quota = _quota_by_territory(quota_rows)
             actual = sum(item["actual"] for item in quota.values())
             budget = sum(item["budget"] for item in quota.values())
             if actual or budget:

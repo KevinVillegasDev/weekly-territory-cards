@@ -172,7 +172,6 @@
       '<div class="mix-heading"><span>Activity Mix</span><small>MTD touch profile</small></div>',
       renderMix(item.mix),
       '<p class="insight">' + item.insight + '</p>',
-      '<footer class="card-footer"><span>' + money(item.actual) + ' actual</span><span>' + money(item.budget) + ' budget</span></footer>',
       '</article>'
     ].join("");
   }
