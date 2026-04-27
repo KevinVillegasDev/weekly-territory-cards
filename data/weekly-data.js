@@ -139,7 +139,7 @@ window.weeklyTerritoryReport = {
       "insight": "LTO-5 is pacing well on budget attainment with 12 credited new merchants and 293 logged stops month-to-date.",
       "ranks": {
         "attainment": 3,
-        "efficiency": 4,
+        "efficiency": 3,
         "merchants": 3,
         "conversion": 9,
         "stops": 1,
@@ -399,7 +399,7 @@ window.weeklyTerritoryReport = {
       "stopSplit": "143P / 102A",
       "avgDay": "6:03",
       "activeDays": "17 / 17",
-      "stopEfficiency": 85.3,
+      "stopEfficiency": 84.9,
       "mix": {
         "No Contact": 3,
         "Int/FU": 33,
@@ -411,7 +411,7 @@ window.weeklyTerritoryReport = {
       "insight": "LTO-7 has 245 logged stops and 17 new merchants. The opportunity is improving conversion from prospect activity.",
       "ranks": {
         "attainment": 10,
-        "efficiency": 3,
+        "efficiency": 4,
         "merchants": 2,
         "conversion": 6,
         "stops": 5,
