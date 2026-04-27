@@ -1,11 +1,11 @@
 window.weeklyTerritoryReport = {
   "meta": {
-    "updatedThrough": "April 24, 2026",
-    "stopsLogged": 2734,
+    "updatedThrough": "April 27, 2026",
+    "stopsLogged": 2736,
     "newMerchants": 108,
-    "businessDaysRemaining": 4,
-    "note": "Updated budget origination data through April 24, 2026. 2,734 stops logged, 108 new merchants enrolled. 4 business days remain. RIC-1 leads attainment at 93.4%, while Joseph Guerra leads new merchant volume.",
-    "totalsNote": "April MTD is a partial month - 72.6% attainment through Apr 24 with 4 business days remaining."
+    "businessDaysRemaining": 3,
+    "note": "Updated budget origination data through April 27, 2026. 2,736 stops logged, 108 new merchants enrolled. 3 business days remain. RIC-1 leads attainment at 103.0%, while Joseph Guerra leads new merchant volume.",
+    "totalsNote": "April MTD is a partial month - 76.7% attainment through Apr 27 with 3 business days remaining."
   },
   "totals": [
     {
@@ -31,16 +31,16 @@ window.weeklyTerritoryReport = {
     },
     {
       "period": "April MTD",
-      "sub": "Through Apr 24",
-      "actual": 6345718.91,
+      "sub": "Through Apr 27",
+      "actual": 6703054.37,
       "budget": 8735345.0,
-      "attainment": 72.6
+      "attainment": 76.7
     },
     {
       "period": "YTD Total",
-      "actual": 28352283.91,
+      "actual": 28709619.37,
       "budget": 31340948.0,
-      "attainment": 90.5,
+      "attainment": 91.6,
       "tone": "total"
     }
   ],
@@ -50,8 +50,8 @@ window.weeklyTerritoryReport = {
       "rep": "Cesar Flores",
       "area": "CA - LA Metro Core",
       "status": "on-track",
-      "attainment": 93.4,
-      "actual": 152468.32,
+      "attainment": 103.0,
+      "actual": 168192.38,
       "budget": 163279.0,
       "newMerchants": 12,
       "leadConversion": 11.0,
@@ -84,16 +84,16 @@ window.weeklyTerritoryReport = {
       "rep": "Yemaira Hernandez",
       "area": "FL - Miami-Dade/Broward",
       "status": "on-track",
-      "attainment": 92.2,
-      "actual": 551835.04,
+      "attainment": 95.7,
+      "actual": 572643.17,
       "budget": 598325.0,
       "newMerchants": 9,
       "leadConversion": 12.0,
-      "stops": 246,
-      "stopSplit": "75P / 171A",
+      "stops": 248,
+      "stopSplit": "75P / 173A",
       "avgDay": "6:25",
-      "activeDays": "17 / 17",
-      "stopEfficiency": 80.9,
+      "activeDays": "17 / 18",
+      "stopEfficiency": 81.0,
       "mix": {
         "No Contact": 10,
         "Int/FU": 17,
@@ -102,7 +102,7 @@ window.weeklyTerritoryReport = {
         "Enrolled": 3,
         "Not Int.": 9
       },
-      "insight": "LTO-1 is pacing well on budget attainment with 9 credited new merchants and 246 logged stops month-to-date.",
+      "insight": "LTO-1 is pacing well on budget attainment with 9 credited new merchants and 248 logged stops month-to-date.",
       "ranks": {
         "attainment": 2,
         "efficiency": 6,
@@ -118,8 +118,8 @@ window.weeklyTerritoryReport = {
       "rep": "Jared Midkiff",
       "area": "FL - State Manager",
       "status": "on-track",
-      "attainment": 89.1,
-      "actual": 839208.92,
+      "attainment": 95.1,
+      "actual": 896168.81,
       "budget": 942216.0,
       "newMerchants": 12,
       "leadConversion": 7.8,
@@ -148,46 +148,12 @@ window.weeklyTerritoryReport = {
       "rank": 3
     },
     {
-      "code": "LTO-3",
-      "rep": "Joseph Guerra",
-      "area": "TX - State Manager",
-      "status": "on-track",
-      "attainment": 76.0,
-      "actual": 407328.95,
-      "budget": 536258.0,
-      "newMerchants": 18,
-      "leadConversion": 22.8,
-      "stops": 245,
-      "stopSplit": "79P / 166A",
-      "avgDay": "6:02",
-      "activeDays": "17 / 18",
-      "stopEfficiency": 79.2,
-      "mix": {
-        "No Contact": 8,
-        "Int/FU": 13,
-        "Rel. Check-In": 55,
-        "Training": 9,
-        "Enrolled": 2,
-        "Not Int.": 13
-      },
-      "insight": "LTO-3 is pacing well on budget attainment with 18 credited new merchants and 245 logged stops month-to-date.",
-      "ranks": {
-        "attainment": 4,
-        "efficiency": 7,
-        "merchants": 1,
-        "conversion": 3,
-        "stops": 5,
-        "avgDay": 4
-      },
-      "rank": 4
-    },
-    {
       "code": "RIC-4",
       "rep": "Jeremy Moore",
       "area": "CA - Orange County/SE LA",
       "status": "on-track",
-      "attainment": 76.0,
-      "actual": 455867.31,
+      "attainment": 81.4,
+      "actual": 488745.16,
       "budget": 600201.0,
       "newMerchants": 1,
       "leadConversion": 1.3,
@@ -213,6 +179,40 @@ window.weeklyTerritoryReport = {
         "stops": 8,
         "avgDay": 8
       },
+      "rank": 4
+    },
+    {
+      "code": "LTO-3",
+      "rep": "Joseph Guerra",
+      "area": "TX - State Manager",
+      "status": "on-track",
+      "attainment": 80.8,
+      "actual": 433380.07,
+      "budget": 536258.0,
+      "newMerchants": 18,
+      "leadConversion": 22.8,
+      "stops": 245,
+      "stopSplit": "79P / 166A",
+      "avgDay": "6:02",
+      "activeDays": "17 / 18",
+      "stopEfficiency": 79.2,
+      "mix": {
+        "No Contact": 8,
+        "Int/FU": 13,
+        "Rel. Check-In": 55,
+        "Training": 9,
+        "Enrolled": 2,
+        "Not Int.": 13
+      },
+      "insight": "LTO-3 is pacing well on budget attainment with 18 credited new merchants and 245 logged stops month-to-date.",
+      "ranks": {
+        "attainment": 5,
+        "efficiency": 7,
+        "merchants": 1,
+        "conversion": 3,
+        "stops": 5,
+        "avgDay": 4
+      },
       "rank": 5
     },
     {
@@ -220,8 +220,8 @@ window.weeklyTerritoryReport = {
       "rep": "DeLon Phoenix",
       "area": "NV - Las Vegas/Reno",
       "status": "on-track",
-      "attainment": 75.0,
-      "actual": 554697.49,
+      "attainment": 78.0,
+      "actual": 576948.98,
       "budget": 739885.0,
       "newMerchants": 2,
       "leadConversion": 1.6,
@@ -240,7 +240,7 @@ window.weeklyTerritoryReport = {
       },
       "insight": "RIC-7 is pacing well on budget attainment with 2 credited new merchants and 198 logged stops month-to-date.",
       "ranks": {
-        "attainment": 5,
+        "attainment": 6,
         "efficiency": 5,
         "merchants": 8,
         "conversion": 10,
@@ -254,8 +254,8 @@ window.weeklyTerritoryReport = {
       "rep": "Eric Henderson",
       "area": "PA - 4 Metros",
       "status": "watch",
-      "attainment": 73.2,
-      "actual": 936955.13,
+      "attainment": 77.0,
+      "actual": 985089.49,
       "budget": 1279835.0,
       "newMerchants": 11,
       "leadConversion": 11.1,
@@ -274,7 +274,7 @@ window.weeklyTerritoryReport = {
       },
       "insight": "RIC-8 is pacing well on budget attainment with 11 credited new merchants and 276 logged stops month-to-date.",
       "ranks": {
-        "attainment": 6,
+        "attainment": 7,
         "efficiency": 8,
         "merchants": 4,
         "conversion": 7,
@@ -288,8 +288,8 @@ window.weeklyTerritoryReport = {
       "rep": "Omar Corona",
       "area": "TX - S. Houston/Valley/El Paso",
       "status": "watch",
-      "attainment": 68.7,
-      "actual": 429450.65,
+      "attainment": 71.1,
+      "actual": 444658.47,
       "budget": 625514.0,
       "newMerchants": 10,
       "leadConversion": 15.6,
@@ -306,9 +306,9 @@ window.weeklyTerritoryReport = {
         "Enrolled": 1,
         "Not Int.": 5
       },
-      "insight": "LTO-2 is converting prospect activity efficiently with 10 new merchants. Budget lift is the next lever to watch.",
+      "insight": "LTO-2 is pacing well on budget attainment with 10 credited new merchants and 260 logged stops month-to-date.",
       "ranks": {
-        "attainment": 7,
+        "attainment": 8,
         "efficiency": 2,
         "merchants": 5,
         "conversion": 4,
@@ -318,46 +318,12 @@ window.weeklyTerritoryReport = {
       "rank": 8
     },
     {
-      "code": "RIC-6",
-      "rep": "Phillip Mason",
-      "area": "CA - Sacramento/NorCal",
-      "status": "watch",
-      "attainment": 63.7,
-      "actual": 365067.59,
-      "budget": 573308.0,
-      "newMerchants": 0,
-      "leadConversion": 0.0,
-      "stops": 233,
-      "stopSplit": "31P / 202A",
-      "avgDay": "5:44",
-      "activeDays": "15 / 15",
-      "stopEfficiency": 67.4,
-      "mix": {
-        "No Contact": 24,
-        "Int/FU": 26,
-        "Rel. Check-In": 30,
-        "Training": 11,
-        "Enrolled": 0,
-        "Not Int.": 9
-      },
-      "insight": "RIC-6 has field activity but no credited new merchants in the current month snapshot. The cleanest focus is converting prospect stops into enrollments.",
-      "ranks": {
-        "attainment": 8,
-        "efficiency": 11,
-        "merchants": 10,
-        "conversion": 12,
-        "stops": 6,
-        "avgDay": 6
-      },
-      "rank": 9
-    },
-    {
       "code": "RIC-2",
       "rep": "Claudia Gerhardt",
       "area": "CA - IE South/San Diego",
       "status": "watch",
-      "attainment": 63.6,
-      "actual": 486489.68,
+      "attainment": 68.2,
+      "actual": 521578.54,
       "budget": 764573.0,
       "newMerchants": 6,
       "leadConversion": 25.0,
@@ -383,15 +349,15 @@ window.weeklyTerritoryReport = {
         "stops": 9,
         "avgDay": 10
       },
-      "rank": 10
+      "rank": 9
     },
     {
       "code": "LTO-7",
       "rep": "Stephanie Whitlock",
       "area": "GA / NE FL / Panhandle",
       "status": "watch",
-      "attainment": 61.1,
-      "actual": 238996.35,
+      "attainment": 67.5,
+      "actual": 263897.4,
       "budget": 390979.0,
       "newMerchants": 17,
       "leadConversion": 11.9,
@@ -417,6 +383,40 @@ window.weeklyTerritoryReport = {
         "stops": 5,
         "avgDay": 3
       },
+      "rank": 10
+    },
+    {
+      "code": "RIC-6",
+      "rep": "Phillip Mason",
+      "area": "CA - Sacramento/NorCal",
+      "status": "watch",
+      "attainment": 66.1,
+      "actual": 379136.73,
+      "budget": 573308.0,
+      "newMerchants": 0,
+      "leadConversion": 0.0,
+      "stops": 233,
+      "stopSplit": "31P / 202A",
+      "avgDay": "5:44",
+      "activeDays": "15 / 15",
+      "stopEfficiency": 67.4,
+      "mix": {
+        "No Contact": 24,
+        "Int/FU": 26,
+        "Rel. Check-In": 30,
+        "Training": 11,
+        "Enrolled": 0,
+        "Not Int.": 9
+      },
+      "insight": "RIC-6 has field activity but no credited new merchants in the current month snapshot. The cleanest focus is converting prospect stops into enrollments.",
+      "ranks": {
+        "attainment": 11,
+        "efficiency": 11,
+        "merchants": 10,
+        "conversion": 12,
+        "stops": 6,
+        "avgDay": 6
+      },
       "rank": 11
     },
     {
@@ -424,8 +424,8 @@ window.weeklyTerritoryReport = {
       "rep": "Matthew MacDonald",
       "area": "AZ + NM/UT/ID",
       "status": "watch",
-      "attainment": 61.0,
-      "actual": 927353.48,
+      "attainment": 63.9,
+      "actual": 972615.17,
       "budget": 1520972.0,
       "newMerchants": 10,
       "leadConversion": 125.0,
@@ -444,7 +444,7 @@ window.weeklyTerritoryReport = {
       },
       "insight": "RIC-9 is converting prospect activity efficiently with 10 new merchants. Budget lift is the next lever to watch.",
       "ranks": {
-        "attainment": 11,
+        "attainment": 12,
         "efficiency": 1,
         "merchants": 5,
         "conversion": 1,
