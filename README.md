@@ -1,38 +1,27 @@
 # Weekly Territory Cards
 
-Static weekly TSR territory report site.
+Static weekly TSR territory report site for EasyPay Finance. Email-friendly companion to the OSR Enrollment Dashboard. Renders a month-to-date summary table plus territory cards for all 12 assigned territories, plus a final standings leaderboard.
 
-This project is intended to be a separate, email-friendly companion to the OSR dashboard. It renders a weekly summary table plus territory cards for all assigned territories.
+**Live site:** https://weekly-territory-progression.netlify.app/
 
-## Current State
+## Architecture, data sources, metrics, and operations
 
-- Static HTML/CSS/JS, no build step.
-- Data lives in `data/weekly-data.js`.
-- `automation/generate_weekly_data.py` can regenerate the data from the existing OSR dashboard snapshots.
+See [`PROJECT_ARCHITECTURE.md`](PROJECT_ARCHITECTURE.md) for the comprehensive reference — system diagram, where each metric comes from, exact formulas, classifier rules, hosting setup, and operational playbooks.
 
-## Local Preview
+## Quick start
 
-Open `index.html` in a browser, or serve the folder with any static file server.
+```bash
+# Regenerate data from the dashboard's snapshot files:
+python automation/generate_weekly_data.py \
+  --dashboard-root <path to osr-enrollmentdash repo>
 
-## Generate Real Data
-
-From this repo:
-
-```powershell
-py automation/generate_weekly_data.py --dashboard-root C:\Codex\osr-enrollmentdash
+# Serve locally:
+python -m http.server 8000
 ```
 
-The report is month-to-date. Each weekly refresh shows how the current month is pacing through the latest available snapshot date.
+## Stack
 
-## Pipeline Notes
-
-The existing dashboard already has most source data:
-
-- Monthly quota / budget attainment
-- Credited enrollments
-- Maps check-ins
-- Territory and roster mappings
-
-The included generator writes `data/weekly-data.js` from the dashboard snapshots. Longer term, this can be pointed directly at Salesforce exports if you want the weekly report to refresh without depending on checked-in dashboard snapshot files.
-
-The current activity mix uses keyword-based classification from Maps comments for categories such as training, no contact, and not interested. If Salesforce has structured activity types, those should replace the keyword heuristic.
+- Static HTML/CSS/JS, no build step.
+- Python 3.12+ generator (`automation/generate_weekly_data.py`), standard library only.
+- Hosted on Netlify, deployed from GitHub. Refresh button proxies through a Netlify Function.
+- Weekly auto-refresh via GitHub Actions cron (Mondays 13:00 UTC).

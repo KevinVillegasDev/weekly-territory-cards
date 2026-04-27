@@ -1,384 +1,489 @@
-# Weekly Territory Cards - Project Architecture
+# Weekly Territory Cards — Project Architecture
 
-## Purpose
+Comprehensive reference for what this app is, where its data comes from, how every metric is computed, and how to operate it.
 
-Weekly Territory Cards is a standalone EasyPay Finance report site for TSR territory performance. It is designed to be shared by weekly email link so TSRs and leadership can view month-to-date performance across all active territories.
+**Live site:** https://weekly-territory-progression.netlify.app/
 
-The project is intentionally separate from the production OSR Enrollment Dashboard. It borrows the same data pipeline concepts and snapshot files, but renders a focused card-based experience for weekly field reporting.
+---
 
-## Current Product Direction
+## 1. Purpose
 
-The report is month-to-date, not a Monday-through-Sunday weekly slice. Each weekly refresh answers: "How is the current month pacing as of the latest available data?"
+A standalone weekly TSR territory report for EasyPay Finance, distributed by email link to reps and leadership every Monday morning. Renders a month-to-date snapshot of each territory's performance: budget attainment, field activity, enrollment volume, lead conversion, and rep ranking.
 
-That decision matters because the main business metrics are monthly:
+The project is intentionally separate from the production OSR Enrollment Dashboard. It re-uses the same Salesforce data (via the dashboard's snapshot files) but renders a focused, single-page card-based view designed to be skimmed in 30 seconds.
 
-- Budget origination attainment
-- Funded dollar actuals versus budget target
-- New merchant enrollments
-- Business days remaining
-- Territory rank and pace
+---
 
-The weekly email cadence is the distribution rhythm. The measurement period remains the current month.
+## 2. System Diagram
 
-## Repository Structure
+```
+                          Salesforce (source of truth)
+                                    │
+                                    │ OAuth Client Credentials
+                                    │ Analytics REST API
+                                    ▼
+                ┌──────────────────────────────────────┐
+                │  osr-enrollmentdash repo (GitHub)    │
+                │  ──────────────────────────────────  │
+                │  GitHub Actions cron runs hourly,    │
+                │  M-F 5am-6pm PT. Pulls 7 SF reports, │
+                │  writes data/snapshots/{YYYY-MM}/    │
+                │  *.json snapshot files. Commits      │
+                │  back to its own repo.               │
+                └──────────────────────────────────────┘
+                                    │
+                                    │ actions/checkout (read-only)
+                                    │ on Monday at 13:00 UTC
+                                    ▼
+                ┌──────────────────────────────────────┐
+                │  weekly-territory-cards repo         │
+                │  ──────────────────────────────────  │
+                │  GitHub Actions cron runs Mondays    │
+                │  13:00 UTC. Checks out both repos,   │
+                │  runs automation/generate_weekly_    │
+                │  data.py, commits data/weekly-       │
+                │  data.js back to its own repo.       │
+                └──────────────────────────────────────┘
+                                    │
+                                    │ git push triggers Netlify deploy
+                                    ▼
+                ┌──────────────────────────────────────┐
+                │  Netlify (CDN + serverless function) │
+                │  ──────────────────────────────────  │
+                │  Static index.html + styles.css +    │
+                │  scripts/app.js read data/weekly-    │
+                │  data.js. Refresh button calls       │
+                │  /.netlify/functions/trigger-refresh │
+                │  which workflow_dispatches the GHA.  │
+                └──────────────────────────────────────┘
+                                    │
+                                    │ link in email
+                                    ▼
+                            Power Automate Monday email
+                            → Reps + leadership inboxes
+```
 
-```text
+---
+
+## 3. Repositories
+
+### This repo: `KevinVillegasDev/weekly-territory-cards` (GitHub) + `easypayfinance/weekly-territory-cards` (Bitbucket, mirror)
+
+Both remotes track the same `codex-initial-weekly-report` branch (Bitbucket calls it `main`). GitHub is the canonical home — Netlify deploys from it, the cron runs on it. Bitbucket is a corporate-visibility mirror that gets manually synced from local.
+
+### Dashboard repo (read-only consumer): `KevinVillegasDev/osr-enrollmentdash` (GitHub)
+
+Public repo. We `actions/checkout` it during our cron job to read the snapshot files. We never push to it (with one historic exception: a one-shot bug fix to make the snapshot file include merged split-fetch data — see section 7).
+
+---
+
+## 4. File Structure
+
+```
 weekly-territory-cards/
-  index.html
-  styles.css
-  scripts/
-    app.js
-  data/
-    weekly-data.js
-  automation/
-    generate_weekly_data.py
-    __init__.py
-  README.md
-  PROJECT_ARCHITECTURE.md
-  netlify.toml
-  .gitignore
+├── index.html                              Page structure (header, totals, controls,
+│                                           cards grid, leaderboard, definitions)
+├── styles.css                              Full visual system (EasyPay brand)
+├── scripts/app.js                          Renders all dynamic UI from
+│                                           window.weeklyTerritoryReport
+├── data/
+│   ├── weekly-data.js                      The data file the page consumes.
+│   │                                       Regenerated by the cron job.
+│   └── historical-totals.json              Closed-month authoritative team totals
+│                                           (Sales Ops Q1 numbers + auto-frozen
+│                                           future months). Source of truth for
+│                                           any month listed here.
+├── automation/
+│   ├── __init__.py
+│   └── generate_weekly_data.py             Core generator. Reads dashboard
+│                                           snapshots, writes weekly-data.js.
+├── netlify/functions/
+│   └── trigger-refresh.js                  Serverless proxy for the in-page
+│                                           Refresh button. Holds a GitHub PAT
+│                                           server-side, calls workflow_dispatch.
+├── .github/workflows/
+│   └── weekly-refresh.yml                  Monday 13:00 UTC cron + manual dispatch.
+├── netlify.toml                            Netlify build config (publish + functions).
+├── README.md                               Quick-start.
+└── PROJECT_ARCHITECTURE.md                 This file.
 ```
 
-## Frontend Architecture
+---
 
-The frontend is static HTML, CSS, and JavaScript. There is no build step, package manager, framework, or bundler.
+## 5. Data Sources (Salesforce)
 
-### `index.html`
+The dashboard's automation pulls these reports via the Salesforce Analytics REST API. We consume the resulting JSON snapshot files at `osr-enrollmentdash/data/snapshots/{YYYY-MM}/`.
 
-Defines the page structure:
+| Snapshot file | Salesforce Report | Report ID | What we use it for |
+|---|---|---|---|
+| `monthly_quota.json` | Monthly_Quota (Report 6) | `00OTO000009YYWj2AO` | Funded $ actuals + Budget targets per rep, current month |
+| `credited_enrollments.json` | Credited_Sales_Team_Enrollments (Report 2) | `00OTO000007Mhrt2AC` | New merchant enrollments credited to OSR per rep |
+| `maps_check_ins.json` | Maps_Check_Ins (Report 5) | `00OTO000009NEbN2AW` | Field check-in records (stops, comments, lead/account flag) |
 
-- Branded EasyPay report header
-- Executive summary stats
-- Team origination totals table
-- Search, status filter, and sort controls
-- Territory card grid mount point
+We do **not** currently use: `new_enrollments`, `current_month_activity`, `last_month_activity`, `isr_notes`, `genesys_talk_time`. Those are pulled by the dashboard but unused here.
 
-It loads data and behavior in this order:
+### Field references on each row (post Salesforce API parsing)
 
-```html
-<script src="data/weekly-data.js"></script>
-<script src="scripts/app.js"></script>
+**`monthly_quota.json` row keys:**
+- `_label_User` — rep display name (matched against `TERRITORY_MAP` + `TERRITORY_ALIASES`)
+- `Funded Dollars` — actual funded $ MTD (currency dict: `{"amount": float}`)
+- `Funded Dollars Quota` — monthly target (currency dict)
+- `Funding Projected` — Salesforce's own forward-projection (unused currently)
+
+**`credited_enrollments.json` row keys:**
+- `OSR Enrollment Credit` — rep display name (the credit field, NOT `_label_OSR` which is territory owner)
+- `_label_Account Name` — merchant display name
+- `Account ID` — 18-char SF Account ID (used for dedup and parent linkage)
+- `Parent Account` — 18-char SF Parent Account ID (used for chain-walk in dormant cumulative attribution)
+- `Converted from - Lead ID` — 18-char SF Lead ID this Account converted from (added April 2026; populated for ~12% of rows currently; used by dormant cumulative attribution)
+- `Branch ID` — unique merchant identifier
+- `Enrollment Date` — used for through-date calculation
+
+**`maps_check_ins.json` row keys:**
+- `_label_Assigned` — rep display name
+- `_label_Company / Account` — merchant display name on the check-in
+- `_label_Created Date/Time` — timestamp ("4/1/2026, 6:04 AM" format typically)
+- `_label_Full Comments` — free-text comment, the only field the classifier reads
+- `Lead` — SF Lead ID when the merchant is a not-yet-enrolled prospect; null/empty when the merchant is an existing Account
+
+---
+
+## 6. The Generator (`automation/generate_weekly_data.py`)
+
+Single-file Python 3.12+ script. No external dependencies beyond the standard library. Output: `data/weekly-data.js` — a JavaScript file assigning a single global `window.weeklyTerritoryReport` object that the front-end reads.
+
+### CLI
+
+```bash
+python automation/generate_weekly_data.py \
+  --dashboard-root <path to osr enrollment dash> \
+  --output data/weekly-data.js \
+  --historical data/historical-totals.json \
+  [--allow-stale]
 ```
 
-The data file must load first because `app.js` reads `window.weeklyTerritoryReport`.
+### Top-level flow (`build_report`)
 
-### `styles.css`
+1. Find the latest snapshot directory under `<dashboard-root>/data/snapshots/`.
+2. Load the three snapshot files (monthly_quota, credited_enrollments, maps_check_ins).
+3. Compute `through_date` (latest activity date across enrollments + check-ins).
+4. **Freshness guard:** raise SystemExit if `through_date` is more than 4 days stale (skipped with `--allow-stale`).
+5. Aggregate per-territory data: `_quota_by_territory`, `_enrollments_by_territory`, `_activity_by_territory`.
+6. Build a list of 12 territory objects (one per `TERRITORY_MAP` entry).
+7. Attach per-metric ranks (`_attach_ranks`) and overall rank by attainment.
+8. **Auto-freeze closed months:** scan all snapshot dirs older than the current month; for any not already in `historical-totals.json`, append their roster-sum totals.
+9. Build the totals table (historical entries from JSON + current month from snapshot).
+10. Compose the executive note and totals note from current values.
+11. JSON-serialize and wrap in a `window.weeklyTerritoryReport = { ... };` declaration.
 
-Contains the full visual system for the report. The current design follows the EasyPay Finance brand skill:
+---
 
-- EasyPay Blue: `#1F5577`
-- EasyPay Green: `#1AC668`
-- EasyPay Teal: `#1BCEAC`
-- Off-white report background
-- White cards with subtle shadows
-- Green-to-teal accent bars
-- Amber styling for watch/attention states
+## 7. Bug fix in dashboard pipeline (April 2026)
 
-The layout is responsive:
+**Problem found:** `osr-enrollmentdash/automation/main.py` was writing the maps check-in snapshot file *before* the split-fetch workaround for SF's 2,000-row API cap ran. Result: snapshot file on disk only had the first 2,000 rows; in-memory dashboard rendering had the full merged set; we (reading the snapshot) saw the truncated version.
 
-- Desktop uses a 3-column card grid.
-- Tablet uses a 2-column card grid.
-- Mobile uses a single-column card grid.
-- The team totals table becomes stacked rows on mobile.
+**Fix shipped:** added a snapshot re-save step right after the split-fetch overrides `reports["maps_check_ins"]`. Snapshot now matches what the dashboard renders.
 
-### `scripts/app.js`
+**Backfill:** Jan and Feb 2026 had no maps_check_ins.json originally. A one-shot script (`backfill_maps.py`) was added to the dashboard repo, ran once via a temporary `backfill-maps.yml` workflow, then both files were deleted. Snapshot files for those months now exist.
 
-Renders all dynamic UI from `window.weeklyTerritoryReport`.
+---
 
-Responsibilities:
+## 8. Metrics — exact formulas
 
-- Populate top-level stats and executive note
-- Render the team totals table
-- Render territory cards
-- Support search by rep, territory code, or area
-- Filter cards by status
-- Sort cards by attainment, new merchants, stops, or lead conversion
-- Expand short data labels into human-readable context
+Each card and the leaderboard are built from these per-territory values. Rank pill thresholds: green = ranks 1–3, amber = 4–6, gray = 7–12.
 
-Important examples:
+### Budget Attainment %
 
-- `79P / 142A` is rendered as `79 prospect stops / 142 existing account stops`.
-- `Int/FU` is rendered as `Interested / Follow-Up`.
-- `Rel. Check-In` is rendered as `Relationship Check-In`.
+- **Source:** `monthly_quota.json` rows where `_label_User` is in `TERRITORY_MAP` ∪ `TERRITORY_ALIASES`.
+- **Formula:** `actual ÷ budget × 100`, where actual = `Funded Dollars`, budget = `Funded Dollars Quota`.
+- **Roll-up rule (transitions):** funded $ sum across primary + alias reps; budget = alias's quota when present (the original month's plan governs the transition month), else primary's.
 
-## Data Contract
+### Stop Count + dedup
 
-The frontend expects one global object:
+- **Source:** `maps_check_ins.json` rows where `_label_Assigned` ∈ roster.
+- **Dedup:** key = `(territory, _label_Company / Account, date)`. When duplicate keys collide, the entry with the **longest comment** is kept (gives the classifier the best signal). Matches the dashboard's `processors/field_activity.py` dedup logic.
+- Result is a unique-merchant-per-day count per territory.
 
-```js
-window.weeklyTerritoryReport = {
-  meta: {},
-  totals: [],
-  territories: []
-};
-```
+### Stop Efficiency %
 
-### `meta`
+- **Formula:** `productive ÷ total × 100`
+- **Productive outcomes** (per the classifier): `Int/FU` + `Enrolled` + `Training` + `Rel. Check-In`.
+- **Not counted:** `No Contact` + `Not Interested` + `Competitor` + `Issue`.
 
-Used for the page header and executive summary.
+### Outcome Classifier (8 buckets, applied to each deduped stop)
 
-```js
-{
-  updatedThrough: "April 23, 2026",
-  stopsLogged: 1995,
-  newMerchants: 97,
-  businessDaysRemaining: 5,
-  note: "...",
-  totalsNote: "..."
+Each stop's `_label_Full Comments` is normalized (lowercase, trimmed) and run through this precedence ladder. First match wins. Friction signals are surfaced before warmer outcomes so a stop that is both an issue and a training session classifies as Issue.
+
+1. **No Contact** — comment shorter than 18 chars, OR contains: closed, locked, not in, not available, no one, left card, no contact, drop off, drop-off, owner not present, owner not in, too busy.
+2. **Issue** — complaint, system error, system issue, audit, escalat, broken, refund issue, issue with.
+3. **Not Int.** — not interested, declined, won't use, wont use, cash only, cash business, no financing, not a fit, no opportunity, does not use financing.
+4. **Competitor** — snap finance, uses snap, koalafi, koala fi, affirm, synchrony, klarna, afterpay, sema financing, uses aff, competitor.
+5. **Enrolled** — enrolled, signed up, sign up, application submitted, sent enrollment, got them set, completed enrollment, submitted app.
+6. **Training** — training, demo, portal, login, onboarding, walkthrough, set up account, account setup, qr code, rewards program, pop materials.
+7. **Int/FU** — interested, follow up, follow-up, return next, come back, asked me to return, asked rep to return, circle back, will revisit, revisit next.
+8. **Rel. Check-In** — default for everything else with substantive notes (≥18 chars, no other match).
+
+The card's visible mix bar collapses Competitor + Issue into the visible "Not Int." segment (8 internal buckets, 6 visible buckets). Stop Efficiency math always uses all 8.
+
+### New Merchants Enrolled
+
+- **Source:** `credited_enrollments.json`, current month only.
+- **Formula:** count of rows where `OSR Enrollment Credit` ∈ roster (primary + aliases).
+- **Color rule on cards/leaderboard:** green ≥8, blue 4–7, gray 1–3, amber 0.
+
+### Lead Conversion %
+
+- **Formula:** `new_merchants ÷ prospect_stops × 100`, current month.
+- **Prospect stops** = check-ins where `Lead` field is non-null. **Account stops** = check-ins where `Lead` is null/empty. The card's L/A split shows this breakdown.
+- **Known artifact:** can exceed 100% for relationship-heavy reps who enroll outside cold prospecting (referrals, web enrollments, leads from prior months). Acknowledged in the definitions section as not-a-bug. A more accurate cumulative attribution metric exists in the codebase (dormant — see section 12) but isn't displayed today because Salesforce data hygiene limits its reliability.
+- **Color rule:** green ≥20%, blue 10–19%, gray 1–9%, amber 0%.
+
+### Active Days
+
+- **Definition:** a calendar day counts as "active" only if the rep logged 3 or more unique merchant stops on it. Threshold set April 2026.
+- **Display format:** `Active / Total Visited` (e.g. `13 / 13`). Total visited = calendar days with any check-in logged.
+
+### Avg Time per Active Day
+
+- **Formula:** mean of `(last_check_in − first_check_in)` spans, taken only over active days (≥3 stops). Days under 3 stops contribute zero time.
+- **Display format:** `H:MM`.
+
+### Rank pills + sort
+
+The leaderboard's rank pills next to Stops, Eff., and Avg/Day reflect the territory's standing in that metric across all 12 reps. Card grid has its own sort dropdown (Attainment, Stop Efficiency, Merchants, Stops, Lead Conversion). Leaderboard has its own sort dropdown (Budget %, Stop Efficiency, Merchants, Lead Conversion, Stops, Avg/Day).
+
+---
+
+## 9. Roster + transitions
+
+### `TERRITORY_MAP` (12 territories, one rep each)
+
+The "current primary" rep for each territory. Edit this when a rep change becomes permanent.
+
+```python
+TERRITORY_MAP = {
+    "LTO-1": "Yemaira Hernandez",
+    "LTO-2": "Omar Corona",
+    "LTO-3": "Joseph Guerra",
+    "LTO-5": "Jared Midkiff",
+    "LTO-7": "Stephanie Whitlock",
+    "RIC-1": "Cesar Flores",
+    "RIC-2": "Claudia Gerhardt",
+    "RIC-4": "Richard Herrera",   # took over from Jeremy Moore Apr 2026
+    "RIC-6": "Phillip Mason",
+    "RIC-7": "DeLon Phoenix",
+    "RIC-8": "Eric Henderson",
+    "RIC-9": "Matthew MacDonald",
 }
 ```
 
-### `totals`
+### `TERRITORY_ALIASES` (transition handling)
 
-Used for the team origination table.
+When a rep changes mid-month, the outgoing rep's funded $ and field activity should still roll up to the territory until the month closes. The alias map carries that.
 
-```js
-{
-  period: "April MTD",
-  sub: "Through Apr 23",
-  actual: 6100743.8,
-  budget: 8735345,
-  attainment: 69.8
+```python
+TERRITORY_ALIASES = {
+    "RIC-4": ["Jeremy Moore"],  # remove after April 2026 closes in historical-totals.json
 }
 ```
 
-### `territories`
+Aggregation rules:
+- **Activity** (`_activity_by_territory`): primary + alias check-ins are pooled into the same territory's deduped stop set.
+- **Enrollments** (`_enrollments_by_territory`): credit goes to whichever name the SF report attributes it to; both flow into the territory.
+- **Quota** (`_quota_by_territory`): funded $ summed across primary + alias rows; budget = alias's row when present (transition month inherits the original plan), else primary's.
 
-Used for each territory card.
+When the transition month closes:
+1. Confirm `historical-totals.json` has the closed-month total locked in.
+2. Remove the alias from `TERRITORY_ALIASES`.
+3. From the next refresh forward, the card reflects only the new primary's data.
 
-```js
+---
+
+## 10. Historical Totals (`data/historical-totals.json`)
+
+Closed-month team totals, in priority order over snapshot-derived totals. Three sources flow in:
+
+1. **Sales Ops authoritative numbers** for Q1 2026 (Jan/Feb/Mar) — manually committed from the [`2026 TSR_ISR Commission Reporting Model`](C:/Users/kevin.villegas/Downloads/2026%20TSR_ISR%20Commission%20Reporting%20Model%203.xlsx) workbook. These are the authoritative team totals and override anything snapshot-derived.
+2. **Auto-freeze on every generator run.** When a new month starts, the prior month's roster-summed totals are appended automatically (only if not already present — never overwrites).
+3. **Manual edits.** You can hand-edit any month's row to override with a more authoritative number. The auto-freeze respects existing entries.
+
+Schema:
+
+```json
 {
-  code: "RIC-1",
-  rep: "Cesar Flores",
-  area: "CA - LA Metro Core",
-  status: "on-track",
-  attainment: 92.0,
-  actual: 150259.53,
-  budget: 163279,
-  newMerchants: 10,
-  leadConversion: 12.7,
-  stops: 221,
-  stopSplit: "79P / 142A",
-  avgDay: "5.8h",
-  activeDays: "11 / 17",
-  mix: {
-    "No Contact": 15,
-    "Int/FU": 0,
-    "Rel. Check-In": 38,
-    "Training": 41,
-    "Enrolled": 0,
-    "Not Int.": 6
-  },
-  insight: "...",
-  ranks: {
-    attainment: 1,
-    merchants: 4,
-    conversion: 7,
-    stops: 1,
-    avgDay: 3
-  },
-  rank: 1
+  "_source": "...documentation string...",
+  "months": [
+    {"year": 2026, "month": 1, "budget": 6953269, "actual": 6796982},
+    {"year": 2026, "month": 2, "budget": 6792127, "actual": 6782287},
+    {"year": 2026, "month": 3, "budget": 8860207, "actual": 8427296}
+  ]
 }
 ```
 
-## Data Generation
+---
 
-### Current Source
+## 11. Operations
 
-The current generator reads the existing dashboard snapshots from:
+### Local development
 
-```text
-C:\Codex\osr-enrollmentdash\data\snapshots
+```bash
+# Regenerate the data file from the dashboard's snapshots:
+python automation/generate_weekly_data.py \
+  --dashboard-root "C:/Users/kevin.villegas/OneDrive - Duvera/Claude/osr enrollment dash"
+
+# Serve the site locally:
+python -m http.server 8000
+# then open http://localhost:8000/
 ```
 
-The command is:
+### Weekly refresh (automated)
 
-```powershell
-py automation/generate_weekly_data.py --dashboard-root C:\Codex\osr-enrollmentdash
+GitHub Actions runs the workflow `weekly-refresh.yml` every Monday at 13:00 UTC (5 AM PST / 6 AM PDT). Steps:
+
+1. Checkout this repo (writable).
+2. Checkout `osr-enrollmentdash` repo at a shallow depth (read-only).
+3. Set up Python 3.12.
+4. Run the generator pointing at the checked-out dashboard.
+5. Diff `data/weekly-data.js`. If changed, commit + push back to GitHub.
+6. Netlify auto-deploys on the push (typically <60 seconds).
+
+### Manual refresh (button on the page)
+
+Click "Refresh report" on the live site. Flow:
+
+1. Page POSTs to `/.netlify/functions/trigger-refresh`.
+2. The Netlify Function reads `GITHUB_PAT` from env and POSTs to GitHub's `workflow_dispatches` endpoint for the weekly-refresh workflow.
+3. GitHub Actions runs the same pipeline as the cron.
+4. Net effect: data refreshes within ~2 minutes.
+
+### Roster change
+
+1. Update `TERRITORY_MAP` in `automation/generate_weekly_data.py`.
+2. If it's a mid-month transition where the outgoing rep's MTD volume should still count, add their name to `TERRITORY_ALIASES` for the relevant code.
+3. Commit + push. Next refresh picks it up.
+
+### Bitbucket sync
+
+Bitbucket is a corporate-visibility mirror. The cron commits to GitHub only. Periodically run from local:
+
+```bash
+git pull origin codex-initial-weekly-report --ff-only
+git push bitbucket codex-initial-weekly-report:main
 ```
 
-That command writes:
+### Deleting a closed-month transition alias
 
-```text
-data/weekly-data.js
+After April 2026 closes:
+1. Confirm April 2026 has been auto-frozen into `historical-totals.json` (or hand-edited there).
+2. Remove `"RIC-4": ["Jeremy Moore"]` from `TERRITORY_ALIASES`.
+3. Commit + push. RIC-4's card will show only Richard Herrera's data going forward.
+
+---
+
+## 12. Dormant: Cumulative Lead Attribution
+
+`_cumulative_lead_attribution()` exists in the generator but isn't called from `build_report`. It computes a more accurate lead conversion metric by tying each enrollment back to the rep's historical lead stops via a three-pass match:
+
+1. Exact SF Lead ID match (`Converted from - Lead ID` field).
+2. Parent Account → originating Lead chain match.
+3. Token-subset name match fallback.
+
+**Why it's dormant:** as of April 2026, only ~12% of credited enrollments have the SF Lead-link field populated. 88% fall through to token-subset matching, which is fuzzy. That makes the cumulative metric show 2-6% team-wide when real conversion is likely 4-10%, which would punish good reps for SF data hygiene problems they don't control.
+
+**Re-enable when:** the SF `Converted from - Lead ID` field's populated rate climbs above ~50%. Wiring is one line in `build_report`:
+
+```python
+lead_attribution = _cumulative_lead_attribution(snapshot_root, current_dir)
+# ... and in the territory loop, replace the simple formula with:
+attr = lead_attribution.get(code, {"matched_enrollments": 0, "unique_leads": 0, "lead_conversion": 0.0})
+lead_conversion = attr["lead_conversion"]
 ```
 
-### Snapshot Files Used
+To check the populated rate at any time:
 
-The generator currently depends on these dashboard snapshot files:
-
-- `monthly_quota.json`
-- `credited_enrollments.json`
-- `maps_check_ins.json`
-
-### Metrics Computed
-
-The generator computes:
-
-- Latest available activity/enrollment date
-- Business days elapsed and remaining
-- Territory actual funded dollars
-- Territory budget target
-- Budget attainment percentage
-- New merchant count by OSR enrollment credit
-- Field stop count
-- Prospect versus existing account stop split
-- Lead conversion percentage
-- Active field days
-- Average field hours per active day
-- Activity mix
-- Per-metric ranks
-- Overall territory rank by attainment
-- Executive summary note
-
-## Relationship To The Original Dashboard
-
-The original dashboard lives at:
-
-```text
-C:\Codex\osr-enrollmentdash
+```python
+import json
+roster = {...}  # current TERRITORY_MAP values + aliases
+total = pop = 0
+for r in json.load(open("data/snapshots/2026-04/credited_enrollments.json")):
+    if (r.get("OSR Enrollment Credit") or "").strip() in roster:
+        total += 1
+        if str(r.get("Converted from - Lead ID") or "").strip() not in ("", "null", "-"):
+            pop += 1
+print(f"{pop}/{total} = {pop/total*100:.1f}%")
 ```
 
-It already has Salesforce authentication, report fetching, parsing, and snapshot writing. The relevant files are:
+---
 
-```text
-automation/config.py
-automation/salesforce_auth.py
-automation/salesforce_reports.py
-automation/main.py
-automation/processors/field_activity.py
-```
+## 13. Hosting + Deployment
 
-The weekly cards app currently reads the dashboard's saved snapshots rather than authenticating directly with Salesforce.
+### Live site
 
-## Salesforce Reports Already Known
+- **URL:** https://weekly-territory-progression.netlify.app/
+- **Host:** Netlify, deployed from the `codex-initial-weekly-report` branch on GitHub.
+- **Deploy trigger:** every push to that branch triggers a Netlify build (~30 seconds).
 
-The original dashboard defines these Salesforce report IDs:
+### Netlify configuration
 
-| Key | Report ID | Primary Use |
-| --- | --- | --- |
-| `new_enrollments` | `00OTO000009L49t2AC` | All new enrollment rows |
-| `credited_enrollments` | `00OTO000007Mhrt2AC` | OSR-credited merchant enrollments |
-| `current_month_activity` | `00OTO00000671Gr2AI` | Current cohort funding/activity |
-| `last_month_activity` | `00OTO000009Iw1x2AC` | Prior cohort funding/activity |
-| `maps_check_ins` | `00OTO000009NEbN2AW` | Maps field check-ins |
-| `monthly_quota` | `00OTO000009YYWj2AO` | Quota, funded dollars, budget attainment |
-| `isr_notes` | `00O8Y0000098j62UAA` | ISR notes and touch points |
-
-For this report, the first live-data integration should use:
-
-- `monthly_quota`
-- `credited_enrollments`
-- `maps_check_ins`
-
-Those three reports cover the current card experience.
-
-## Recommended Live Data Architecture
-
-The safest next step is to add a live generation mode to `automation/generate_weekly_data.py`.
-
-Recommended flow:
-
-1. Reuse Salesforce auth and report fetch code from the dashboard repo.
-2. Fetch only the reports needed by this app.
-3. Normalize rows using the same parser as the dashboard.
-4. Generate the same `window.weeklyTerritoryReport` object.
-5. Write `data/weekly-data.js`.
-6. Keep snapshot mode as a fallback.
-
-Proposed command shape:
-
-```powershell
-py automation/generate_weekly_data.py --dashboard-root C:\Codex\osr-enrollmentdash --live
-```
-
-Fallback snapshot mode should remain:
-
-```powershell
-py automation/generate_weekly_data.py --dashboard-root C:\Codex\osr-enrollmentdash
-```
-
-## Current Data Caveats
-
-Most values are grounded in real dashboard snapshot data. A few areas still need refinement before this becomes a fully authoritative leadership report.
-
-### Activity Mix
-
-Activity mix is currently inferred from Maps check-in comments using keywords. For example, comments containing terms such as "training", "portal", or "onboarding" are classified as training.
-
-This is useful for a prototype but not ideal for CFO-grade reporting. A structured Salesforce field for check-in outcome, visit type, or disposition would be better.
-
-### Deduplication
-
-The original dashboard has more detailed field activity deduplication logic in:
-
-```text
-C:\Codex\osr-enrollmentdash\automation\processors\field_activity.py
-```
-
-The weekly generator should eventually reuse that logic so stop counts match the dashboard exactly.
-
-### Enrollment Attribution To Visits
-
-The report shows new merchant counts separately from visit mix. It does not yet know which specific check-in led to an enrollment, so the `Enrolled` segment in activity mix is not authoritative.
-
-### Historical Totals
-
-The totals table includes months where `monthly_quota.json` exists. If leadership wants a fixed Jan-Apr or YTD view every month, the app should fetch or preserve historical quota/origination data.
-
-## Deployment
-
-The project is static and can be hosted anywhere that serves plain HTML/CSS/JS.
-
-`netlify.toml` is included for Netlify:
+`netlify.toml`:
 
 ```toml
 [build]
   publish = "."
+  functions = "netlify/functions"
 ```
 
-No build command is required.
+No build command — static publish from the repo root, functions auto-detected from the `netlify/functions/` folder.
 
-## Local Preview
+### Required environment variable
 
-Open the file directly:
+- **`GITHUB_PAT`** — fine-grained GitHub Personal Access Token. Scoped to the `weekly-territory-cards` repo only with `Actions: Read and write` permission. Set in Netlify UI under Site configuration → Environment variables (with "Contains secret values" checked). The Netlify function uses this to trigger the GitHub workflow.
 
-```text
-file:///C:/Codex/weekly-territory-cards/index.html
-```
+### GitHub Actions secrets
 
-Or serve the folder with any static server.
+None on this repo. The workflow only needs the default `GITHUB_TOKEN` for committing back to the repo.
 
-## Verification Checklist
+The dashboard repo separately holds `SF_LOGIN_URL`, `SF_CLIENT_ID`, `SF_CLIENT_SECRET`, `GENESYS_*` for its own pipeline.
 
-After changing data or UI:
+### Power Automate (planned)
 
-```powershell
-node --check scripts\app.js
-node --check data\weekly-data.js
-py automation/generate_weekly_data.py --dashboard-root C:\Codex\osr-enrollmentdash
-```
+Scheduled flow at Monday ~5:15 AM PT, sends an email with the Netlify URL to reps and leadership. The 15-minute lag after the 5:00 AM cron ensures fresh data. (Not yet built as of this writing.)
 
-For visual QA, render desktop and mobile screenshots with Chrome headless:
+---
 
-```powershell
-& 'C:\Program Files\Google\Chrome\Application\chrome.exe' --headless --disable-gpu --window-size=1440,1700 --screenshot='C:\Codex\weekly-territory-cards\preview.png' 'file:///C:/Codex/weekly-territory-cards/index.html'
+## 14. Known Data Caveats
 
-& 'C:\Program Files\Google\Chrome\Application\chrome.exe' --headless --disable-gpu --window-size=390,2800 --screenshot='C:\Codex\weekly-territory-cards\preview-mobile-tall.png' 'file:///C:/Codex/weekly-territory-cards/index.html'
-```
+| Caveat | Impact | Path to fix |
+|---|---|---|
+| Lead Conversion can exceed 100% | Relationship-heavy reps (e.g. RIC-9 at 125%) read as outliers | Re-enable cumulative attribution once SF Lead-link rate is >50% |
+| Activity classifier is keyword-based on free-text comments | Mix percentages can miscategorize new phrasing or non-English notes | Add a structured Visit Type / Disposition picklist on the Maps check-in object |
+| Stop count's "Enrolled" classification is based on rep's note text, not SF system confirmation | Stops marked Enrolled can pre-date the actual finalized enrollment by days | Wire the SF Branch Enrollment confirmation back to its originating check-in (would also unlock real lead-to-stop attribution) |
+| `Converted from - Lead ID` only ~12% populated | Dormant cumulative attribution metric undercounts | SF admin work: ensure web-enrollment Leads merge into existing Lead records, retroactively populate the field for past conversions |
+| Roster hardcoded in `TERRITORY_MAP` | New rep additions require code edit + push | Source from a SF roster report (low priority until a transition forces it) |
 
-Preview screenshots are ignored by git.
+---
 
-## Design Notes
+## 15. Brand + Design
 
-The app follows the EasyPay Finance branding skill:
+EasyPay Finance brand colors live in CSS variables in `styles.css`:
 
-- Use EasyPay Blue for headers and institutional surfaces.
-- Use EasyPay Green for primary positive/accent states.
-- Use EasyPay Teal for links, secondary accents, and data visualization.
-- Use amber/gold for watch or attention states.
-- Keep copy clear and non-jargony.
-- Spell out abbreviations where a TSR or executive might not know the shorthand.
+- `--ep-blue`: `#1F5577` (institutional)
+- `--ep-green`: `#1AC668` (positive accents, primary CTAs)
+- `--ep-teal`: `#1BCEAC` (secondary accents, data viz)
+- `--ep-amber`: `#FFC107` (watch states)
 
-The current design intentionally avoids a marketing landing page. The first screen is the actual report.
+Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.png`. Layout is responsive: 3-column card grid on desktop, 2-column on tablet, single-column on mobile. Totals table goes stacked on mobile.
 
+---
+
+## 16. History / Significant Changes
+
+- **2026-04-24**: Initial scaffold. Static cards from snapshot data.
+- **2026-04-24**: Added refresh button (Netlify function) + GitHub Actions Monday cron + freshness guard.
+- **2026-04-24**: Added historical-totals.json + auto-freeze for closed months. Hand-loaded Sales Ops Q1 numbers.
+- **2026-04-24**: Field-activity dedup matched to dashboard processor logic.
+- **2026-04-24**: Final Standings leaderboard added with rank pills and color rules. Stat Definitions section added below.
+- **2026-04-24**: Stop classifier rewritten to 8-bucket precedence ladder. Active day redefined as ≥3 unique merchant stops. Avg/day formatted as H:MM.
+- **2026-04-24**: Bug fix in dashboard pipeline (`main.py`) to re-save merged maps_check_ins snapshot after split-fetch. Backfilled Jan/Feb 2026 maps data.
+- **2026-04-27**: RIC-4 transition. Richard Herrera replaces Jeremy Moore. TERRITORY_ALIASES introduced for transition aggregation.
+- **2026-04-27**: Added "Converted from - Lead ID" column to SF Report 2. Built three-pass hybrid attribution (Lead ID → parent chain → token fallback). Reverted to simple current-month formula due to insufficient SF data hygiene; cumulative function preserved as dormant code.
