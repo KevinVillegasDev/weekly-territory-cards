@@ -217,6 +217,7 @@ def _load_json(path: Path) -> list[dict]:
 
 
 LEAD_ATTRIBUTION_WINDOW_MONTHS = 6  # rolling window for cumulative lead conversion
+LEAD_LINK_FIELD = "Converted from - Lead ID"  # column on credited_enrollments report
 BUSINESS_SUFFIXES = {"inc", "llc", "ltd", "corp", "co", "company", "incorporated", "lp", "llp"}
 
 
@@ -267,9 +268,16 @@ def _cumulative_lead_attribution(snapshot_root: Path, current_dir: Path) -> dict
         cutoff_month += 12
     cutoff = (cutoff_year, cutoff_month)
 
-    # Per territory: dict mapping normalized merchant key → token set (for token-subset matching).
-    leads_by_terr: dict[str, dict[str, frozenset[str]]] = defaultdict(dict)
-    enrollments_by_terr: dict[str, dict[str, frozenset[str]]] = defaultdict(dict)
+    # Per territory: lead IDs (for deterministic match) + token map (for fallback)
+    leads_by_terr_ids: dict[str, set[str]] = defaultdict(set)
+    leads_by_terr_tokens: dict[str, dict[str, frozenset[str]]] = defaultdict(dict)
+
+    # Per territory: list of enrollment metadata
+    enrollments_by_terr: dict[str, list[dict]] = defaultdict(list)
+
+    # Account ID → originating Lead ID (built across all rows in the window so we can
+    # resolve the parent → lead chain match).
+    account_to_origin_lead: dict[str, str] = {}
 
     for snapshot_dir in sorted(p for p in snapshot_root.iterdir() if p.is_dir()):
         try:
@@ -280,43 +288,73 @@ def _cumulative_lead_attribution(snapshot_root: Path, current_dir: Path) -> dict
             continue
 
         for row in _load_json(snapshot_dir / "maps_check_ins.json"):
-            lead_val = row.get("Lead")
-            if lead_val in (None, "", "null"):
+            lead_id = (row.get("Lead") or "").strip()
+            if lead_id in ("", "null"):
                 continue
             code = name_to_terr.get((row.get("_label_Assigned") or "").strip())
             if not code:
                 continue
+            leads_by_terr_ids[code].add(lead_id)
             tokens = _normalize_merchant_tokens(row.get("_label_Company / Account"))
             if tokens:
-                leads_by_terr[code][" ".join(sorted(tokens))] = tokens
+                leads_by_terr_tokens[code][" ".join(sorted(tokens))] = tokens
 
         for row in _load_json(snapshot_dir / "credited_enrollments.json"):
             code = name_to_terr.get((row.get("OSR Enrollment Credit") or "").strip())
             if not code:
                 continue
-            tokens = _normalize_merchant_tokens(row.get("_label_Account Name"))
-            if tokens:
-                enrollments_by_terr[code][" ".join(sorted(tokens))] = tokens
+            account_id = str(row.get("Account ID") or "").strip()
+            origin_lead = str(row.get(LEAD_LINK_FIELD) or "").strip()
+            if origin_lead in ("", "null", "-"):
+                origin_lead = ""
+            if account_id and origin_lead:
+                account_to_origin_lead[account_id] = origin_lead
+            enrollments_by_terr[code].append({
+                "account_id": account_id,
+                "parent_account_id": str(row.get("Parent Account") or "").strip(),
+                "origin_lead": origin_lead,
+                "tokens": _normalize_merchant_tokens(row.get("_label_Account Name")),
+            })
 
-    # A lead with <2 tokens is too generic for safe subset matching — counts in the denominator
-    # only if it gets an exact match.
     MIN_LEAD_TOKENS = 2
 
     result: dict[str, dict] = {}
     for code in TERRITORY_MAP:
-        leads = leads_by_terr.get(code, {})
-        enrollments = enrollments_by_terr.get(code, {})
-        matched_keys: set[str] = set()
-        for enroll_key, enroll_tokens in enrollments.items():
-            if enroll_key in leads:
-                matched_keys.add(enroll_key)
+        rep_lead_ids = leads_by_terr_ids.get(code, set())
+        rep_lead_tokens = leads_by_terr_tokens.get(code, {})
+        enrollments = enrollments_by_terr.get(code, [])
+
+        # Dedup enrollments: by account_id when present (most stable), otherwise normalized name.
+        dedup: dict[str, dict] = {}
+        for e in enrollments:
+            key = e["account_id"] or " ".join(sorted(e["tokens"]))
+            if key:
+                dedup[key] = e
+
+        matched = 0
+        for e in dedup.values():
+            # 1. Direct exact ID match — Account converted directly from a tracked Lead.
+            if e["origin_lead"] and e["origin_lead"] in rep_lead_ids:
+                matched += 1
                 continue
-            for lead_tokens in leads.values():
-                if len(lead_tokens) >= MIN_LEAD_TOKENS and lead_tokens.issubset(enroll_tokens):
-                    matched_keys.add(enroll_key)
-                    break
-        denominator = len(leads)
-        matched = len(matched_keys)
+            # 2. Chain match — parent Account converted from a tracked Lead, branch rolls up to it.
+            parent_origin = account_to_origin_lead.get(e["parent_account_id"])
+            if parent_origin and parent_origin in rep_lead_ids:
+                matched += 1
+                continue
+            # 3. Fallback: token-subset match on display names (covers nulls + chain cases the
+            #    parent-lookup can't reach because the parent isn't in this report).
+            enroll_tokens = e["tokens"]
+            if enroll_tokens:
+                key = " ".join(sorted(enroll_tokens))
+                if key in rep_lead_tokens:
+                    matched += 1
+                    continue
+                if any(len(lt) >= MIN_LEAD_TOKENS and lt.issubset(enroll_tokens) for lt in rep_lead_tokens.values()):
+                    matched += 1
+                    continue
+
+        denominator = len(rep_lead_tokens)
         result[code] = {
             "unique_leads": denominator,
             "matched_enrollments": matched,

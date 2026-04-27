@@ -167,10 +167,15 @@
       <article>
         <h3>Lead Conversion % (cumulative attribution, trailing 6 months)</h3>
         <p><strong>Formula:</strong> (Matched enrollments &divide; Unique lead merchants) &times; 100, capped at 100% by construction.</p>
-        <p><strong>Numerator:</strong> credited enrollments where the enrolled merchant&rsquo;s name matches a lead stop you logged for that territory in the trailing 6-month window. Token-subset match handles multi-branch chains (e.g. one &ldquo;Boost Mobile&rdquo; lead stop covers later enrollments of &ldquo;Boost Mobile Houston&rdquo;, &ldquo;Boost Mobile Cleveland&rdquo;, etc.).</p>
+        <p><strong>Numerator:</strong> credited enrollments that can be traced back to a lead you logged for that territory in the trailing 6-month window. The match runs in three passes:</p>
+        <ol class="classifier-list">
+          <li><strong>Exact Salesforce ID match.</strong> If the enrolled Account has a &ldquo;Converted from &mdash; Lead ID&rdquo; populated, and that Lead ID is in your tracked lead-stop set, it matches deterministically. No name guesswork.</li>
+          <li><strong>Parent &rarr; Lead chain match.</strong> If the enrollment&rsquo;s Parent Account was itself converted from one of your tracked Leads, the branch enrollment counts &mdash; covers multi-location chains where one parent agreement seeds many branch enrollments.</li>
+          <li><strong>Token-subset name match (fallback).</strong> If neither ID link is populated, the rep&rsquo;s lead-stop merchant names are matched against the enrollment merchant names by token subset. So a single &ldquo;Boost Mobile&rdquo; lead stop covers enrollments of &ldquo;Boost Mobile Houston&rdquo;, &ldquo;Boost Mobile Cleveland&rdquo;, etc.</li>
+        </ol>
         <p><strong>Denominator:</strong> distinct merchants visited as a lead (Lead field populated on the Maps row) in the same window. Account stops (already-enrolled merchants) are excluded. The L/A split on each card still shows current-month prospect vs account check-in volume.</p>
         <p><strong>Why this changed:</strong> the old formula was new-merchants &divide; current-month prospect stops, which could exceed 100% when reps enrolled merchants outside cold prospecting (referrals, account-relationship enrollments, phone closes). The cumulative attribution measures only the cold-prospect-to-funded path, which is the meaningful efficiency question. Reps who enroll mostly through relationships will show low conversion here &mdash; that&rsquo;s correct, not a bug.</p>
-        <p><strong>What hurts your number:</strong> enrolling merchants without ever logging a lead check-in for them. The fix is a single Maps lead stop on first contact, even if brief.</p>
+        <p><strong>What hurts your number:</strong> enrolling merchants without ever logging a lead check-in for them, OR web enrollments that come in unmerged from your prior lead record. The fix on your side: a single Maps lead stop on first contact, even if brief. Salesforce-side: have your admin merge web-self-enrollment leads into your existing Lead record so the Converted from &mdash; Lead ID populates.</p>
         <p><strong>Color coding:</strong> Green &ge; 20% &middot; Blue 10&ndash;19% &middot; Gray 1&ndash;9% &middot; Amber 0%.</p>
       </article>
 
