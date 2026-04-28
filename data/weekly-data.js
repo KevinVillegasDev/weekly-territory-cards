@@ -1,10 +1,10 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "April 28, 2026",
-    "stopsLogged": 3002,
+    "stopsLogged": 3026,
     "newMerchants": 111,
     "businessDaysRemaining": 2,
-    "note": "Updated budget origination data through April 28, 2026. 3,002 stops logged, 111 new merchants enrolled. 2 business days remain. RIC-1 leads attainment at 117.0%, while Joseph Guerra leads new merchant volume.",
+    "note": "Updated budget origination data through April 28, 2026. 3,026 stops logged, 111 new merchants enrolled. 2 business days remain. RIC-1 leads attainment at 117.0%, while Joseph Guerra leads new merchant volume.",
     "totalsNote": "April MTD is a partial month - 83.9% attainment through Apr 28 with 2 business days remaining."
   },
   "totals": [
@@ -55,27 +55,27 @@ window.weeklyTerritoryReport = {
       "budget": 163279.0,
       "newMerchants": 12,
       "leadConversion": 10.3,
-      "stops": 272,
-      "stopSplit": "116P / 156A",
-      "avgDay": "5:11",
+      "stops": 278,
+      "stopSplit": "117P / 161A",
+      "avgDay": "5:19",
       "activeDays": "16 / 16",
-      "stopEfficiency": 69.5,
+      "stopEfficiency": 69.8,
       "mix": {
-        "No Contact": 20,
-        "Int/FU": 15,
-        "Rel. Check-In": 25,
-        "Training": 26,
+        "No Contact": 19,
+        "Int/FU": 14,
+        "Rel. Check-In": 26,
+        "Training": 27,
         "Enrolled": 3,
         "Not Int.": 11
       },
-      "insight": "RIC-1 is pacing well on budget attainment with 12 credited new merchants and 272 logged stops month-to-date.",
+      "insight": "RIC-1 is pacing well on budget attainment with 12 credited new merchants and 278 logged stops month-to-date.",
       "ranks": {
         "attainment": 1,
-        "efficiency": 10,
+        "efficiency": 9,
         "merchants": 4,
         "conversion": 7,
         "stops": 4,
-        "avgDay": 10
+        "avgDay": 8
       },
       "rank": 1
     },
@@ -105,10 +105,10 @@ window.weeklyTerritoryReport = {
       "insight": "LTO-1 is pacing well on budget attainment with 9 credited new merchants and 277 logged stops month-to-date.",
       "ranks": {
         "attainment": 2,
-        "efficiency": 6,
+        "efficiency": 5,
         "merchants": 6,
         "conversion": 6,
-        "stops": 3,
+        "stops": 5,
         "avgDay": 2
       },
       "rank": 2
@@ -123,11 +123,11 @@ window.weeklyTerritoryReport = {
       "budget": 942216.0,
       "newMerchants": 13,
       "leadConversion": 7.8,
-      "stops": 320,
-      "stopSplit": "166P / 154A",
-      "avgDay": "7:41",
+      "stops": 321,
+      "stopSplit": "166P / 155A",
+      "avgDay": "7:44",
       "activeDays": "20 / 20",
-      "stopEfficiency": 85.3,
+      "stopEfficiency": 85.0,
       "mix": {
         "No Contact": 5,
         "Int/FU": 10,
@@ -136,7 +136,7 @@ window.weeklyTerritoryReport = {
         "Enrolled": 6,
         "Not Int.": 10
       },
-      "insight": "LTO-5 is pacing well on budget attainment with 13 credited new merchants and 320 logged stops month-to-date.",
+      "insight": "LTO-5 is pacing well on budget attainment with 13 credited new merchants and 321 logged stops month-to-date.",
       "ranks": {
         "attainment": 3,
         "efficiency": 3,
@@ -173,10 +173,10 @@ window.weeklyTerritoryReport = {
       "insight": "LTO-3 is pacing well on budget attainment with 19 credited new merchants and 277 logged stops month-to-date.",
       "ranks": {
         "attainment": 4,
-        "efficiency": 7,
+        "efficiency": 6,
         "merchants": 1,
         "conversion": 2,
-        "stops": 3,
+        "stops": 5,
         "avgDay": 4
       },
       "rank": 4
@@ -207,10 +207,10 @@ window.weeklyTerritoryReport = {
       "insight": "RIC-4 is pacing well on budget attainment with 1 credited new merchants and 197 logged stops month-to-date.",
       "ranks": {
         "attainment": 5,
-        "efficiency": 12,
+        "efficiency": 11,
         "merchants": 9,
         "conversion": 10,
-        "stops": 8,
+        "stops": 9,
         "avgDay": 7
       },
       "rank": 5
@@ -225,11 +225,11 @@ window.weeklyTerritoryReport = {
       "budget": 739885.0,
       "newMerchants": 2,
       "leadConversion": 1.5,
-      "stops": 209,
-      "stopSplit": "135P / 74A",
-      "avgDay": "5:18",
+      "stops": 211,
+      "stopSplit": "135P / 76A",
+      "avgDay": "5:23",
       "activeDays": "20 / 20",
-      "stopEfficiency": 82.3,
+      "stopEfficiency": 82.5,
       "mix": {
         "No Contact": 14,
         "Int/FU": 43,
@@ -238,14 +238,14 @@ window.weeklyTerritoryReport = {
         "Enrolled": 3,
         "Not Int.": 4
       },
-      "insight": "RIC-7 is pacing well on budget attainment with 2 credited new merchants and 209 logged stops month-to-date.",
+      "insight": "RIC-7 is pacing well on budget attainment with 2 credited new merchants and 211 logged stops month-to-date.",
       "ranks": {
         "attainment": 6,
-        "efficiency": 5,
+        "efficiency": 4,
         "merchants": 8,
         "conversion": 9,
-        "stops": 7,
-        "avgDay": 8
+        "stops": 8,
+        "avgDay": 7
       },
       "rank": 6
     },
@@ -275,7 +275,7 @@ window.weeklyTerritoryReport = {
       "insight": "RIC-8 is pacing well on budget attainment with 12 credited new merchants and 304 logged stops month-to-date.",
       "ranks": {
         "attainment": 7,
-        "efficiency": 8,
+        "efficiency": 7,
         "merchants": 4,
         "conversion": 5,
         "stops": 2,
@@ -293,27 +293,27 @@ window.weeklyTerritoryReport = {
       "budget": 625514.0,
       "newMerchants": 10,
       "leadConversion": 13.5,
-      "stops": 277,
-      "stopSplit": "74P / 203A",
-      "avgDay": "4:42",
+      "stops": 282,
+      "stopSplit": "74P / 208A",
+      "avgDay": "4:45",
       "activeDays": "20 / 20",
-      "stopEfficiency": 88.1,
+      "stopEfficiency": 88.3,
       "mix": {
-        "No Contact": 8,
+        "No Contact": 7,
         "Int/FU": 5,
-        "Rel. Check-In": 75,
+        "Rel. Check-In": 76,
         "Training": 7,
         "Enrolled": 1,
         "Not Int.": 4
       },
-      "insight": "LTO-2 is pacing well on budget attainment with 10 credited new merchants and 277 logged stops month-to-date.",
+      "insight": "LTO-2 is pacing well on budget attainment with 10 credited new merchants and 282 logged stops month-to-date.",
       "ranks": {
         "attainment": 8,
-        "efficiency": 2,
+        "efficiency": 1,
         "merchants": 5,
         "conversion": 4,
         "stops": 3,
-        "avgDay": 11
+        "avgDay": 10
       },
       "rank": 8
     },
@@ -326,12 +326,12 @@ window.weeklyTerritoryReport = {
       "actual": 562678.76,
       "budget": 764573.0,
       "newMerchants": 6,
-      "leadConversion": 21.4,
-      "stops": 183,
-      "stopSplit": "28P / 155A",
-      "avgDay": "5:11",
+      "leadConversion": 20.7,
+      "stops": 188,
+      "stopSplit": "29P / 159A",
+      "avgDay": "5:18",
       "activeDays": "14 / 14",
-      "stopEfficiency": 74.3,
+      "stopEfficiency": 74.5,
       "mix": {
         "No Contact": 21,
         "Int/FU": 45,
@@ -340,14 +340,14 @@ window.weeklyTerritoryReport = {
         "Enrolled": 3,
         "Not Int.": 5
       },
-      "insight": "RIC-2 is pacing well on budget attainment with 6 credited new merchants and 183 logged stops month-to-date.",
+      "insight": "RIC-2 is pacing well on budget attainment with 6 credited new merchants and 188 logged stops month-to-date.",
       "ranks": {
         "attainment": 9,
-        "efficiency": 9,
+        "efficiency": 8,
         "merchants": 7,
         "conversion": 3,
-        "stops": 9,
-        "avgDay": 10
+        "stops": 10,
+        "avgDay": 9
       },
       "rank": 9
     },
@@ -377,10 +377,10 @@ window.weeklyTerritoryReport = {
       "insight": "LTO-7 is pacing well on budget attainment with 17 credited new merchants and 260 logged stops month-to-date.",
       "ranks": {
         "attainment": 10,
-        "efficiency": 4,
+        "efficiency": 3,
         "merchants": 2,
         "conversion": 6,
-        "stops": 6,
+        "stops": 7,
         "avgDay": 3
       },
       "rank": 10
@@ -395,11 +395,11 @@ window.weeklyTerritoryReport = {
       "budget": 573308.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 264,
-      "stopSplit": "31P / 233A",
-      "avgDay": "5:38",
+      "stops": 266,
+      "stopSplit": "31P / 235A",
+      "avgDay": "5:48",
       "activeDays": "17 / 17",
-      "stopEfficiency": 67.0,
+      "stopEfficiency": 67.3,
       "mix": {
         "No Contact": 23,
         "Int/FU": 24,
@@ -411,10 +411,10 @@ window.weeklyTerritoryReport = {
       "insight": "RIC-6 has field activity but no credited new merchants in the current month snapshot. The cleanest focus is converting prospect stops into enrollments.",
       "ranks": {
         "attainment": 10,
-        "efficiency": 11,
+        "efficiency": 10,
         "merchants": 10,
         "conversion": 11,
-        "stops": 5,
+        "stops": 6,
         "avgDay": 6
       },
       "rank": 11
@@ -428,12 +428,12 @@ window.weeklyTerritoryReport = {
       "actual": 1086282.76,
       "budget": 1520972.0,
       "newMerchants": 10,
-      "leadConversion": 62.5,
-      "stops": 162,
-      "stopSplit": "16P / 146A",
-      "avgDay": "5:17",
+      "leadConversion": 58.8,
+      "stops": 165,
+      "stopSplit": "17P / 148A",
+      "avgDay": "5:23",
       "activeDays": "20 / 20",
-      "stopEfficiency": 88.3,
+      "stopEfficiency": 87.9,
       "mix": {
         "No Contact": 7,
         "Int/FU": 5,
@@ -442,14 +442,14 @@ window.weeklyTerritoryReport = {
         "Enrolled": 2,
         "Not Int.": 5
       },
-      "insight": "RIC-9 is pacing well on budget attainment with 10 credited new merchants and 162 logged stops month-to-date.",
+      "insight": "RIC-9 is pacing well on budget attainment with 10 credited new merchants and 165 logged stops month-to-date.",
       "ranks": {
         "attainment": 11,
-        "efficiency": 1,
+        "efficiency": 2,
         "merchants": 5,
         "conversion": 1,
-        "stops": 10,
-        "avgDay": 9
+        "stops": 11,
+        "avgDay": 7
       },
       "rank": 12
     }
