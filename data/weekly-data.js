@@ -1,10 +1,10 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "April 27, 2026",
-    "stopsLogged": 2846,
+    "stopsLogged": 2847,
     "newMerchants": 110,
     "businessDaysRemaining": 3,
-    "note": "Updated budget origination data through April 27, 2026. 2,846 stops logged, 110 new merchants enrolled. 3 business days remain. RIC-1 leads attainment at 103.0%, while Joseph Guerra leads new merchant volume.",
+    "note": "Updated budget origination data through April 27, 2026. 2,847 stops logged, 110 new merchants enrolled. 3 business days remain. RIC-1 leads attainment at 103.0%, while Joseph Guerra leads new merchant volume.",
     "totalsNote": "April MTD is a partial month - 76.7% attainment through Apr 27 with 3 business days remaining."
   },
   "totals": [
@@ -75,7 +75,7 @@ window.weeklyTerritoryReport = {
         "merchants": 3,
         "conversion": 8,
         "stops": 6,
-        "avgDay": 10
+        "avgDay": 11
       },
       "rank": 1
     },
@@ -245,7 +245,7 @@ window.weeklyTerritoryReport = {
         "merchants": 7,
         "conversion": 10,
         "stops": 9,
-        "avgDay": 9
+        "avgDay": 10
       },
       "rank": 6
     },
@@ -326,16 +326,16 @@ window.weeklyTerritoryReport = {
       "actual": 521578.54,
       "budget": 764573.0,
       "newMerchants": 6,
-      "leadConversion": 23.1,
-      "stops": 169,
-      "stopSplit": "26P / 143A",
-      "avgDay": "5:14",
+      "leadConversion": 22.2,
+      "stops": 170,
+      "stopSplit": "27P / 143A",
+      "avgDay": "5:19",
       "activeDays": "13 / 13",
-      "stopEfficiency": 74.6,
+      "stopEfficiency": 74.1,
       "mix": {
-        "No Contact": 20,
+        "No Contact": 21,
         "Int/FU": 44,
-        "Rel. Check-In": 17,
+        "Rel. Check-In": 16,
         "Training": 11,
         "Enrolled": 3,
         "Not Int.": 5
@@ -347,7 +347,7 @@ window.weeklyTerritoryReport = {
         "merchants": 6,
         "conversion": 3,
         "stops": 11,
-        "avgDay": 11
+        "avgDay": 9
       },
       "rank": 9
     },
