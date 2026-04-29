@@ -411,7 +411,6 @@ h1 {
 .mix-heading,
 .mix-bar,
 .mix-labels,
-.insight,
 .card-footer {
   margin-left: 18px;
   margin-right: 18px;
@@ -658,14 +657,6 @@ h1 {
 
 .mix-labels b {
   color: var(--ep-text-body);
-}
-
-.insight {
-  margin-top: 22px;
-  color: var(--ep-text-body);
-  font-size: 0.9rem;
-  font-weight: 650;
-  line-height: 1.58;
 }
 
 .card-footer {

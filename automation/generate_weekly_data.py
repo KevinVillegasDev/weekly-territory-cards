@@ -161,7 +161,6 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
                 "activeDays": f'{activity["active_days"]} / {activity["total_visited"]}',
                 "stopEfficiency": round(activity["efficiency"], 1),
                 "mix": activity["mix"],
-                "insight": _build_insight(code, rep, attainment, new_merchants, activity, lead_conversion),
             }
         )
 
@@ -720,16 +719,6 @@ def _attach_ranks(items: list[dict]) -> None:
 
     for item in items:
         item.pop("avg_hours_sort", None)
-
-
-def _build_insight(code: str, rep: str, attainment: float, new_merchants: int, activity: dict, conversion: float) -> str:
-    if new_merchants == 0:
-        return f"{code} has field activity but no credited new merchants in the current month snapshot. The cleanest focus is converting prospect stops into enrollments."
-    if attainment >= 70:
-        return f"{code} is pacing well on budget attainment with {new_merchants} credited new merchants and {activity['total']} logged stops month-to-date."
-    if conversion >= 12:
-        return f"{code} is converting prospect activity efficiently with {new_merchants} new merchants. Budget lift is the next lever to watch."
-    return f"{code} has {activity['total']} logged stops and {new_merchants} new merchants. The opportunity is improving conversion from prospect activity."
 
 
 def _build_executive_note(territories: list[dict], through_date: date, biz_remaining: int) -> str:
