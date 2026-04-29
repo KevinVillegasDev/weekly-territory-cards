@@ -54,4 +54,16 @@ jobs:
           git config user.email "actions@github.com"
           git add data/weekly-data.js data/historical-totals.json
           git commit -m "Weekly refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push
+          # Retry-on-race: if someone pushed code changes between our checkout
+          # and our push, rebase on top and try again. Data files only — won't
+          # collide with code changes.
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "Push succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected on attempt $attempt — pulling --rebase and retrying"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          echo "Push still rejected after 5 attempts"
+          exit 1
