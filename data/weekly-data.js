@@ -1,10 +1,10 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "April 29, 2026",
-    "stopsLogged": 3204,
+    "stopsLogged": 3206,
     "newMerchants": 111,
     "businessDaysRemaining": 1,
-    "note": "Updated budget origination data through April 29, 2026. 3,204 stops logged, 111 new merchants enrolled. 1 business days remain. RIC-1 leads attainment at 118.7%, while Joseph Guerra leads new merchant volume.",
+    "note": "Updated budget origination data through April 29, 2026. 3,206 stops logged, 111 new merchants enrolled. 1 business days remain. RIC-1 leads attainment at 118.7%, while Joseph Guerra leads new merchant volume.",
     "totalsNote": "April MTD is a partial month - 87.5% attainment through Apr 29 with 1 business day remaining."
   },
   "totals": [
@@ -187,11 +187,11 @@ window.weeklyTerritoryReport = {
       "budget": 739885.0,
       "newMerchants": 2,
       "leadConversion": 1.5,
-      "stops": 220,
-      "stopSplit": "135P / 85A",
-      "avgDay": "5:31",
+      "stops": 221,
+      "stopSplit": "135P / 86A",
+      "avgDay": "5:32",
       "activeDays": "21 / 21",
-      "stopEfficiency": 82.3,
+      "stopEfficiency": 82.4,
       "mix": {
         "No Contact": 14,
         "Int/FU": 43,
@@ -352,11 +352,11 @@ window.weeklyTerritoryReport = {
       "budget": 573308.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 280,
-      "stopSplit": "31P / 249A",
-      "avgDay": "5:49",
+      "stops": 281,
+      "stopSplit": "31P / 250A",
+      "avgDay": "5:51",
       "activeDays": "18 / 18",
-      "stopEfficiency": 67.9,
+      "stopEfficiency": 68.0,
       "mix": {
         "No Contact": 23,
         "Int/FU": 24,
