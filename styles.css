@@ -1103,6 +1103,89 @@ h1 {
   font-size: 0.8rem;
 }
 
+.archive-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--ep-border-light);
+  font-size: 0.78rem;
+}
+
+.archive-nav:empty {
+  display: none;
+}
+
+.archive-nav-label {
+  color: var(--ep-text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+}
+
+.archive-link {
+  color: var(--ep-blue);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #EEF2F6;
+}
+
+.archive-link:hover {
+  background: var(--ep-teal-lightest);
+  color: var(--ep-blue);
+}
+
+.archive-link.is-active {
+  background: var(--ep-blue);
+  color: var(--ep-text-white);
+  cursor: default;
+}
+
+.archive-link-back {
+  background: var(--ep-green);
+  color: var(--ep-text-white);
+}
+
+.archive-link-back:hover {
+  background: var(--ep-green-dark);
+  color: var(--ep-text-white);
+}
+
+.rk-loading {
+  grid-column: 1 / -1;
+  padding: 32px;
+  border: 1px solid var(--ep-border-light);
+  border-radius: var(--ep-radius-lg);
+  background: var(--ep-bg-white);
+  color: var(--ep-text-muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.rk-loading a {
+  color: var(--ep-blue);
+  font-weight: 700;
+}
+
+/* Closed-month archive view: only header + rankings remain visible. */
+body.archive-view .report-brief,
+body.archive-view .executive-note,
+body.archive-view .totals-section,
+body.archive-view .controls-band,
+body.archive-view .cards-grid,
+body.archive-view .definitions {
+  display: none;
+}
+
+body.archive-view .rankings-section {
+  margin-top: 24px;
+}
+
 @media (max-width: 1080px) {
   .rankings-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

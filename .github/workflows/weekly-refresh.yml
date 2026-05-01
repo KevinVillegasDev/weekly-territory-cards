@@ -2,8 +2,10 @@ name: Weekly Territory Cards Refresh
 
 on:
   schedule:
-    # Mondays at 13:00 UTC = 5:00 AM PST (6:00 AM PDT).
-    - cron: '0 13 * * 1'
+    # Daily at 13:00 UTC = 5:00 AM PST (6:00 AM PDT). Daily cadence ensures
+    # closed-month archives capture within ~24 hours of rollover and that
+    # mid-week glances see fresh data.
+    - cron: '0 13 * * *'
   workflow_dispatch:
 
 permissions:
@@ -41,10 +43,15 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet data/weekly-data.js data/historical-totals.json; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
+          tracked_dirty=0
+          if ! git diff --quiet data/weekly-data.js data/historical-totals.json data/monthly-archives 2>/dev/null; then
+            tracked_dirty=1
+          fi
+          new_archives="$(git ls-files --others --exclude-standard data/monthly-archives)"
+          if [ "$tracked_dirty" = "1" ] || [ -n "$new_archives" ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit and push
@@ -52,7 +59,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add data/weekly-data.js data/historical-totals.json
+          git add data/weekly-data.js data/historical-totals.json data/monthly-archives
           git commit -m "Weekly refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
           # Retry-on-race: if someone pushed code changes between our checkout
           # and our push, rebase on top and try again. Data files only — won't

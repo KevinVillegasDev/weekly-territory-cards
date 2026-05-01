@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter, defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -90,6 +90,11 @@ def main() -> None:
         help="Closed-month company-wide totals (overrides snapshot-derived totals for those months)",
     )
     parser.add_argument(
+        "--archive-dir",
+        default="data/monthly-archives",
+        help="Per-territory closed-month rankings archives (one JSON per month)",
+    )
+    parser.add_argument(
         "--allow-stale",
         action="store_true",
         help="Skip the freshness guard (for backfills or testing only)",
@@ -100,8 +105,9 @@ def main() -> None:
     snapshot_root = dashboard_root / "data" / "snapshots"
     output_path = Path(args.output)
     historical_path = Path(args.historical)
+    archive_dir = Path(args.archive_dir)
 
-    report = build_report(snapshot_root, historical_path, allow_stale=args.allow_stale)
+    report = build_report(snapshot_root, historical_path, archive_dir, allow_stale=args.allow_stale)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         "window.weeklyTerritoryReport = "
@@ -112,7 +118,7 @@ def main() -> None:
     print(f"Wrote {output_path} from {snapshot_root}")
 
 
-def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool = False) -> dict:
+def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, allow_stale: bool = False) -> dict:
     current_dir = _latest_snapshot_dir(snapshot_root)
     year, month = _parse_snapshot_name(current_dir.name)
 
@@ -170,6 +176,8 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
         item["rank"] = idx
 
     _freeze_closed_months(snapshot_root, current_dir, historical_path)
+    _archive_closed_months(snapshot_root, current_dir, archive_dir)
+    archives = _list_archives(archive_dir)
     totals = _build_totals(current_dir, historical_path, through_date)
     current_row = next((row for row in totals if row.get("period", "").endswith("MTD")), None)
 
@@ -188,6 +196,7 @@ def build_report(snapshot_root: Path, historical_path: Path, allow_stale: bool =
             )
             if current_row
             else "",
+            "archives": archives,
         },
         "totals": totals,
         "territories": territories,
@@ -628,6 +637,122 @@ def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_pat
     historical_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     for entry in new_entries:
         print(f"Froze {MONTH_NAMES[entry['month']]} {entry['year']} into {historical_path}")
+
+
+def _archive_closed_months(snapshot_root: Path, current_dir: Path, archive_dir: Path) -> None:
+    """For every snapshot older than current_dir, write per-territory rankings data
+    to archive_dir/YYYY-MM.json once the calendar has rolled over by >=1 day.
+
+    The 1-day delay lets Salesforce's next-business-day 4am PST settle land in the
+    dashboard's snapshot before we freeze. Idempotent: existing archive files are
+    never overwritten — to regenerate after Sales Ops corrections, delete the file.
+    """
+    current_year, current_month = _parse_snapshot_name(current_dir.name)
+    today = date.today()
+
+    for snapshot_dir in sorted(p for p in snapshot_root.iterdir() if p.is_dir()):
+        try:
+            year, month = _parse_snapshot_name(snapshot_dir.name)
+        except (ValueError, IndexError):
+            continue
+        if (year, month) >= (current_year, current_month):
+            continue
+        # Wait until the day after rollover so SF's next-business-day settle has
+        # landed in the snapshot.
+        if today < _first_day_of_next_month(year, month) + timedelta(days=1):
+            continue
+
+        archive_path = archive_dir / f"{year:04d}-{month:02d}.json"
+        if archive_path.exists():
+            continue
+
+        quota_rows = _load_json(snapshot_dir / "monthly_quota.json")
+        if not quota_rows:
+            continue
+        credited_rows = _load_json(snapshot_dir / "credited_enrollments.json")
+        checkin_rows = _load_json(snapshot_dir / "maps_check_ins.json")
+
+        quota_by_terr = _quota_by_territory(quota_rows)
+        enrollments_by_terr = _enrollments_by_territory(credited_rows)
+        activity_by_terr = _activity_by_territory(checkin_rows)
+
+        territories = []
+        actual_sum = 0.0
+        budget_sum = 0.0
+        for code, rep in TERRITORY_MAP.items():
+            quota = quota_by_terr.get(code, {})
+            actual = quota.get("actual", 0.0)
+            budget = quota.get("budget", 0.0)
+            attainment = (actual / budget * 100) if budget else 0.0
+            actual_sum += actual
+            budget_sum += budget
+
+            activity = activity_by_terr.get(code, _empty_activity())
+            new_merchants = enrollments_by_terr.get(code, 0)
+            prospect_stops = activity["prospect"]
+            lead_conversion = (new_merchants / prospect_stops * 100) if prospect_stops else 0.0
+
+            territories.append(
+                {
+                    "code": code,
+                    "rep": rep,
+                    "attainment": round(attainment, 1),
+                    "newMerchants": new_merchants,
+                    "leadConversion": round(lead_conversion, 1),
+                    "stops": activity["total"],
+                    "avgDay": _format_h_mm(activity["avg_hours"]),
+                }
+            )
+
+        attainment_sum = (actual_sum / budget_sum * 100) if budget_sum else 0.0
+        archive_payload = {
+            "year": year,
+            "month": month,
+            "monthName": MONTH_NAMES[month],
+            "frozenAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+            "totals": {
+                "actual": round(actual_sum, 2),
+                "budget": round(budget_sum, 2),
+                "attainment": round(attainment_sum, 1),
+            },
+            "territories": territories,
+        }
+
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        archive_path.write_text(
+            json.dumps(archive_payload, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        print(f"Archived {MONTH_NAMES[month]} {year} -> {archive_path}")
+
+
+def _first_day_of_next_month(year: int, month: int) -> date:
+    if month == 12:
+        return date(year + 1, 1, 1)
+    return date(year, month + 1, 1)
+
+
+def _list_archives(archive_dir: Path) -> list[dict]:
+    """List archives present on disk. Returned newest-first for the dropdown."""
+    if not archive_dir.exists():
+        return []
+    found: list[dict] = []
+    for path in sorted(archive_dir.glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            year = int(data["year"])
+            month = int(data["month"])
+        except (json.JSONDecodeError, KeyError, ValueError, OSError):
+            continue
+        found.append(
+            {
+                "year": year,
+                "month": month,
+                "monthName": data.get("monthName") or MONTH_NAMES.get(month, ""),
+                "key": f"{year:04d}-{month:02d}",
+            }
+        )
+    return sorted(found, key=lambda m: (m["year"], m["month"]), reverse=True)
 
 
 def _build_totals(current_dir: Path, historical_path: Path, through_date: date) -> list[dict]:

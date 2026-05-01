@@ -42,6 +42,13 @@
   function init() {
     if (!report) return;
 
+    var params = new URLSearchParams(window.location.search);
+    var monthParam = params.get("month");
+    if (monthParam && /^\d{4}-\d{2}$/.test(monthParam)) {
+      enterArchiveView(monthParam);
+      return;
+    }
+
     setText("statStops", report.meta.stopsLogged.toLocaleString());
     setText("statMerchants", report.meta.newMerchants.toLocaleString());
     setText("statDays", report.meta.businessDaysRemaining.toLocaleString());
@@ -57,6 +64,56 @@
     bindControls();
     renderCards();
     renderRankings();
+    renderArchiveLinks();
+  }
+
+  function enterArchiveView(monthKey) {
+    document.body.classList.add("archive-view");
+    var grid = document.getElementById("rankingsGrid");
+    if (grid) grid.innerHTML = '<p class="rk-loading">Loading ' + monthKey + ' archive…</p>';
+
+    fetch("data/monthly-archives/" + monthKey + ".json", { cache: "no-cache" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("not found");
+        return r.json();
+      })
+      .then(renderArchive)
+      .catch(function () {
+        if (grid) {
+          grid.innerHTML =
+            '<p class="rk-loading">Archive for ' + monthKey + ' not found. ' +
+            '<a href="./">Back to current month</a>.</p>';
+        }
+      });
+  }
+
+  function renderArchive(archive) {
+    report = {
+      meta: { archives: (window.weeklyTerritoryReport && window.weeklyTerritoryReport.meta && window.weeklyTerritoryReport.meta.archives) || [] },
+      territories: archive.territories
+    };
+    setText("rankingsPeriod", archive.monthName + " " + archive.year + " — Final");
+    setText("rankingsThrough", "End of month");
+    renderRankings();
+    renderArchiveLinks(archive);
+  }
+
+  function renderArchiveLinks(currentArchive) {
+    var nav = document.getElementById("archiveNav");
+    if (!nav) return;
+    var archives = (window.weeklyTerritoryReport && window.weeklyTerritoryReport.meta && window.weeklyTerritoryReport.meta.archives) || [];
+    var parts = [];
+    if (currentArchive) {
+      parts.push('<a class="archive-link archive-link-back" href="./">&larr; Current month</a>');
+    }
+    archives.forEach(function (a) {
+      if (currentArchive && currentArchive.year === a.year && currentArchive.month === a.month) {
+        parts.push('<span class="archive-link is-active">' + a.monthName + ' ' + a.year + '</span>');
+      } else {
+        parts.push('<a class="archive-link" href="?month=' + a.key + '">' + a.monthName + ' ' + a.year + '</a>');
+      }
+    });
+    nav.innerHTML = parts.length ? '<span class="archive-nav-label">Past months:</span>' + parts.join("") : "";
   }
 
   function renderTotals() {
