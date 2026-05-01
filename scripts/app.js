@@ -57,7 +57,8 @@
     setText("totalsNote", report.meta.totalsNote);
 
     var monthMatch = String(report.meta.updatedThrough || "").match(/^(\w+)/);
-    setText("rankingsPeriod", (monthMatch ? monthMatch[1] : "Current") + " MTD");
+    var statusSuffix = report.meta.monthStatus === "final" ? " Final" : " MTD";
+    setText("rankingsPeriod", (monthMatch ? monthMatch[1] : "Current") + statusSuffix);
     setText("rankingsThrough", report.meta.updatedThrough || "-");
 
     renderTotals();

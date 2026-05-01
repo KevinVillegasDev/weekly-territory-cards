@@ -183,8 +183,37 @@ def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, 
     _freeze_closed_months(snapshot_root, current_dir, historical_path)
     _archive_closed_months(snapshot_root, current_dir, archive_dir)
     archives = _list_archives(archive_dir)
-    totals = _build_totals(current_dir, historical_path, through_date)
-    current_row = next((row for row in totals if row.get("period", "").endswith("MTD")), None)
+
+    # The dashboard's snapshot rollover is data-driven (depends on SF returning
+    # data for the new month), so the calendar can be ahead of the latest
+    # snapshot folder by several days. When that happens — i.e. today's calendar
+    # month is already past the snapshot's month — the snapshot is fully closed
+    # and we should label it "Final" instead of "MTD".
+    today = date.today()
+    month_complete = (today.year, today.month) > (year, month)
+
+    totals = _build_totals(current_dir, historical_path, through_date, month_complete=month_complete)
+    current_row = next(
+        (row for row in totals if MONTH_NAMES[month] in row.get("period", "") and "Total" not in row.get("period", "")),
+        None,
+    )
+    if current_row is None:
+        current_row = next((row for row in totals if row.get("period", "").endswith("MTD")), None)
+
+    if month_complete and current_row is not None:
+        totals_note = (
+            f"{MONTH_NAMES[month]} {year} closed at {current_row['attainment']:.1f}% attainment. "
+            f"Awaiting Sales Ops final reconciliation; numbers may shift slightly with corrections."
+        )
+    elif current_row is not None:
+        totals_note = (
+            f"{MONTH_NAMES[month]} MTD is a partial month - "
+            f"{current_row['attainment']:.1f}% attainment through "
+            f"{_format_date_short(through_date)} with {biz_remaining} business "
+            f"day{'s' if biz_remaining != 1 else ''} remaining."
+        )
+    else:
+        totals_note = ""
 
     return {
         "meta": {
@@ -192,15 +221,9 @@ def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, 
             "stopsLogged": sum(item["stops"] for item in territories),
             "newMerchants": sum(item["newMerchants"] for item in territories),
             "businessDaysRemaining": biz_remaining,
+            "monthStatus": "final" if month_complete else "mtd",
             "note": _build_executive_note(territories, through_date, biz_remaining),
-            "totalsNote": (
-                f"{MONTH_NAMES[month]} MTD is a partial month - "
-                f"{current_row['attainment']:.1f}% attainment through "
-                f"{_format_date_short(through_date)} with {biz_remaining} business "
-                f"day{'s' if biz_remaining != 1 else ''} remaining."
-            )
-            if current_row
-            else "",
+            "totalsNote": totals_note,
             "archives": archives,
         },
         "totals": totals,
@@ -764,8 +787,13 @@ def _list_archives(archive_dir: Path) -> list[dict]:
     return sorted(found, key=lambda m: (m["year"], m["month"]), reverse=True)
 
 
-def _build_totals(current_dir: Path, historical_path: Path, through_date: date) -> list[dict]:
-    """Historical closed months from historical_path, current month from the snapshot (company-wide, no roster filter)."""
+def _build_totals(current_dir: Path, historical_path: Path, through_date: date, month_complete: bool = False) -> list[dict]:
+    """Historical closed months from historical_path, current month from the snapshot (company-wide, no roster filter).
+
+    If month_complete is True, the current snapshot's month is calendar-closed (the
+    dashboard simply hasn't rolled over yet because SF doesn't have new-month data),
+    so we label it "Final" instead of "MTD" and drop the "Through Apr 30" sub.
+    """
     rows = []
     historical_months: set[tuple[int, int]] = set()
 
@@ -797,10 +825,16 @@ def _build_totals(current_dir: Path, historical_path: Path, through_date: date) 
             budget = sum(item["budget"] for item in quota.values())
             if actual or budget:
                 attainment = (actual / budget * 100) if budget else 0.0
+                if month_complete:
+                    period = f"{MONTH_NAMES[current_month]} {current_year} Final"
+                    sub = "Pending Sales Ops reconciliation"
+                else:
+                    period = f"{MONTH_NAMES[current_month]} MTD"
+                    sub = f"Through {_format_date_short(through_date)}"
                 rows.append(
                     {
-                        "period": f"{MONTH_NAMES[current_month]} MTD",
-                        "sub": f"Through {_format_date_short(through_date)}",
+                        "period": period,
+                        "sub": sub,
                         "actual": round(actual, 2),
                         "budget": round(budget, 2),
                         "attainment": round(attainment, 1),
