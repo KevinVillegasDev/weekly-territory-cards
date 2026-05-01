@@ -43,13 +43,12 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          tracked_dirty=0
-          if ! git diff --quiet data/weekly-data.js data/historical-totals.json data/monthly-archives 2>/dev/null; then
-            tracked_dirty=1
-          fi
-          new_archives="$(git ls-files --others --exclude-standard data/monthly-archives)"
-          if [ "$tracked_dirty" = "1" ] || [ -n "$new_archives" ]; then
+          # git status --porcelain handles missing paths, modifications, and
+          # untracked new files in one go without erroring out.
+          dirty="$(git status --porcelain data/weekly-data.js data/historical-totals.json data/monthly-archives 2>/dev/null || true)"
+          if [ -n "$dirty" ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "$dirty"
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
@@ -59,7 +58,10 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add data/weekly-data.js data/historical-totals.json data/monthly-archives
+          git add data/weekly-data.js data/historical-totals.json
+          if [ -d data/monthly-archives ]; then
+            git add data/monthly-archives
+          fi
           git commit -m "Weekly refresh $(date -u +'%Y-%m-%d %H:%M UTC')"
           # Retry-on-race: if someone pushed code changes between our checkout
           # and our push, rebase on top and try again. Data files only — won't
