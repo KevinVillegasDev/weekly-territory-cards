@@ -71,6 +71,11 @@ MONTH_NAMES = {
 
 MAX_SNAPSHOT_STALENESS_DAYS = 4
 
+# Earliest month for which we publish a rankings archive. Months before this
+# are skipped to avoid surfacing transition-month quirks (e.g. RIC-1 / RIC-4
+# rep changes pre-April 2026 leave incomplete per-territory data).
+ARCHIVE_MIN_YEAR_MONTH = (2026, 4)
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate weekly territory cards data")
@@ -657,6 +662,8 @@ def _archive_closed_months(snapshot_root: Path, current_dir: Path, archive_dir: 
             continue
         if (year, month) >= (current_year, current_month):
             continue
+        if (year, month) < ARCHIVE_MIN_YEAR_MONTH:
+            continue
         # Wait until the day after rollover so SF's next-business-day settle has
         # landed in the snapshot.
         if today < _first_day_of_next_month(year, month) + timedelta(days=1):
@@ -743,6 +750,8 @@ def _list_archives(archive_dir: Path) -> list[dict]:
             year = int(data["year"])
             month = int(data["month"])
         except (json.JSONDecodeError, KeyError, ValueError, OSError):
+            continue
+        if (year, month) < ARCHIVE_MIN_YEAR_MONTH:
             continue
         found.append(
             {

@@ -6,14 +6,7 @@ window.weeklyTerritoryReport = {
     "businessDaysRemaining": 0,
     "note": "Updated budget origination data through April 30, 2026. 3,274 stops logged, 111 new merchants enrolled. 0 business days remain. RIC-1 leads attainment at 121.2%, while Joseph Guerra leads new merchant volume.",
     "totalsNote": "April MTD is a partial month - 90.3% attainment through Apr 30 with 0 business days remaining.",
-    "archives": [
-      {
-        "year": 2026,
-        "month": 3,
-        "monthName": "March",
-        "key": "2026-03"
-      }
-    ]
+    "archives": []
   },
   "totals": [
     {
