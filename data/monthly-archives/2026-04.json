@@ -3,16 +3,17 @@
   "month": 4,
   "monthName": "April",
   "frozenAt": "2026-05-02T14:05:14Z",
+  "_source": "Attainment, actual, and budget patched 2026-05-04 with Sales Ops authoritative April actuals (snapshot freeze on May 2 missed late-tail funded $ that settled post-rollover). Activity metrics (stops, merchants, leadConversion, avgDay) preserved from the May 2 snapshot.",
   "totals": {
-    "actual": 7888974.12,
+    "actual": 8178576.0,
     "budget": 8735345.0,
-    "attainment": 90.3
+    "attainment": 93.6
   },
   "territories": [
     {
       "code": "LTO-1",
       "rep": "Yemaira Hernandez",
-      "attainment": 114.9,
+      "attainment": 119.4,
       "newMerchants": 12,
       "leadConversion": 13.8,
       "stops": 305,
@@ -21,16 +22,16 @@
     {
       "code": "LTO-2",
       "rep": "Omar Corona",
-      "attainment": 84.0,
-      "newMerchants": 12,
-      "leadConversion": 15.2,
+      "attainment": 87.2,
+      "newMerchants": 11,
+      "leadConversion": 13.9,
       "stops": 319,
       "avgDay": "4:50"
     },
     {
       "code": "LTO-3",
       "rep": "Joseph Guerra",
-      "attainment": 97.5,
+      "attainment": 101.6,
       "newMerchants": 20,
       "leadConversion": 24.1,
       "stops": 292,
@@ -39,7 +40,7 @@
     {
       "code": "LTO-5",
       "rep": "Jared Midkiff",
-      "attainment": 109.6,
+      "attainment": 114.8,
       "newMerchants": 16,
       "leadConversion": 9.3,
       "stops": 343,
@@ -48,7 +49,7 @@
     {
       "code": "LTO-7",
       "rep": "Stephanie Whitlock",
-      "attainment": 79.5,
+      "attainment": 80.1,
       "newMerchants": 17,
       "leadConversion": 9.7,
       "stops": 285,
@@ -57,7 +58,7 @@
     {
       "code": "RIC-1",
       "rep": "Cesar Flores",
-      "attainment": 121.2,
+      "attainment": 122.2,
       "newMerchants": 14,
       "leadConversion": 11.4,
       "stops": 321,
@@ -66,7 +67,7 @@
     {
       "code": "RIC-2",
       "rep": "Claudia Gerhardt",
-      "attainment": 79.8,
+      "attainment": 82.7,
       "newMerchants": 8,
       "leadConversion": 26.7,
       "stops": 212,
@@ -75,7 +76,7 @@
     {
       "code": "RIC-4",
       "rep": "Richard Herrera",
-      "attainment": 92.7,
+      "attainment": 94.7,
       "newMerchants": 1,
       "leadConversion": 1.3,
       "stops": 215,
@@ -84,7 +85,7 @@
     {
       "code": "RIC-6",
       "rep": "Phillip Mason",
-      "attainment": 77.9,
+      "attainment": 79.2,
       "newMerchants": 0,
       "leadConversion": 0.0,
       "stops": 297,
@@ -93,7 +94,7 @@
     {
       "code": "RIC-7",
       "rep": "DeLon Phoenix",
-      "attainment": 92.2,
+      "attainment": 95.3,
       "newMerchants": 2,
       "leadConversion": 1.5,
       "stops": 223,
@@ -102,7 +103,7 @@
     {
       "code": "RIC-8",
       "rep": "Eric Henderson",
-      "attainment": 90.4,
+      "attainment": 94.3,
       "newMerchants": 19,
       "leadConversion": 17.6,
       "stops": 334,
@@ -111,7 +112,7 @@
     {
       "code": "RIC-9",
       "rep": "Matthew MacDonald",
-      "attainment": 76.2,
+      "attainment": 79.7,
       "newMerchants": 14,
       "leadConversion": 50.0,
       "stops": 185,
