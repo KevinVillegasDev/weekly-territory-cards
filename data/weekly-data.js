@@ -1,11 +1,11 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "May 5, 2026",
-    "stopsLogged": 478,
+    "stopsLogged": 482,
     "newMerchants": 1,
     "businessDaysRemaining": 18,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through May 5, 2026. 478 stops logged, 1 new merchants enrolled. 18 business days remain. RIC-1 leads attainment at 19.0%, while DeLon Phoenix leads new merchant volume.",
+    "note": "Updated budget origination data through May 5, 2026. 482 stops logged, 1 new merchants enrolled. 18 business days remain. RIC-1 leads attainment at 19.0%, while DeLon Phoenix leads new merchant volume.",
     "totalsNote": "May MTD is a partial month - 11.1% attainment through May 5 with 18 business days remaining.",
     "archives": [
       {
@@ -123,7 +123,7 @@ window.weeklyTerritoryReport = {
         "merchants": 2,
         "conversion": 2,
         "stops": 8,
-        "avgDay": 4
+        "avgDay": 5
       },
       "rank": 2
     },
@@ -203,25 +203,25 @@ window.weeklyTerritoryReport = {
       "budget": 460837.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 45,
-      "stopSplit": "2P / 43A",
-      "avgDay": "5:25",
+      "stops": 47,
+      "stopSplit": "2P / 45A",
+      "avgDay": "5:41",
       "activeDays": "3 / 3",
-      "stopEfficiency": 75.6,
+      "stopEfficiency": 72.3,
       "mix": {
-        "No Contact": 16,
-        "Int/FU": 27,
-        "Rel. Check-In": 32,
-        "Training": 16,
+        "No Contact": 17,
+        "Int/FU": 26,
+        "Rel. Check-In": 31,
+        "Training": 15,
         "Enrolled": 0,
-        "Not Int.": 9
+        "Not Int.": 11
       },
       "ranks": {
         "attainment": 5,
         "efficiency": 10,
         "merchants": 2,
         "conversion": 2,
-        "stops": 5,
+        "stops": 4,
         "avgDay": 8
       },
       "rank": 5
@@ -269,11 +269,11 @@ window.weeklyTerritoryReport = {
       "budget": 727092.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 45,
-      "stopSplit": "10P / 35A",
-      "avgDay": "4:28",
+      "stops": 46,
+      "stopSplit": "11P / 35A",
+      "avgDay": "4:45",
       "activeDays": "3 / 3",
-      "stopEfficiency": 44.4,
+      "stopEfficiency": 43.5,
       "mix": {
         "No Contact": 47,
         "Int/FU": 33,
@@ -401,11 +401,11 @@ window.weeklyTerritoryReport = {
       "budget": 1426448.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 23,
-      "stopSplit": "5P / 18A",
-      "avgDay": "6:34",
+      "stops": 24,
+      "stopSplit": "5P / 19A",
+      "avgDay": "6:46",
       "activeDays": "2 / 2",
-      "stopEfficiency": 95.7,
+      "stopEfficiency": 95.8,
       "mix": {
         "No Contact": 0,
         "Int/FU": 4,
@@ -420,7 +420,7 @@ window.weeklyTerritoryReport = {
         "merchants": 2,
         "conversion": 2,
         "stops": 9,
-        "avgDay": 5
+        "avgDay": 4
       },
       "rank": 11
     },
@@ -452,7 +452,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 5,
         "merchants": 2,
         "conversion": 2,
-        "stops": 4,
+        "stops": 5,
         "avgDay": 7
       },
       "rank": 12
