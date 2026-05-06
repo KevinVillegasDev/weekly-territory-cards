@@ -1,11 +1,11 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "May 5, 2026",
-    "stopsLogged": 482,
+    "stopsLogged": 483,
     "newMerchants": 1,
     "businessDaysRemaining": 18,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through May 5, 2026. 482 stops logged, 1 new merchants enrolled. 18 business days remain. RIC-1 leads attainment at 19.0%, while DeLon Phoenix leads new merchant volume.",
+    "note": "Updated budget origination data through May 5, 2026. 483 stops logged, 1 new merchants enrolled. 18 business days remain. RIC-1 leads attainment at 19.0%, while DeLon Phoenix leads new merchant volume.",
     "totalsNote": "May MTD is a partial month - 11.1% attainment through May 5 with 18 business days remaining.",
     "archives": [
       {
@@ -203,18 +203,18 @@ window.weeklyTerritoryReport = {
       "budget": 460837.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 47,
-      "stopSplit": "2P / 45A",
-      "avgDay": "5:41",
+      "stops": 48,
+      "stopSplit": "2P / 46A",
+      "avgDay": "5:51",
       "activeDays": "3 / 3",
-      "stopEfficiency": 72.3,
+      "stopEfficiency": 72.9,
       "mix": {
         "No Contact": 17,
-        "Int/FU": 26,
-        "Rel. Check-In": 31,
+        "Int/FU": 25,
+        "Rel. Check-In": 33,
         "Training": 15,
         "Enrolled": 0,
-        "Not Int.": 11
+        "Not Int.": 10
       },
       "ranks": {
         "attainment": 5,
@@ -222,7 +222,7 @@ window.weeklyTerritoryReport = {
         "merchants": 2,
         "conversion": 2,
         "stops": 4,
-        "avgDay": 8
+        "avgDay": 7
       },
       "rank": 5
     },
@@ -453,7 +453,7 @@ window.weeklyTerritoryReport = {
         "merchants": 2,
         "conversion": 2,
         "stops": 5,
-        "avgDay": 7
+        "avgDay": 8
       },
       "rank": 12
     }
