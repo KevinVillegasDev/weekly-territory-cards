@@ -5,8 +5,8 @@
   "frozenAt": "2026-05-02T14:05:14Z",
   "_source": "Attainment, actual, and budget patched 2026-05-04 with Sales Ops authoritative April actuals (snapshot freeze on May 2 missed late-tail funded $ that settled post-rollover). Activity metrics (stops, merchants, leadConversion, avgDay) preserved from the May 2 snapshot.",
   "totals": {
-    "actual": 8178576.0,
-    "budget": 8735345.0,
+    "actual": 8178576,
+    "budget": 8735344,
     "attainment": 93.6
   },
   "territories": [
