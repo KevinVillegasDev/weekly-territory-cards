@@ -1,11 +1,11 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "May 18, 2026",
-    "stopsLogged": 1887,
+    "stopsLogged": 1897,
     "newMerchants": 32,
     "businessDaysRemaining": 9,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through May 18, 2026. 1,887 stops logged, 32 new merchants enrolled. 9 business days remain. RIC-1 leads attainment at 64.8%, while Stephanie Whitlock leads new merchant volume.",
+    "note": "Updated budget origination data through May 18, 2026. 1,897 stops logged, 32 new merchants enrolled. 9 business days remain. RIC-1 leads attainment at 64.8%, while Stephanie Whitlock leads new merchant volume.",
     "totalsNote": "May MTD is a partial month - 48.7% attainment through May 18 with 9 business days remaining.",
     "archives": [
       {
@@ -71,11 +71,11 @@ window.weeklyTerritoryReport = {
       "budget": 268777.0,
       "newMerchants": 2,
       "leadConversion": 2.2,
-      "stops": 217,
-      "stopSplit": "91P / 126A",
-      "avgDay": "5:09",
+      "stops": 219,
+      "stopSplit": "93P / 126A",
+      "avgDay": "5:14",
       "activeDays": "12 / 12",
-      "stopEfficiency": 63.1,
+      "stopEfficiency": 63.5,
       "mix": {
         "No Contact": 15,
         "Int/FU": 23,
@@ -123,7 +123,7 @@ window.weeklyTerritoryReport = {
         "merchants": 3,
         "conversion": 5,
         "stops": 6,
-        "avgDay": 7
+        "avgDay": 8
       },
       "rank": 2
     },
@@ -156,7 +156,7 @@ window.weeklyTerritoryReport = {
         "merchants": 5,
         "conversion": 9,
         "stops": 9,
-        "avgDay": 1
+        "avgDay": 2
       },
       "rank": 3
     },
@@ -251,7 +251,7 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 6,
-        "efficiency": 5,
+        "efficiency": 4,
         "merchants": 1,
         "conversion": 4,
         "stops": 5,
@@ -334,27 +334,27 @@ window.weeklyTerritoryReport = {
       "actual": 323102.72,
       "budget": 703049.0,
       "newMerchants": 1,
-      "leadConversion": 4.2,
-      "stops": 73,
-      "stopSplit": "24P / 49A",
-      "avgDay": "6:49",
+      "leadConversion": 3.8,
+      "stops": 77,
+      "stopSplit": "26P / 51A",
+      "avgDay": "7:04",
       "activeDays": "9 / 12",
-      "stopEfficiency": 84.9,
+      "stopEfficiency": 81.8,
       "mix": {
-        "No Contact": 11,
+        "No Contact": 14,
         "Int/FU": 32,
-        "Rel. Check-In": 29,
-        "Training": 19,
+        "Rel. Check-In": 27,
+        "Training": 18,
         "Enrolled": 5,
         "Not Int.": 4
       },
       "ranks": {
         "attainment": 9,
-        "efficiency": 4,
+        "efficiency": 5,
         "merchants": 6,
         "conversion": 6,
         "stops": 12,
-        "avgDay": 2
+        "avgDay": 1
       },
       "rank": 9
     },
@@ -368,14 +368,14 @@ window.weeklyTerritoryReport = {
       "budget": 727092.0,
       "newMerchants": 1,
       "leadConversion": 3.1,
-      "stops": 201,
-      "stopSplit": "32P / 169A",
-      "avgDay": "5:33",
+      "stops": 204,
+      "stopSplit": "32P / 172A",
+      "avgDay": "5:42",
       "activeDays": "12 / 12",
-      "stopEfficiency": 61.2,
+      "stopEfficiency": 61.3,
       "mix": {
-        "No Contact": 31,
-        "Int/FU": 32,
+        "No Contact": 30,
+        "Int/FU": 33,
         "Rel. Check-In": 24,
         "Training": 4,
         "Enrolled": 1,
@@ -434,11 +434,11 @@ window.weeklyTerritoryReport = {
       "budget": 546511.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 163,
-      "stopSplit": "26P / 137A",
-      "avgDay": "5:39",
+      "stops": 164,
+      "stopSplit": "26P / 138A",
+      "avgDay": "5:54",
       "activeDays": "10 / 12",
-      "stopEfficiency": 70.6,
+      "stopEfficiency": 70.7,
       "mix": {
         "No Contact": 20,
         "Int/FU": 17,
@@ -453,7 +453,7 @@ window.weeklyTerritoryReport = {
         "merchants": 7,
         "conversion": 10,
         "stops": 7,
-        "avgDay": 8
+        "avgDay": 7
       },
       "rank": 12
     }
