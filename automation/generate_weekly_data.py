@@ -20,6 +20,7 @@ TERRITORY_MAP = {
     "LTO-1": "Yemaira Hernandez",
     "LTO-2": "Omar Corona",
     "LTO-3": "Joseph Guerra",
+    "LTO-4": "Francisco Gonzalez",
     "LTO-5": "Jared Midkiff",
     "LTO-7": "Stephanie Whitlock",
     "RIC-1": "Cesar Flores",
