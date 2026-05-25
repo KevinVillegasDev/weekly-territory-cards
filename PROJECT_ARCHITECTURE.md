@@ -169,7 +169,7 @@ python automation/generate_weekly_data.py \
 3. Compute `through_date` (latest activity date across enrollments + check-ins).
 4. **Freshness guard:** raise SystemExit if `through_date` is more than 4 days stale (skipped with `--allow-stale`).
 5. Aggregate per-territory data: `_quota_by_territory`, `_enrollments_by_territory`, `_activity_by_territory`.
-6. Build a list of 12 territory objects (one per `TERRITORY_MAP` entry).
+6. Build a list of 13 territory objects (one per `TERRITORY_MAP` entry).
 7. Attach per-metric ranks (`_attach_ranks`) and overall rank by attainment.
 8. **Auto-freeze closed months:** scan all snapshot dirs older than the current month; for any not already in `historical-totals.json`, append their roster-sum totals.
 9. Build the totals table (historical entries from JSON + current month from snapshot).
@@ -190,7 +190,7 @@ python automation/generate_weekly_data.py \
 
 ## 8. Metrics — exact formulas
 
-Each card and the leaderboard are built from these per-territory values. Rank pill thresholds: green = ranks 1–3, amber = 4–6, gray = 7–12.
+Each card and the leaderboard are built from these per-territory values. Rank pill thresholds: green = ranks 1–3, amber = 4–6, gray = 7–13.
 
 ### Budget Attainment %
 
@@ -250,13 +250,13 @@ The card's visible mix bar collapses Competitor + Issue into the visible "Not In
 
 ### Rank pills + sort
 
-The leaderboard's rank pills next to Stops, Eff., and Avg/Day reflect the territory's standing in that metric across all 12 reps. Card grid has its own sort dropdown (Attainment, Stop Efficiency, Merchants, Stops, Lead Conversion). Leaderboard has its own sort dropdown (Budget %, Stop Efficiency, Merchants, Lead Conversion, Stops, Avg/Day).
+The leaderboard's rank pills next to Stops, Eff., and Avg/Day reflect the territory's standing in that metric across all 13 reps. Card grid has its own sort dropdown (Attainment, Stop Efficiency, Merchants, Stops, Lead Conversion). Leaderboard has its own sort dropdown (Budget %, Stop Efficiency, Merchants, Lead Conversion, Stops, Avg/Day).
 
 ---
 
 ## 9. Roster + transitions
 
-### `TERRITORY_MAP` (12 territories, one rep each)
+### `TERRITORY_MAP` (13 territories, one rep each)
 
 The "current primary" rep for each territory. Edit this when a rep change becomes permanent.
 
@@ -265,6 +265,7 @@ TERRITORY_MAP = {
     "LTO-1": "Yemaira Hernandez",
     "LTO-2": "Omar Corona",
     "LTO-3": "Joseph Guerra",
+    "LTO-4": "Francisco Gonzalez",   # joined May 2026; territory previously unassigned
     "LTO-5": "Jared Midkiff",
     "LTO-7": "Stephanie Whitlock",
     "RIC-1": "Cesar Flores",
@@ -487,3 +488,4 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-04-24**: Bug fix in dashboard pipeline (`main.py`) to re-save merged maps_check_ins snapshot after split-fetch. Backfilled Jan/Feb 2026 maps data.
 - **2026-04-27**: RIC-4 transition. Richard Herrera replaces Jeremy Moore. TERRITORY_ALIASES introduced for transition aggregation.
 - **2026-04-27**: Added "Converted from - Lead ID" column to SF Report 2. Built three-pass hybrid attribution (Lead ID → parent chain → token fallback). Reverted to simple current-month formula due to insufficient SF data hygiene; cumulative function preserved as dormant code.
+- **2026-05-24**: Roster expanded to 13 reps. Francisco Gonzalez added as LTO-4 (territory previously unassigned). No alias needed. SF Monthly_Quota row initially missing his budget — card will show $0 budget / 0% attainment until Sales Ops populates it, then auto-corrects on the next refresh.
