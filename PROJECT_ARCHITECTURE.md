@@ -360,8 +360,10 @@ Click "Refresh report" on the live site. Flow:
 ### Roster change
 
 1. Update `TERRITORY_MAP` in `automation/generate_weekly_data.py`.
-2. If it's a mid-month transition where the outgoing rep's MTD volume should still count, add their name to `TERRITORY_ALIASES` for the relevant code.
-3. Commit + push. Next refresh picks it up.
+2. **If adding a NEW territory code** (not just swapping a rep on an existing one), also add an entry to `TERRITORY_AREAS` with the geographic area string. The build loop does a hard lookup `TERRITORY_AREAS[code]` for every entry in `TERRITORY_MAP`, so a missing key crashes the generator with `KeyError`. (Both dicts live at the top of `generate_weekly_data.py`.)
+3. If it's a mid-month transition where the outgoing rep's MTD volume should still count, add their name to `TERRITORY_ALIASES` for the relevant code.
+4. Run locally against the dashboard snapshot before pushing — catches missing-key bugs in seconds: `python automation/generate_weekly_data.py --dashboard-root <path> --output /tmp/test.js`.
+5. Commit + push. Next refresh picks it up.
 
 ### Bitbucket sync
 
@@ -489,3 +491,4 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-04-27**: RIC-4 transition. Richard Herrera replaces Jeremy Moore. TERRITORY_ALIASES introduced for transition aggregation.
 - **2026-04-27**: Added "Converted from - Lead ID" column to SF Report 2. Built three-pass hybrid attribution (Lead ID → parent chain → token fallback). Reverted to simple current-month formula due to insufficient SF data hygiene; cumulative function preserved as dormant code.
 - **2026-05-24**: Roster expanded to 13 reps. Francisco Gonzalez added as LTO-4 (territory previously unassigned). No alias needed. SF Monthly_Quota row initially missing his budget — card will show $0 budget / 0% attainment until Sales Ops populates it, then auto-corrects on the next refresh.
+- **2026-05-26**: Monday's cron failed with `KeyError: 'LTO-4'` because the LTO-4 addition only updated `TERRITORY_MAP`, not `TERRITORY_AREAS`. Fix: added `"LTO-4": "TX - Dallas Metro"` to `TERRITORY_AREAS`. Doc's Roster Change checklist updated to call out the parallel dict requirement explicitly + a local dry-run step.
