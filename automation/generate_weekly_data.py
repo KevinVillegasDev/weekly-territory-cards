@@ -43,6 +43,7 @@ TERRITORY_AREAS = {
     "LTO-1": "FL - Miami-Dade/Broward",
     "LTO-2": "TX - S. Houston/Valley/El Paso",
     "LTO-3": "TX - State Manager",
+    "LTO-4": "TX - Dallas Metro",
     "LTO-5": "FL - State Manager",
     "LTO-7": "GA / NE FL / Panhandle",
     "RIC-1": "CA - LA Metro Core",
