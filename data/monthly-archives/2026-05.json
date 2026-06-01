@@ -2,7 +2,7 @@
   "year": 2026,
   "month": 5,
   "monthName": "May",
-  "frozenAt": "2026-06-01T16:56:55Z",
+  "frozenAt": "2026-06-01T18:32:45Z",
   "locked": false,
   "_note": "Auto-generated rankings archive. Budget %/actual/budget self-heal during the first week as late funded $ settles. To pin Sales Ops authoritative numbers, edit the values and set \"locked\": true — the pipeline will then never overwrite this file.",
   "totals": {
@@ -15,8 +15,8 @@
       "code": "LTO-1",
       "rep": "Yemaira Hernandez",
       "attainment": 132.1,
-      "newMerchants": 15,
-      "leadConversion": 15.3,
+      "newMerchants": 17,
+      "leadConversion": 17.3,
       "stops": 290,
       "avgDay": "5:51"
     },
@@ -33,8 +33,8 @@
       "code": "LTO-3",
       "rep": "Joseph Guerra",
       "attainment": 103.0,
-      "newMerchants": 13,
-      "leadConversion": 19.7,
+      "newMerchants": 14,
+      "leadConversion": 21.2,
       "stops": 211,
       "avgDay": "6:24"
     },
@@ -51,8 +51,8 @@
       "code": "LTO-5",
       "rep": "Jared Midkiff",
       "attainment": 109.1,
-      "newMerchants": 9,
-      "leadConversion": 5.9,
+      "newMerchants": 10,
+      "leadConversion": 6.5,
       "stops": 274,
       "avgDay": "6:51"
     },
@@ -114,8 +114,8 @@
       "code": "RIC-8",
       "rep": "Eric Henderson",
       "attainment": 93.0,
-      "newMerchants": 15,
-      "leadConversion": 24.2,
+      "newMerchants": 16,
+      "leadConversion": 25.8,
       "stops": 283,
       "avgDay": "6:17"
     },
