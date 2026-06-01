@@ -1,29 +1,33 @@
 {
-  "_source": "Closed-month authoritative totals from Sales Ops. These override any snapshot-derived roster sums. The auto-freeze in generate_weekly_data.py never overwrites entries already listed here.",
+  "_source": "Closed-month authoritative totals (12-rep roster). These override snapshot-derived sums. An entry with \"locked\": true is never overwritten by the pipeline — set it after pasting Sales Ops authoritative numbers. Unlocked entries self-heal during the first ~8 days after rollover as late funded $ settles, then freeze.",
   "months": [
     {
       "year": 2026,
       "month": 1,
       "budget": 6953269,
-      "actual": 6796982
+      "actual": 6796982,
+      "locked": true
     },
     {
       "year": 2026,
       "month": 2,
       "budget": 6792127,
-      "actual": 6782287
+      "actual": 6782287,
+      "locked": true
     },
     {
       "year": 2026,
       "month": 3,
       "budget": 8860207,
-      "actual": 8427296
+      "actual": 8427296,
+      "locked": true
     },
     {
       "year": 2026,
       "month": 4,
       "budget": 8735344,
-      "actual": 8178576
+      "actual": 8178576,
+      "locked": true
     },
     {
       "year": 2026,

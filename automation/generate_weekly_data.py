@@ -78,6 +78,13 @@ MAX_SNAPSHOT_STALENESS_DAYS = 4
 # rep changes pre-April 2026 leave incomplete per-territory data).
 ARCHIVE_MIN_YEAR_MONTH = (2026, 4)
 
+# A closed month's rankings archive is re-written on each run for this many days
+# after rollover, letting Budget % self-heal as late funded $ settles (the
+# dashboard refreshes the prior month's monthly_quota.json through day 7). After
+# the window, the auto numbers freeze. A `"locked": true` archive is never
+# touched regardless of the window (used for manual Sales Ops patches).
+SETTLEMENT_WINDOW_DAYS = 8
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate weekly territory cards data")
@@ -622,20 +629,27 @@ def _h_mm_to_hours(text: str) -> float:
 
 
 def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_path: Path) -> None:
-    """For every snapshot older than current_dir, append its roster-sum totals to historical_path if absent.
+    """For every snapshot older than current_dir, write its roster-sum totals to historical_path.
 
-    Idempotent: existing entries are never overwritten, so user-supplied corrections (e.g. manually
-    folded-in RIC-1 numbers) survive subsequent runs. Preserves the `_source` description.
+    Mirrors the archive's self-heal behavior so the totals table and the rankings
+    archive never diverge: a closed month's totals are RE-WRITTEN on each run during
+    the settlement window (SETTLEMENT_WINDOW_DAYS after rollover) so the funded-$
+    figure climbs to accurate as late transactions settle, then freezes.
+
+    A month entry with `"locked": true` is never overwritten — set it after pasting
+    Sales Ops authoritative numbers. Entries already past the settlement window are
+    also left untouched (their `locked` flag is irrelevant at that point).
     """
     payload: dict = {}
-    existing_months: set[tuple[int, int]] = set()
+    existing_by_month: dict[tuple[int, int], dict] = {}
     if historical_path.exists():
         payload = json.loads(historical_path.read_text(encoding="utf-8"))
         for entry in payload.get("months", []):
-            existing_months.add((int(entry["year"]), int(entry["month"])))
+            existing_by_month[(int(entry["year"]), int(entry["month"]))] = entry
 
     current_year, current_month = _parse_snapshot_name(current_dir.name)
-    new_entries: list[dict] = []
+    today = date.today()
+    changed = False
     for snapshot_dir in sorted(p for p in snapshot_root.iterdir() if p.is_dir()):
         try:
             year, month = _parse_snapshot_name(snapshot_dir.name)
@@ -643,8 +657,18 @@ def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_pat
             continue
         if (year, month) >= (current_year, current_month):
             continue
-        if (year, month) in existing_months:
-            continue
+
+        existing = existing_by_month.get((year, month))
+        if existing is not None:
+            # Respect manual Sales Ops patches.
+            if existing.get("locked"):
+                continue
+            # Outside the settlement window — freeze as-is.
+            days_since_rollover = (today - _first_day_of_next_month(year, month)).days
+            if days_since_rollover > SETTLEMENT_WINDOW_DAYS:
+                continue
+            # else within window, unlocked — fall through and refresh in place.
+
         quota_rows = _load_json(snapshot_dir / "monthly_quota.json")
         if not quota_rows:
             continue
@@ -653,29 +677,55 @@ def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_pat
         budget = sum(item["budget"] for item in quota.values())
         if not (actual or budget):
             continue
-        new_entries.append({"year": year, "month": month, "budget": round(budget, 2), "actual": round(actual, 2)})
 
-    if not new_entries:
+        new_budget = round(budget, 2)
+        new_actual = round(actual, 2)
+        if existing is not None:
+            if existing.get("budget") == new_budget and existing.get("actual") == new_actual:
+                continue  # no change this run
+            existing["budget"] = new_budget
+            existing["actual"] = new_actual
+            changed = True
+            print(f"Refreshed {MONTH_NAMES[month]} {year} totals in {historical_path} (settling)")
+        else:
+            existing_by_month[(year, month)] = {
+                "year": year, "month": month, "budget": new_budget, "actual": new_actual,
+            }
+            changed = True
+            print(f"Froze {MONTH_NAMES[month]} {year} into {historical_path}")
+
+    if not changed:
         return
 
-    months = list(payload.get("months", [])) + new_entries
+    months = list(existing_by_month.values())
     months.sort(key=lambda m: (int(m["year"]), int(m["month"])))
     payload["months"] = months
     if "_source" not in payload:
-        payload["_source"] = "Auto-frozen closed-month roster totals. Edit individual months to override with authoritative numbers."
+        payload["_source"] = "Auto-frozen closed-month roster totals. Edit individual months to override with authoritative numbers; set \"locked\": true on an entry to pin it."
     historical_path.parent.mkdir(parents=True, exist_ok=True)
     historical_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    for entry in new_entries:
-        print(f"Froze {MONTH_NAMES[entry['month']]} {entry['year']} into {historical_path}")
 
 
 def _archive_closed_months(snapshot_root: Path, current_dir: Path, archive_dir: Path) -> None:
     """For every snapshot older than current_dir, write per-territory rankings data
-    to archive_dir/YYYY-MM.json once the calendar has rolled over by >=1 day.
+    to archive_dir/YYYY-MM.json.
 
-    The 1-day delay lets Salesforce's next-business-day 4am PST settle land in the
-    dashboard's snapshot before we freeze. Idempotent: existing archive files are
-    never overwritten — to regenerate after Sales Ops corrections, delete the file.
+    A closed month is archived IMMEDIATELY at rollover so it's available for the
+    start-of-month leadership screenshot. Four of the five ranking columns
+    (merchants, lead conversion, stops, avg time) are field-activity metrics that
+    are final the moment the month closes; only Budget % drifts upward as late
+    funded-dollar transactions settle over the new month's first week.
+
+    To handle that drift, an unlocked archive is RE-WRITTEN on each run during the
+    settlement window (SETTLEMENT_WINDOW_DAYS after rollover) so Budget % self-heals
+    to accurate without manual work. The dashboard refreshes the prior month's
+    monthly_quota.json through day 7, so the window is set just beyond that.
+
+    Two ways an archive becomes permanent:
+      • `"locked": true` in the JSON — set this after patching with Sales Ops
+        authoritative numbers; the cron will never overwrite it again.
+      • The settlement window elapses — after that, the auto numbers are frozen
+        as-is and no longer re-written.
     """
     current_year, current_month = _parse_snapshot_name(current_dir.name)
     today = date.today()
@@ -689,14 +739,23 @@ def _archive_closed_months(snapshot_root: Path, current_dir: Path, archive_dir: 
             continue
         if (year, month) < ARCHIVE_MIN_YEAR_MONTH:
             continue
-        # Wait until the day after rollover so SF's next-business-day settle has
-        # landed in the snapshot.
-        if today < _first_day_of_next_month(year, month) + timedelta(days=1):
-            continue
 
         archive_path = archive_dir / f"{year:04d}-{month:02d}.json"
+        existing = None
         if archive_path.exists():
-            continue
+            try:
+                existing = json.loads(archive_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                existing = {}
+            # Manual Sales Ops patch — never clobber.
+            if existing.get("locked"):
+                print(f"Skipping {MONTH_NAMES[month]} {year} archive (locked)")
+                continue
+            # Past the settlement window — freeze the auto numbers as-is.
+            days_since_rollover = (today - _first_day_of_next_month(year, month)).days
+            if days_since_rollover > SETTLEMENT_WINDOW_DAYS:
+                continue
+            # else: within window, unlocked — fall through and refresh in place.
 
         quota_rows = _load_json(snapshot_dir / "monthly_quota.json")
         if not quota_rows:
@@ -737,16 +796,32 @@ def _archive_closed_months(snapshot_root: Path, current_dir: Path, archive_dir: 
             )
 
         attainment_sum = (actual_sum / budget_sum * 100) if budget_sum else 0.0
+        totals_block = {
+            "actual": round(actual_sum, 2),
+            "budget": round(budget_sum, 2),
+            "attainment": round(attainment_sum, 1),
+        }
+
+        # Skip the write entirely if the substantive data is unchanged from the
+        # existing file. Otherwise the timestamp alone would change on every run
+        # during the settlement window, producing a daily no-op commit.
+        if archive_path.exists() and isinstance(existing, dict):
+            if existing.get("totals") == totals_block and existing.get("territories") == territories:
+                continue
+
         archive_payload = {
             "year": year,
             "month": month,
             "monthName": MONTH_NAMES[month],
             "frozenAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-            "totals": {
-                "actual": round(actual_sum, 2),
-                "budget": round(budget_sum, 2),
-                "attainment": round(attainment_sum, 1),
-            },
+            "locked": False,
+            "_note": (
+                "Auto-generated rankings archive. Budget %/actual/budget self-heal "
+                "during the first week as late funded $ settles. To pin Sales Ops "
+                "authoritative numbers, edit the values and set \"locked\": true — "
+                "the pipeline will then never overwrite this file."
+            ),
+            "totals": totals_block,
             "territories": territories,
         }
 
