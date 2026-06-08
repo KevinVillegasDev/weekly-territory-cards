@@ -271,12 +271,26 @@ TERRITORY_MAP = {
     "RIC-1": "Cesar Flores",
     "RIC-2": "Claudia Gerhardt",
     "RIC-4": "Richard Herrera",   # took over from Jeremy Moore Apr 2026
+    "RIC-5": "Mariana Gross",     # joined June 2026; territory (Phoenix Metro, AZ) previously unassigned
     "RIC-6": "Phillip Mason",
     "RIC-7": "DeLon Phoenix",
     "RIC-8": "Eric Henderson",
     "RIC-9": "Matthew MacDonald",
 }
 ```
+
+### `TERRITORY_START` (mid-year additions)
+
+A territory added to `TERRITORY_MAP` partway through the year must NOT retroactively appear in earlier months — otherwise it injects a zero/partial row into prior rankings and (if the territory had any unbudgeted production) silently pulls that volume into a closed month's totals. `TERRITORY_START` gives each such territory an effective `(year, month)`; it's excluded from every month before that.
+
+```python
+TERRITORY_START = {
+    "LTO-4": (2026, 5),  # Francisco Gonzalez took LTO-4 from May 2026
+    "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
+}
+```
+
+Applied (via `_territory_active(code, year, month)`) in all four month-specific roster computations: live cards, the rankings archive, the historical-totals freeze, and the current-month totals row. Territories not listed are active from the start of tracking. **Real case this caught:** RIC-5 carried ~$654K of May funded $ with no May budget (territory unassigned); without the start gate, adding Mariana would have inflated the closed May total by that amount and listed her at 0% in every May ranking column.
 
 ### `TERRITORY_ALIASES` (transition handling)
 
@@ -361,9 +375,10 @@ Click "Refresh report" on the live site. Flow:
 
 1. Update `TERRITORY_MAP` in `automation/generate_weekly_data.py`.
 2. **If adding a NEW territory code** (not just swapping a rep on an existing one), also add an entry to `TERRITORY_AREAS` with the geographic area string. The build loop does a hard lookup `TERRITORY_AREAS[code]` for every entry in `TERRITORY_MAP`, so a missing key crashes the generator with `KeyError`. (Both dicts live at the top of `generate_weekly_data.py`.)
-3. If it's a mid-month transition where the outgoing rep's MTD volume should still count, add their name to `TERRITORY_ALIASES` for the relevant code.
-4. Run locally against the dashboard snapshot before pushing — catches missing-key bugs in seconds: `python automation/generate_weekly_data.py --dashboard-root <path> --output /tmp/test.js`.
-5. Commit + push. Next refresh picks it up.
+3. **If the addition is a mid-year hire / newly-assigned territory**, add a `TERRITORY_START` entry with the first `(year, month)` they count. Skipping this lets the territory appear in earlier closed months — a 0% row in those rankings, plus any unbudgeted prior production silently folded into that month's total. (This is exactly what RIC-5 hit: ~$654K of unbudgeted May funded $.)
+4. If it's a mid-MONTH transition where the outgoing rep's MTD volume should still count, add their name to `TERRITORY_ALIASES` for the relevant code instead.
+5. Run locally against the dashboard snapshot before pushing — catches missing-key bugs and verifies the new rep appears in the current month but NOT in locked/closed prior months: `python automation/generate_weekly_data.py --dashboard-root <path> --output /tmp/test.js`.
+6. Commit + push. Next refresh picks it up.
 
 ### Bitbucket sync
 
@@ -492,3 +507,4 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-04-27**: Added "Converted from - Lead ID" column to SF Report 2. Built three-pass hybrid attribution (Lead ID → parent chain → token fallback). Reverted to simple current-month formula due to insufficient SF data hygiene; cumulative function preserved as dormant code.
 - **2026-05-24**: Roster expanded to 13 reps. Francisco Gonzalez added as LTO-4 (territory previously unassigned). No alias needed. SF Monthly_Quota row initially missing his budget — card will show $0 budget / 0% attainment until Sales Ops populates it, then auto-corrects on the next refresh.
 - **2026-05-26**: Monday's cron failed with `KeyError: 'LTO-4'` because the LTO-4 addition only updated `TERRITORY_MAP`, not `TERRITORY_AREAS`. Fix: added `"LTO-4": "TX - Dallas Metro"` to `TERRITORY_AREAS`. Doc's Roster Change checklist updated to call out the parallel dict requirement explicitly + a local dry-run step.
+- **2026-06-08**: Roster expanded to 14 reps. Mariana Gross added as RIC-5 (Phoenix Metro, AZ; previously unassigned), effective June 2026. Introduced `TERRITORY_START` effective-dating so mid-year additions don't pollute earlier months — caught RIC-5's ~$654K of unbudgeted May production, which would otherwise have inflated the closed May total and listed Mariana at 0% across every May ranking column. `TERRITORY_START` is applied in all four month-specific roster computations.

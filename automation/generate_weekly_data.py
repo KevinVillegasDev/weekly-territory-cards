@@ -26,6 +26,7 @@ TERRITORY_MAP = {
     "RIC-1": "Cesar Flores",
     "RIC-2": "Claudia Gerhardt",
     "RIC-4": "Richard Herrera",
+    "RIC-5": "Mariana Gross",  # Added June 2026 (Phoenix Metro, AZ; previously unassigned)
     "RIC-6": "Phillip Mason",
     "RIC-7": "DeLon Phoenix",
     "RIC-8": "Eric Henderson",
@@ -39,6 +40,22 @@ TERRITORY_ALIASES = {
     "RIC-4": ["Jeremy Moore"],  # Jeremy's April production rolls into RIC-4 through April close
 }
 
+# (year, month) a territory first counts toward the roster. A territory added
+# here is EXCLUDED from any month before its start — so a mid-year hire doesn't
+# retroactively inject a zero/partial row into earlier rankings, or pull a
+# previously-unassigned territory's production into a closed month's totals.
+# Territories not listed are treated as active from the start of tracking.
+TERRITORY_START = {
+    "LTO-4": (2026, 5),  # Francisco Gonzalez took LTO-4 from May 2026
+    "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
+}
+
+
+def _territory_active(code: str, year: int, month: int) -> bool:
+    """True if `code` counts toward the roster in the given month (>= its start)."""
+    start = TERRITORY_START.get(code)
+    return start is None or (year, month) >= start
+
 TERRITORY_AREAS = {
     "LTO-1": "FL - Miami-Dade/Broward",
     "LTO-2": "TX - S. Houston/Valley/El Paso",
@@ -49,6 +66,7 @@ TERRITORY_AREAS = {
     "RIC-1": "CA - LA Metro Core",
     "RIC-2": "CA - IE South/San Diego",
     "RIC-4": "CA - Orange County/SE LA",
+    "RIC-5": "AZ - Phoenix Metro",
     "RIC-6": "CA - Sacramento/NorCal",
     "RIC-7": "NV - Las Vegas/Reno",
     "RIC-8": "PA - 4 Metros",
@@ -154,6 +172,8 @@ def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, 
 
     territories = []
     for code, rep in TERRITORY_MAP.items():
+        if not _territory_active(code, year, month):
+            continue
         quota = quota_by_terr.get(code, {})
         actual = quota.get("actual", 0.0)
         budget = quota.get("budget", 0.0)
@@ -673,8 +693,8 @@ def _freeze_closed_months(snapshot_root: Path, current_dir: Path, historical_pat
         if not quota_rows:
             continue
         quota = _quota_by_territory(quota_rows)
-        actual = sum(item["actual"] for item in quota.values())
-        budget = sum(item["budget"] for item in quota.values())
+        actual = sum(v["actual"] for c, v in quota.items() if _territory_active(c, year, month))
+        budget = sum(v["budget"] for c, v in quota.items() if _territory_active(c, year, month))
         if not (actual or budget):
             continue
 
@@ -771,17 +791,23 @@ def _archive_closed_months(snapshot_root: Path, current_dir: Path, archive_dir: 
         actual_sum = 0.0
         budget_sum = 0.0
         for code, rep in TERRITORY_MAP.items():
+            # Skip territories not yet active that month (mid-year hire) so they
+            # don't pollute an earlier month's rankings/totals retroactively.
+            if not _territory_active(code, year, month):
+                continue
+
             quota = quota_by_terr.get(code, {})
             actual = quota.get("actual", 0.0)
             budget = quota.get("budget", 0.0)
-            attainment = (actual / budget * 100) if budget else 0.0
-            actual_sum += actual
-            budget_sum += budget
 
             activity = activity_by_terr.get(code, _empty_activity())
             new_merchants = enrollments_by_terr.get(code, 0)
             prospect_stops = activity["prospect"]
             lead_conversion = (new_merchants / prospect_stops * 100) if prospect_stops else 0.0
+
+            attainment = (actual / budget * 100) if budget else 0.0
+            actual_sum += actual
+            budget_sum += budget
 
             territories.append(
                 {
@@ -898,8 +924,8 @@ def _build_totals(current_dir: Path, historical_path: Path, through_date: date, 
         quota_rows = _load_json(current_dir / "monthly_quota.json")
         if quota_rows:
             quota = _quota_by_territory(quota_rows)
-            actual = sum(item["actual"] for item in quota.values())
-            budget = sum(item["budget"] for item in quota.values())
+            actual = sum(v["actual"] for c, v in quota.items() if _territory_active(c, current_year, current_month))
+            budget = sum(v["budget"] for c, v in quota.items() if _territory_active(c, current_year, current_month))
             if actual or budget:
                 attainment = (actual / budget * 100) if budget else 0.0
                 if month_complete:
