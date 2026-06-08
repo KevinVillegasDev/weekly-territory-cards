@@ -60,6 +60,7 @@
     var statusSuffix = report.meta.monthStatus === "final" ? " Final" : " MTD";
     setText("rankingsPeriod", (monthMatch ? monthMatch[1] : "Current") + statusSuffix);
     setText("rankingsThrough", report.meta.updatedThrough || "-");
+    setText("rankingsRoster", (report.territories || []).length);
 
     renderTotals();
     bindControls();
@@ -95,6 +96,7 @@
     };
     setText("rankingsPeriod", archive.monthName + " " + archive.year + " — Final");
     setText("rankingsThrough", "End of month");
+    setText("rankingsRoster", (archive.territories || []).length);
     renderRankings();
     renderArchiveLinks(archive);
   }

@@ -1,5 +1,5 @@
 {
-  "_source": "Closed-month authoritative totals (12-rep roster). These override snapshot-derived sums. An entry with \"locked\": true is never overwritten by the pipeline — set it after pasting Sales Ops authoritative numbers. Unlocked entries self-heal during the first ~8 days after rollover as late funded $ settles, then freeze.",
+  "_source": "Closed-month authoritative totals (assigned-territory roster). These override snapshot-derived sums. An entry with \"locked\": true is never overwritten by the pipeline — set it after pasting Sales Ops authoritative numbers. Unlocked entries self-heal during the first ~8 days after rollover as late funded $ settles, then freeze.",
   "months": [
     {
       "year": 2026,
