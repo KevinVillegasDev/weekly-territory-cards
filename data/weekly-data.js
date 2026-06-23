@@ -253,14 +253,14 @@ window.weeklyTerritoryReport = {
       "stopSplit": "164P / 72A",
       "avgDay": "6:20",
       "activeDays": "16 / 16",
-      "stopEfficiency": 81.8,
+      "stopEfficiency": 81.4,
       "mix": {
         "No Contact": 8,
         "Int/FU": 27,
-        "Rel. Check-In": 46,
-        "Training": 3,
+        "Rel. Check-In": 44,
+        "Training": 4,
         "Enrolled": 6,
-        "Not Int.": 10
+        "Not Int.": 11
       },
       "ranks": {
         "attainment": 6,
