@@ -1,11 +1,11 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "June 23, 2026",
-    "stopsLogged": 2651,
+    "stopsLogged": 2653,
     "newMerchants": 61,
     "businessDaysRemaining": 5,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through June 23, 2026. 2,651 stops logged, 61 new merchants enrolled. 5 business days remain. LTO-1 leads attainment at 102.1%, while Joseph Guerra leads new merchant volume.",
+    "note": "Updated budget origination data through June 23, 2026. 2,653 stops logged, 61 new merchants enrolled. 5 business days remain. LTO-1 leads attainment at 102.1%, while Joseph Guerra leads new merchant volume.",
     "totalsNote": "June MTD is a partial month - 66.4% attainment through Jun 23 with 5 business days remaining.",
     "archives": [
       {
@@ -150,11 +150,11 @@ window.weeklyTerritoryReport = {
       "budget": 966928.0,
       "newMerchants": 3,
       "leadConversion": 2.7,
-      "stops": 218,
-      "stopSplit": "113P / 105A",
-      "avgDay": "7:07",
+      "stops": 219,
+      "stopSplit": "113P / 106A",
+      "avgDay": "7:09",
       "activeDays": "13 / 13",
-      "stopEfficiency": 82.1,
+      "stopEfficiency": 82.2,
       "mix": {
         "No Contact": 10,
         "Int/FU": 9,
@@ -414,15 +414,15 @@ window.weeklyTerritoryReport = {
       "budget": 604274.0,
       "newMerchants": 4,
       "leadConversion": 4.4,
-      "stops": 247,
-      "stopSplit": "91P / 156A",
-      "avgDay": "6:05",
+      "stops": 248,
+      "stopSplit": "91P / 157A",
+      "avgDay": "6:18",
       "activeDays": "17 / 17",
-      "stopEfficiency": 70.9,
+      "stopEfficiency": 71.0,
       "mix": {
         "No Contact": 24,
-        "Int/FU": 19,
-        "Rel. Check-In": 38,
+        "Int/FU": 20,
+        "Rel. Check-In": 37,
         "Training": 12,
         "Enrolled": 2,
         "Not Int.": 5
