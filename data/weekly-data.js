@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
-    "updatedThrough": "June 24, 2026",
-    "stopsLogged": 2840,
+    "updatedThrough": "June 25, 2026",
+    "stopsLogged": 2851,
     "newMerchants": 61,
-    "businessDaysRemaining": 4,
+    "businessDaysRemaining": 3,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through June 24, 2026. 2,840 stops logged, 61 new merchants enrolled. 4 business days remain. LTO-1 leads attainment at 105.8%, while Joseph Guerra leads new merchant volume.",
-    "totalsNote": "June MTD is a partial month - 69.5% attainment through Jun 24 with 4 business days remaining.",
+    "note": "Updated budget origination data through June 25, 2026. 2,851 stops logged, 61 new merchants enrolled. 3 business days remain. LTO-1 leads attainment at 110.7%, while Joseph Guerra leads new merchant volume.",
+    "totalsNote": "June MTD is a partial month - 72.3% attainment through Jun 25 with 3 business days remaining.",
     "archives": [
       {
         "year": 2026,
@@ -60,16 +60,16 @@ window.weeklyTerritoryReport = {
     },
     {
       "period": "June MTD",
-      "sub": "Through Jun 24",
-      "actual": 7117503.16,
+      "sub": "Through Jun 25",
+      "actual": 7409547.83,
       "budget": 10241446.0,
-      "attainment": 69.5
+      "attainment": 72.3
     },
     {
       "period": "YTD Total",
-      "actual": 45339870.64,
+      "actual": 45631915.31,
       "budget": 50175185.0,
-      "attainment": 90.4,
+      "attainment": 90.9,
       "tone": "total"
     }
   ],
@@ -79,20 +79,20 @@ window.weeklyTerritoryReport = {
       "rep": "Yemaira Hernandez",
       "area": "FL - Miami-Dade/Broward",
       "status": "on-track",
-      "attainment": 105.8,
-      "actual": 658835.34,
+      "attainment": 110.7,
+      "actual": 689264.53,
       "budget": 622599.0,
       "newMerchants": 3,
       "leadConversion": 4.8,
-      "stops": 232,
-      "stopSplit": "62P / 170A",
+      "stops": 234,
+      "stopSplit": "63P / 171A",
       "avgDay": "5:38",
-      "activeDays": "16 / 16",
-      "stopEfficiency": 84.1,
+      "activeDays": "16 / 17",
+      "stopEfficiency": 84.2,
       "mix": {
         "No Contact": 9,
-        "Int/FU": 20,
-        "Rel. Check-In": 49,
+        "Int/FU": 21,
+        "Rel. Check-In": 48,
         "Training": 14,
         "Enrolled": 1,
         "Not Int.": 7
@@ -103,7 +103,7 @@ window.weeklyTerritoryReport = {
         "merchants": 5,
         "conversion": 7,
         "stops": 8,
-        "avgDay": 10
+        "avgDay": 9
       },
       "rank": 1
     },
@@ -112,21 +112,21 @@ window.weeklyTerritoryReport = {
       "rep": "Joseph Guerra",
       "area": "TX - State Manager",
       "status": "on-track",
-      "attainment": 100.8,
-      "actual": 568555.17,
+      "attainment": 103.9,
+      "actual": 586421.89,
       "budget": 564234.0,
       "newMerchants": 9,
       "leadConversion": 20.5,
-      "stops": 168,
-      "stopSplit": "44P / 124A",
+      "stops": 169,
+      "stopSplit": "44P / 125A",
       "avgDay": "6:00",
-      "activeDays": "12 / 12",
-      "stopEfficiency": 74.4,
+      "activeDays": "12 / 13",
+      "stopEfficiency": 74.6,
       "mix": {
-        "No Contact": 10,
-        "Int/FU": 32,
+        "No Contact": 9,
+        "Int/FU": 34,
         "Rel. Check-In": 30,
-        "Training": 10,
+        "Training": 9,
         "Enrolled": 2,
         "Not Int.": 16
       },
@@ -145,21 +145,21 @@ window.weeklyTerritoryReport = {
       "rep": "Jared Midkiff",
       "area": "FL - State Manager",
       "status": "on-track",
-      "attainment": 92.0,
-      "actual": 889556.36,
+      "attainment": 95.5,
+      "actual": 923259.65,
       "budget": 966928.0,
       "newMerchants": 3,
       "leadConversion": 2.4,
-      "stops": 245,
-      "stopSplit": "124P / 121A",
-      "avgDay": "7:13",
-      "activeDays": "14 / 14",
-      "stopEfficiency": 83.3,
+      "stops": 248,
+      "stopSplit": "126P / 122A",
+      "avgDay": "6:46",
+      "activeDays": "15 / 15",
+      "stopEfficiency": 83.1,
       "mix": {
-        "No Contact": 9,
-        "Int/FU": 9,
-        "Rel. Check-In": 42,
-        "Training": 29,
+        "No Contact": 8,
+        "Int/FU": 10,
+        "Rel. Check-In": 43,
+        "Training": 28,
         "Enrolled": 3,
         "Not Int.": 8
       },
@@ -178,8 +178,8 @@ window.weeklyTerritoryReport = {
       "rep": "Cesar Flores",
       "area": "CA - LA Metro Core",
       "status": "on-track",
-      "attainment": 76.9,
-      "actual": 237190.34,
+      "attainment": 79.1,
+      "actual": 244160.37,
       "budget": 308501.0,
       "newMerchants": 5,
       "leadConversion": 4.7,
@@ -211,16 +211,16 @@ window.weeklyTerritoryReport = {
       "rep": "Stephanie Whitlock",
       "area": "GA / NE FL / Panhandle",
       "status": "watch",
-      "attainment": 72.8,
-      "actual": 302771.05,
+      "attainment": 77.5,
+      "actual": 322344.1,
       "budget": 415747.0,
       "newMerchants": 8,
       "leadConversion": 4.3,
-      "stops": 266,
-      "stopSplit": "186P / 80A",
+      "stops": 268,
+      "stopSplit": "188P / 80A",
       "avgDay": "6:24",
-      "activeDays": "18 / 18",
-      "stopEfficiency": 82.7,
+      "activeDays": "18 / 19",
+      "stopEfficiency": 82.8,
       "mix": {
         "No Contact": 7,
         "Int/FU": 26,
@@ -244,8 +244,8 @@ window.weeklyTerritoryReport = {
       "rep": "Omar Corona",
       "area": "TX - S. Houston/Valley/El Paso",
       "status": "watch",
-      "attainment": 69.9,
-      "actual": 457419.15,
+      "attainment": 73.6,
+      "actual": 481214.94,
       "budget": 654246.0,
       "newMerchants": 1,
       "leadConversion": 1.9,
@@ -268,50 +268,17 @@ window.weeklyTerritoryReport = {
         "merchants": 7,
         "conversion": 14,
         "stops": 9,
-        "avgDay": 9
-      },
-      "rank": 6
-    },
-    {
-      "code": "RIC-8",
-      "rep": "Eric Henderson",
-      "area": "PA - 4 Metros",
-      "status": "watch",
-      "attainment": 66.8,
-      "actual": 886494.37,
-      "budget": 1327526.0,
-      "newMerchants": 9,
-      "leadConversion": 7.1,
-      "stops": 278,
-      "stopSplit": "127P / 151A",
-      "avgDay": "5:53",
-      "activeDays": "18 / 19",
-      "stopEfficiency": 80.2,
-      "mix": {
-        "No Contact": 15,
-        "Int/FU": 11,
-        "Rel. Check-In": 65,
-        "Training": 3,
-        "Enrolled": 1,
-        "Not Int.": 5
-      },
-      "ranks": {
-        "attainment": 7,
-        "efficiency": 6,
-        "merchants": 1,
-        "conversion": 5,
-        "stops": 1,
         "avgDay": 8
       },
-      "rank": 7
+      "rank": 6
     },
     {
       "code": "RIC-5",
       "rep": "Mariana Gross",
       "area": "AZ - Phoenix Metro",
       "status": "watch",
-      "attainment": 66.2,
-      "actual": 525857.8,
+      "attainment": 70.9,
+      "actual": 563139.12,
       "budget": 794256.0,
       "newMerchants": 8,
       "leadConversion": 23.5,
@@ -329,12 +296,45 @@ window.weeklyTerritoryReport = {
         "Not Int.": 16
       },
       "ranks": {
-        "attainment": 8,
+        "attainment": 7,
         "efficiency": 7,
         "merchants": 2,
         "conversion": 2,
         "stops": 11,
-        "avgDay": 12
+        "avgDay": 11
+      },
+      "rank": 7
+    },
+    {
+      "code": "RIC-8",
+      "rep": "Eric Henderson",
+      "area": "PA - 4 Metros",
+      "status": "watch",
+      "attainment": 69.9,
+      "actual": 927743.98,
+      "budget": 1327526.0,
+      "newMerchants": 9,
+      "leadConversion": 7.0,
+      "stops": 281,
+      "stopSplit": "129P / 152A",
+      "avgDay": "5:36",
+      "activeDays": "19 / 20",
+      "stopEfficiency": 80.1,
+      "mix": {
+        "No Contact": 15,
+        "Int/FU": 11,
+        "Rel. Check-In": 66,
+        "Training": 2,
+        "Enrolled": 1,
+        "Not Int.": 5
+      },
+      "ranks": {
+        "attainment": 8,
+        "efficiency": 6,
+        "merchants": 1,
+        "conversion": 5,
+        "stops": 1,
+        "avgDay": 10
       },
       "rank": 8
     },
@@ -343,8 +343,8 @@ window.weeklyTerritoryReport = {
       "rep": "Claudia Gerhardt",
       "area": "CA - IE South/San Diego",
       "status": "watch",
-      "attainment": 59.1,
-      "actual": 471516.32,
+      "attainment": 61.8,
+      "actual": 492948.46,
       "budget": 797495.0,
       "newMerchants": 1,
       "leadConversion": 5.9,
@@ -367,7 +367,7 @@ window.weeklyTerritoryReport = {
         "merchants": 7,
         "conversion": 6,
         "stops": 6,
-        "avgDay": 11
+        "avgDay": 10
       },
       "rank": 9
     },
@@ -376,8 +376,8 @@ window.weeklyTerritoryReport = {
       "rep": "Matthew MacDonald",
       "area": "AZ + NM/UT/ID",
       "status": "watch",
-      "attainment": 58.7,
-      "actual": 914718.1,
+      "attainment": 61.5,
+      "actual": 958328.21,
       "budget": 1557605.0,
       "newMerchants": 1,
       "leadConversion": 100.0,
@@ -400,7 +400,7 @@ window.weeklyTerritoryReport = {
         "merchants": 7,
         "conversion": 1,
         "stops": 14,
-        "avgDay": 13
+        "avgDay": 12
       },
       "rank": 10
     },
@@ -409,8 +409,8 @@ window.weeklyTerritoryReport = {
       "rep": "Phillip Mason",
       "area": "CA - Sacramento/NorCal",
       "status": "watch",
-      "attainment": 57.0,
-      "actual": 344545.2,
+      "attainment": 57.6,
+      "actual": 348131.93,
       "budget": 604274.0,
       "newMerchants": 4,
       "leadConversion": 4.0,
@@ -471,6 +471,39 @@ window.weeklyTerritoryReport = {
       "rank": 12
     },
     {
+      "code": "RIC-4",
+      "rep": "Richard Herrera",
+      "area": "CA - Orange County/SE LA",
+      "status": "watch",
+      "attainment": 52.8,
+      "actual": 271696.54,
+      "budget": 514464.0,
+      "newMerchants": 3,
+      "leadConversion": 3.2,
+      "stops": 260,
+      "stopSplit": "93P / 167A",
+      "avgDay": "6:30",
+      "activeDays": "15 / 15",
+      "stopEfficiency": 70.0,
+      "mix": {
+        "No Contact": 21,
+        "Int/FU": 13,
+        "Rel. Check-In": 36,
+        "Training": 18,
+        "Enrolled": 3,
+        "Not Int.": 9
+      },
+      "ranks": {
+        "attainment": 13,
+        "efficiency": 12,
+        "merchants": 5,
+        "conversion": 12,
+        "stops": 5,
+        "avgDay": 3
+      },
+      "rank": 13
+    },
+    {
       "code": "LTO-4",
       "rep": "Francisco Gonzalez",
       "area": "TX - Dallas Metro",
@@ -494,45 +527,12 @@ window.weeklyTerritoryReport = {
         "Not Int.": 7
       },
       "ranks": {
-        "attainment": 13,
+        "attainment": 14,
         "efficiency": 10,
         "merchants": 4,
         "conversion": 4,
         "stops": 13,
-        "avgDay": 14
-      },
-      "rank": 13
-    },
-    {
-      "code": "RIC-4",
-      "rep": "Richard Herrera",
-      "area": "CA - Orange County/SE LA",
-      "status": "watch",
-      "attainment": 50.4,
-      "actual": 259149.85,
-      "budget": 514464.0,
-      "newMerchants": 3,
-      "leadConversion": 3.2,
-      "stops": 260,
-      "stopSplit": "93P / 167A",
-      "avgDay": "6:30",
-      "activeDays": "15 / 15",
-      "stopEfficiency": 70.0,
-      "mix": {
-        "No Contact": 21,
-        "Int/FU": 13,
-        "Rel. Check-In": 36,
-        "Training": 18,
-        "Enrolled": 3,
-        "Not Int.": 9
-      },
-      "ranks": {
-        "attainment": 14,
-        "efficiency": 12,
-        "merchants": 5,
-        "conversion": 12,
-        "stops": 5,
-        "avgDay": 3
+        "avgDay": 13
       },
       "rank": 14
     }
