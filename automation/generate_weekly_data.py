@@ -50,11 +50,32 @@ TERRITORY_START = {
     "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
 }
 
+# (year, month) a territory STOPS counting toward the roster (departure / vacancy).
+# A territory listed here is EXCLUDED from that month forward, but PRESERVED in
+# every earlier month — so a departed rep drops off the live board immediately
+# without being erased from the closed months they actually competed in.
+# Keep their TERRITORY_MAP / TERRITORY_AREAS entries so those past archives still
+# render their name.
+TERRITORY_END = {
+    "LTO-4": (2026, 6),  # Francisco Gonzalez departed; excluded June 2026 forward
+    "RIC-7": (2026, 6),  # DeLon Phoenix departed; excluded June 2026 forward
+}
+
 
 def _territory_active(code: str, year: int, month: int) -> bool:
-    """True if `code` counts toward the roster in the given month (>= its start)."""
+    """True if `code` counts toward the roster in the given month.
+
+    Active when the month is on/after its start (TERRITORY_START) and strictly
+    before its end (TERRITORY_END). Territories absent from either map are
+    unbounded on that side.
+    """
     start = TERRITORY_START.get(code)
-    return start is None or (year, month) >= start
+    if start is not None and (year, month) < start:
+        return False
+    end = TERRITORY_END.get(code)
+    if end is not None and (year, month) >= end:
+        return False
+    return True
 
 TERRITORY_AREAS = {
     "LTO-1": "FL - Miami-Dade/Broward",

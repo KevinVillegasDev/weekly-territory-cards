@@ -273,10 +273,14 @@ TERRITORY_MAP = {
     "RIC-4": "Richard Herrera",   # took over from Jeremy Moore Apr 2026
     "RIC-5": "Mariana Gross",     # joined June 2026; territory (Phoenix Metro, AZ) previously unassigned
     "RIC-6": "Phillip Mason",
-    "RIC-7": "DeLon Phoenix",
+    "RIC-7": "DeLon Phoenix",     # departed; excluded June 2026 forward via TERRITORY_END (kept here so closed-month archives still render his name)
     "RIC-8": "Eric Henderson",
     "RIC-9": "Matthew MacDonald",
 }
+# LTO-4 "Francisco Gonzalez" also departed; excluded June 2026 forward via TERRITORY_END.
+# Departed reps STAY in TERRITORY_MAP — removing them would erase them from the
+# still-renderable closed months they competed in. TERRITORY_END gates them off
+# the live board instead.
 ```
 
 ### `TERRITORY_START` (mid-year additions)
@@ -291,6 +295,19 @@ TERRITORY_START = {
 ```
 
 Applied (via `_territory_active(code, year, month)`) in all four month-specific roster computations: live cards, the rankings archive, the historical-totals freeze, and the current-month totals row. Territories not listed are active from the start of tracking. **Real case this caught:** RIC-5 carried ~$654K of May funded $ with no May budget (territory unassigned); without the start gate, adding Mariana would have inflated the closed May total by that amount and listed her at 0% in every May ranking column.
+
+### `TERRITORY_END` (departures / vacancies)
+
+The mirror of `TERRITORY_START`: the `(year, month)` a territory STOPS counting. A departed rep is excluded from that month forward but **preserved in every earlier month** — so they drop off the live board immediately without being erased from the closed-month leaderboards they actually competed in. The same `_territory_active()` check enforces both bounds (active iff `start <= month < end`).
+
+```python
+TERRITORY_END = {
+    "LTO-4": (2026, 6),  # Francisco Gonzalez departed; excluded June 2026 forward
+    "RIC-7": (2026, 6),  # DeLon Phoenix departed; excluded June 2026 forward
+}
+```
+
+Departed reps are intentionally **left in `TERRITORY_MAP` / `TERRITORY_AREAS`** so any still-unlocked closed month can re-render their name; `TERRITORY_END` does the gating. Excluding a departed territory also drops its (now-vacant) budget from the live totals, so team attainment isn't dragged down by an unstaffed quota.
 
 ### `TERRITORY_ALIASES` (transition handling)
 
@@ -379,6 +396,16 @@ Click "Refresh report" on the live site. Flow:
 4. If it's a mid-MONTH transition where the outgoing rep's MTD volume should still count, add their name to `TERRITORY_ALIASES` for the relevant code instead.
 5. Run locally against the dashboard snapshot before pushing — catches missing-key bugs and verifies the new rep appears in the current month but NOT in locked/closed prior months: `python automation/generate_weekly_data.py --dashboard-root <path> --output /tmp/test.js`.
 6. Commit + push. Next refresh picks it up.
+
+### Roster removal (departure)
+
+**Do NOT delete the rep from `TERRITORY_MAP`** — that erases them from the still-renderable closed months they competed in (and changes those months' totals). Instead:
+
+1. Add a `TERRITORY_END` entry for their territory code with the `(year, month)` they stop counting (usually the month they departed). They're excluded from that month forward, preserved before it.
+2. Leave their `TERRITORY_MAP` and `TERRITORY_AREAS` entries in place.
+3. If the territory is being reassigned to a new rep rather than left vacant, that's a separate add (new name in `TERRITORY_MAP`, `TERRITORY_START` for the incoming rep) — and the departing/incoming dates should line up.
+4. Run locally and confirm: the rep is gone from the current month but still present in their prior archives; the live roster count dropped.
+5. Commit + push.
 
 ### Bitbucket sync
 
@@ -508,3 +535,5 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-05-24**: Roster expanded to 13 reps. Francisco Gonzalez added as LTO-4 (territory previously unassigned). No alias needed. SF Monthly_Quota row initially missing his budget — card will show $0 budget / 0% attainment until Sales Ops populates it, then auto-corrects on the next refresh.
 - **2026-05-26**: Monday's cron failed with `KeyError: 'LTO-4'` because the LTO-4 addition only updated `TERRITORY_MAP`, not `TERRITORY_AREAS`. Fix: added `"LTO-4": "TX - Dallas Metro"` to `TERRITORY_AREAS`. Doc's Roster Change checklist updated to call out the parallel dict requirement explicitly + a local dry-run step.
 - **2026-06-08**: Roster expanded to 14 reps. Mariana Gross added as RIC-5 (Phoenix Metro, AZ; previously unassigned), effective June 2026. Introduced `TERRITORY_START` effective-dating so mid-year additions don't pollute earlier months — caught RIC-5's ~$654K of unbudgeted May production, which would otherwise have inflated the closed May total and listed Mariana at 0% across every May ranking column. `TERRITORY_START` is applied in all four month-specific roster computations.
+- **2026-06-08**: Rankings header roster count made dynamic (was hardcoded "12-rep"). Now derived from `territories.length` — live count on the current view, the archived month's count on a closed-month view.
+- **2026-06-29**: Francisco Gonzalez (LTO-4) and DeLon Phoenix (RIC-7) departed the company. Added `TERRITORY_END` (mirror of `TERRITORY_START`) excluding both from June 2026 forward; live roster now 12. They remain in `TERRITORY_MAP` and in the May (13-rep) and April (DeLon only) archives — closed months they competed in are preserved. Their vacant June budgets (~$1.11M combined) correctly drop from the live June totals.
