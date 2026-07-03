@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
-    "updatedThrough": "July 1, 2026",
-    "stopsLogged": 137,
+    "updatedThrough": "July 2, 2026",
+    "stopsLogged": 233,
     "newMerchants": 0,
-    "businessDaysRemaining": 22,
+    "businessDaysRemaining": 21,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through July 1, 2026. 137 stops logged, 0 new merchants enrolled. 22 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
-    "totalsNote": "",
+    "note": "Updated budget origination data through July 2, 2026. 233 stops logged, 0 new merchants enrolled. 21 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
+    "totalsNote": "July MTD is a partial month - 0.0% attainment through Jul 2 with 21 business days remaining.",
     "archives": [
       {
         "year": 2026,
@@ -67,15 +67,22 @@ window.weeklyTerritoryReport = {
     {
       "period": "June 2026",
       "sub": "",
-      "actual": 8462524.52,
+      "actual": 8340678.6,
       "budget": 9127875.0,
-      "attainment": 92.7
+      "attainment": 91.4
+    },
+    {
+      "period": "July MTD",
+      "sub": "Through Jul 2",
+      "actual": 338357.55,
+      "budget": 0.0,
+      "attainment": 0.0
     },
     {
       "period": "YTD Total",
-      "actual": 46684892.0,
+      "actual": 46901403.63,
       "budget": 49061614.0,
-      "attainment": 95.2,
+      "attainment": 95.6,
       "tone": "total"
     }
   ],
@@ -86,7 +93,7 @@ window.weeklyTerritoryReport = {
       "area": "FL - Miami-Dade/Broward",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 39138.28,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
@@ -108,8 +115,8 @@ window.weeklyTerritoryReport = {
         "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 3,
-        "avgDay": 7
+        "stops": 6,
+        "avgDay": 6
       },
       "rank": 1
     },
@@ -119,22 +126,22 @@ window.weeklyTerritoryReport = {
       "area": "TX - S. Houston/Valley/El Paso",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 23171.14,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 13,
-      "stopSplit": "3P / 10A",
-      "avgDay": "5:55",
-      "activeDays": "1 / 1",
+      "stops": 26,
+      "stopSplit": "4P / 22A",
+      "avgDay": "4:38",
+      "activeDays": "2 / 2",
       "stopEfficiency": 76.9,
       "mix": {
-        "No Contact": 8,
-        "Int/FU": 8,
-        "Rel. Check-In": 54,
-        "Training": 15,
+        "No Contact": 12,
+        "Int/FU": 15,
+        "Rel. Check-In": 49,
+        "Training": 12,
         "Enrolled": 0,
-        "Not Int.": 15
+        "Not Int.": 12
       },
       "ranks": {
         "attainment": 1,
@@ -142,7 +149,7 @@ window.weeklyTerritoryReport = {
         "merchants": 1,
         "conversion": 1,
         "stops": 4,
-        "avgDay": 8
+        "avgDay": 9
       },
       "rank": 2
     },
@@ -152,22 +159,22 @@ window.weeklyTerritoryReport = {
       "area": "TX - State Manager",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 13666.01,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 16,
-      "stopSplit": "1P / 15A",
-      "avgDay": "6:35",
-      "activeDays": "1 / 1",
-      "stopEfficiency": 93.8,
+      "stops": 30,
+      "stopSplit": "4P / 26A",
+      "avgDay": "6:02",
+      "activeDays": "2 / 2",
+      "stopEfficiency": 93.3,
       "mix": {
-        "No Contact": 6,
-        "Int/FU": 12,
+        "No Contact": 3,
+        "Int/FU": 17,
         "Rel. Check-In": 57,
-        "Training": 19,
-        "Enrolled": 6,
-        "Not Int.": 0
+        "Training": 17,
+        "Enrolled": 3,
+        "Not Int.": 3
       },
       "ranks": {
         "attainment": 1,
@@ -175,7 +182,7 @@ window.weeklyTerritoryReport = {
         "merchants": 1,
         "conversion": 1,
         "stops": 2,
-        "avgDay": 4
+        "avgDay": 7
       },
       "rank": 3
     },
@@ -185,22 +192,22 @@ window.weeklyTerritoryReport = {
       "area": "FL - State Manager",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 26838.8,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 16,
-      "stopSplit": "9P / 7A",
-      "avgDay": "7:10",
-      "activeDays": "1 / 1",
-      "stopEfficiency": 87.5,
+      "stops": 30,
+      "stopSplit": "18P / 12A",
+      "avgDay": "7:00",
+      "activeDays": "2 / 2",
+      "stopEfficiency": 83.3,
       "mix": {
-        "No Contact": 6,
-        "Int/FU": 12,
-        "Rel. Check-In": 64,
-        "Training": 12,
+        "No Contact": 7,
+        "Int/FU": 10,
+        "Rel. Check-In": 63,
+        "Training": 10,
         "Enrolled": 0,
-        "Not Int.": 6
+        "Not Int.": 10
       },
       "ranks": {
         "attainment": 1,
@@ -218,7 +225,7 @@ window.weeklyTerritoryReport = {
       "area": "GA / NE FL / Panhandle",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 15332.38,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
@@ -237,10 +244,10 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 8,
+        "efficiency": 9,
         "merchants": 1,
         "conversion": 1,
-        "stops": 7,
+        "stops": 9,
         "avgDay": 11
       },
       "rank": 5
@@ -251,7 +258,7 @@ window.weeklyTerritoryReport = {
       "area": "CA - LA Metro Core",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 38409.25,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
@@ -270,10 +277,10 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 8,
+        "efficiency": 9,
         "merchants": 1,
         "conversion": 1,
-        "stops": 7,
+        "stops": 9,
         "avgDay": 11
       },
       "rank": 6
@@ -284,7 +291,7 @@ window.weeklyTerritoryReport = {
       "area": "CA - IE South/San Diego",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 30182.31,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
@@ -306,8 +313,8 @@ window.weeklyTerritoryReport = {
         "efficiency": 5,
         "merchants": 1,
         "conversion": 1,
-        "stops": 4,
-        "avgDay": 9
+        "stops": 7,
+        "avgDay": 8
       },
       "rank": 7
     },
@@ -317,26 +324,26 @@ window.weeklyTerritoryReport = {
       "area": "CA - Orange County/SE LA",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 6216.79,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 20,
-      "stopSplit": "9P / 11A",
-      "avgDay": "6:26",
-      "activeDays": "1 / 1",
-      "stopEfficiency": 60.0,
+      "stops": 38,
+      "stopSplit": "15P / 23A",
+      "avgDay": "6:14",
+      "activeDays": "2 / 2",
+      "stopEfficiency": 65.8,
       "mix": {
-        "No Contact": 25,
-        "Int/FU": 35,
-        "Rel. Check-In": 15,
-        "Training": 10,
+        "No Contact": 18,
+        "Int/FU": 24,
+        "Rel. Check-In": 31,
+        "Training": 11,
         "Enrolled": 0,
-        "Not Int.": 15
+        "Not Int.": 16
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 7,
+        "efficiency": 8,
         "merchants": 1,
         "conversion": 1,
         "stops": 1,
@@ -350,21 +357,21 @@ window.weeklyTerritoryReport = {
       "area": "AZ - Phoenix Metro",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 40470.95,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 15,
-      "stopSplit": "4P / 11A",
-      "avgDay": "6:16",
-      "activeDays": "1 / 1",
-      "stopEfficiency": 66.7,
+      "stops": 28,
+      "stopSplit": "9P / 19A",
+      "avgDay": "6:24",
+      "activeDays": "2 / 2",
+      "stopEfficiency": 67.9,
       "mix": {
-        "No Contact": 27,
-        "Int/FU": 7,
-        "Rel. Check-In": 59,
+        "No Contact": 25,
+        "Int/FU": 4,
+        "Rel. Check-In": 53,
         "Training": 0,
-        "Enrolled": 0,
+        "Enrolled": 11,
         "Not Int.": 7
       },
       "ranks": {
@@ -373,7 +380,7 @@ window.weeklyTerritoryReport = {
         "merchants": 1,
         "conversion": 1,
         "stops": 3,
-        "avgDay": 6
+        "avgDay": 4
       },
       "rank": 9
     },
@@ -383,26 +390,26 @@ window.weeklyTerritoryReport = {
       "area": "CA - Sacramento/NorCal",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 18638.89,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 9,
-      "stopSplit": "4P / 5A",
-      "avgDay": "6:37",
-      "activeDays": "1 / 1",
+      "stops": 24,
+      "stopSplit": "8P / 16A",
+      "avgDay": "6:51",
+      "activeDays": "2 / 2",
       "stopEfficiency": 66.7,
       "mix": {
         "No Contact": 33,
-        "Int/FU": 11,
-        "Rel. Check-In": 56,
-        "Training": 0,
+        "Int/FU": 12,
+        "Rel. Check-In": 47,
+        "Training": 8,
         "Enrolled": 0,
         "Not Int.": 0
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 6,
+        "efficiency": 7,
         "merchants": 1,
         "conversion": 1,
         "stops": 5,
@@ -416,19 +423,19 @@ window.weeklyTerritoryReport = {
       "area": "PA - 4 Metros",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 46128.67,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 15,
-      "stopSplit": "8P / 7A",
-      "avgDay": "7:17",
-      "activeDays": "1 / 1",
-      "stopEfficiency": 60.0,
+      "stops": 24,
+      "stopSplit": "11P / 13A",
+      "avgDay": "7:28",
+      "activeDays": "2 / 2",
+      "stopEfficiency": 66.7,
       "mix": {
-        "No Contact": 40,
-        "Int/FU": 0,
-        "Rel. Check-In": 60,
+        "No Contact": 33,
+        "Int/FU": 4,
+        "Rel. Check-In": 63,
         "Training": 0,
         "Enrolled": 0,
         "Not Int.": 0
@@ -438,7 +445,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 7,
         "merchants": 1,
         "conversion": 1,
-        "stops": 3,
+        "stops": 5,
         "avgDay": 1
       },
       "rank": 11
@@ -449,7 +456,7 @@ window.weeklyTerritoryReport = {
       "area": "AZ + NM/UT/ID",
       "status": "watch",
       "attainment": 0.0,
-      "actual": 0.0,
+      "actual": 40164.08,
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
@@ -471,7 +478,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 6,
+        "stops": 8,
         "avgDay": 10
       },
       "rank": 12
