@@ -34,6 +34,15 @@ TERRITORY_MAP = {
     "RIC-9": "Matthew MacDonald",
 }
 
+# Deliberately EXCLUDED from this view (do NOT add just because they're on the
+# dashboard's OSR roster):
+#   RIC-10 "Marco Garmendia" — new unique position (July 2026). Holds a territory
+#     but does NOT run the usual field-stop cadence, so the stops / avg-time /
+#     lead-conversion metrics this board ranks on don't apply. Adding him would
+#     put a misleading low-activity row in every ranking column. His RIC-10
+#     origination volume is therefore also out of the team totals here.
+# TERRITORY_MAP is intentionally NOT a 1:1 mirror of the dashboard roster.
+
 # Names whose production should still roll up to a territory during a transition
 # (departed reps, mid-month handoffs). Remove entries after the relevant month
 # is closed in historical-totals.json so the card reflects the new rep cleanly.

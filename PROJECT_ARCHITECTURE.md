@@ -284,6 +284,10 @@ TERRITORY_MAP = {
 # the live board instead.
 ```
 
+**Not every dashboard-roster rep belongs on this board.** `TERRITORY_MAP` is deliberately *not* a 1:1 mirror of the dashboard's OSR roster. Reps whose role isn't built on the usual field-stop cadence are intentionally omitted, because this board ranks on stops / avg field time / lead conversion — metrics that would read as a misleading low-activity row for them.
+
+- **RIC-10 "Marco Garmendia"** — new unique position (July 2026). On the dashboard roster with a real territory, but excluded here by request. His RIC-10 origination volume is consequently also outside this view's team totals. Do not add him without an explicit ask.
+
 ### `TERRITORY_START` (mid-year additions)
 
 A territory added to `TERRITORY_MAP` partway through the year must NOT retroactively appear in earlier months — otherwise it injects a zero/partial row into prior rankings and (if the territory had any unbudgeted production) silently pulls that volume into a closed month's totals. `TERRITORY_START` gives each such territory an effective `(year, month)`; it's excluded from every month before that.
@@ -540,4 +544,5 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-06-08**: Rankings header roster count made dynamic (was hardcoded "12-rep"). Now derived from `territories.length` — live count on the current view, the archived month's count on a closed-month view.
 - **2026-06-29**: Francisco Gonzalez (LTO-4) and DeLon Phoenix (RIC-7) departed the company. Added `TERRITORY_END` (mirror of `TERRITORY_START`) excluding both from June 2026 forward; live roster now 12. They remain in `TERRITORY_MAP` and in the May (13-rep) and April (DeLon only) archives — closed months they competed in are preserved. Their vacant June budgets (~$1.11M combined) correctly drop from the live June totals.
 - **2026-06-29**: Locked the May archive + May historical-totals entry (`locked: true`) so the closed-May leaderboard is permanent even after the departed reps were removed from the dashboard roster.
-- **2026-07-06**: Jose Valencia added as RIC-3 (CA; previously unassigned), effective July 2026 via `TERRITORY_START`. Live roster now 13. Excluded from June and earlier archives. Area string is a bare `"CA"` placeholder — update with his specific sub-region when known. (Marco Garmendia / RIC-10 also appeared on the dashboard roster the same month but is NOT yet added here — pending confirmation.)
+- **2026-07-06**: Jose Valencia added as RIC-3 (CA; previously unassigned), effective July 2026 via `TERRITORY_START`. Live roster now 13. Excluded from June and earlier archives. Area string is a bare `"CA"` placeholder — update with his specific sub-region when known.
+- **2026-07-06**: Confirmed Marco Garmendia (RIC-10) is deliberately EXCLUDED from this board — his new position doesn't run the usual field-stop cadence, so the stop/time/conversion rankings don't apply. Documented in `TERRITORY_MAP` comment + roster section so he isn't added by a future dashboard-roster sync. His RIC-10 volume is also out of this view's team totals.
