@@ -270,6 +270,7 @@ TERRITORY_MAP = {
     "LTO-7": "Stephanie Whitlock",
     "RIC-1": "Cesar Flores",
     "RIC-2": "Claudia Gerhardt",
+    "RIC-3": "Jose Valencia",     # joined July 2026; territory (CA) previously unassigned
     "RIC-4": "Richard Herrera",   # took over from Jeremy Moore Apr 2026
     "RIC-5": "Mariana Gross",     # joined June 2026; territory (Phoenix Metro, AZ) previously unassigned
     "RIC-6": "Phillip Mason",
@@ -291,6 +292,7 @@ A territory added to `TERRITORY_MAP` partway through the year must NOT retroacti
 TERRITORY_START = {
     "LTO-4": (2026, 5),  # Francisco Gonzalez took LTO-4 from May 2026
     "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
+    "RIC-3": (2026, 7),  # Jose Valencia took RIC-3 (CA) from July 2026
 }
 ```
 
@@ -537,3 +539,5 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-06-08**: Roster expanded to 14 reps. Mariana Gross added as RIC-5 (Phoenix Metro, AZ; previously unassigned), effective June 2026. Introduced `TERRITORY_START` effective-dating so mid-year additions don't pollute earlier months — caught RIC-5's ~$654K of unbudgeted May production, which would otherwise have inflated the closed May total and listed Mariana at 0% across every May ranking column. `TERRITORY_START` is applied in all four month-specific roster computations.
 - **2026-06-08**: Rankings header roster count made dynamic (was hardcoded "12-rep"). Now derived from `territories.length` — live count on the current view, the archived month's count on a closed-month view.
 - **2026-06-29**: Francisco Gonzalez (LTO-4) and DeLon Phoenix (RIC-7) departed the company. Added `TERRITORY_END` (mirror of `TERRITORY_START`) excluding both from June 2026 forward; live roster now 12. They remain in `TERRITORY_MAP` and in the May (13-rep) and April (DeLon only) archives — closed months they competed in are preserved. Their vacant June budgets (~$1.11M combined) correctly drop from the live June totals.
+- **2026-06-29**: Locked the May archive + May historical-totals entry (`locked: true`) so the closed-May leaderboard is permanent even after the departed reps were removed from the dashboard roster.
+- **2026-07-06**: Jose Valencia added as RIC-3 (CA; previously unassigned), effective July 2026 via `TERRITORY_START`. Live roster now 13. Excluded from June and earlier archives. Area string is a bare `"CA"` placeholder — update with his specific sub-region when known. (Marco Garmendia / RIC-10 also appeared on the dashboard roster the same month but is NOT yet added here — pending confirmation.)

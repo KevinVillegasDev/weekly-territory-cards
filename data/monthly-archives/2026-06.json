@@ -2,7 +2,7 @@
   "year": 2026,
   "month": 6,
   "monthName": "June",
-  "frozenAt": "2026-07-03T15:01:06Z",
+  "frozenAt": "2026-07-06T15:36:31Z",
   "locked": false,
   "_note": "Auto-generated rankings archive. Budget %/actual/budget self-heal during the first week as late funded $ settles. To pin Sales Ops authoritative numbers, edit the values and set \"locked\": true — the pipeline will then never overwrite this file.",
   "totals": {

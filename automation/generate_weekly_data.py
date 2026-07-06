@@ -25,6 +25,7 @@ TERRITORY_MAP = {
     "LTO-7": "Stephanie Whitlock",
     "RIC-1": "Cesar Flores",
     "RIC-2": "Claudia Gerhardt",
+    "RIC-3": "Jose Valencia",  # Added July 2026 (CA; previously unassigned)
     "RIC-4": "Richard Herrera",
     "RIC-5": "Mariana Gross",  # Added June 2026 (Phoenix Metro, AZ; previously unassigned)
     "RIC-6": "Phillip Mason",
@@ -48,6 +49,7 @@ TERRITORY_ALIASES = {
 TERRITORY_START = {
     "LTO-4": (2026, 5),  # Francisco Gonzalez took LTO-4 from May 2026
     "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
+    "RIC-3": (2026, 7),  # Jose Valencia took RIC-3 (CA) from July 2026
 }
 
 # (year, month) a territory STOPS counting toward the roster (departure / vacancy).
@@ -86,6 +88,7 @@ TERRITORY_AREAS = {
     "LTO-7": "GA / NE FL / Panhandle",
     "RIC-1": "CA - LA Metro Core",
     "RIC-2": "CA - IE South/San Diego",
+    "RIC-3": "CA",
     "RIC-4": "CA - Orange County/SE LA",
     "RIC-5": "AZ - Phoenix Metro",
     "RIC-6": "CA - Sacramento/NorCal",
