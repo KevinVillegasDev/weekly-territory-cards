@@ -1,11 +1,11 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "July 15, 2026",
-    "stopsLogged": 1458,
+    "stopsLogged": 1463,
     "newMerchants": 7,
     "businessDaysRemaining": 12,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through July 15, 2026. 1,458 stops logged, 7 new merchants enrolled. 12 business days remain. LTO-7 leads attainment at 55.4%, while Stephanie Whitlock leads new merchant volume.",
+    "note": "Updated budget origination data through July 15, 2026. 1,463 stops logged, 7 new merchants enrolled. 12 business days remain. LTO-7 leads attainment at 55.4%, while Stephanie Whitlock leads new merchant volume.",
     "totalsNote": "July MTD is a partial month - 38.1% attainment through Jul 15 with 12 business days remaining.",
     "archives": [
       {
@@ -97,22 +97,22 @@ window.weeklyTerritoryReport = {
       "budget": 364205.0,
       "newMerchants": 2,
       "leadConversion": 2.6,
-      "stops": 125,
-      "stopSplit": "77P / 48A",
-      "avgDay": "7:02",
+      "stops": 124,
+      "stopSplit": "77P / 47A",
+      "avgDay": "7:00",
       "activeDays": "8 / 8",
-      "stopEfficiency": 73.6,
+      "stopEfficiency": 74.2,
       "mix": {
-        "No Contact": 9,
+        "No Contact": 8,
         "Int/FU": 30,
-        "Rel. Check-In": 36,
+        "Rel. Check-In": 37,
         "Training": 4,
         "Enrolled": 3,
         "Not Int.": 18
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 8,
+        "efficiency": 7,
         "merchants": 1,
         "conversion": 4,
         "stops": 5,
@@ -460,18 +460,18 @@ window.weeklyTerritoryReport = {
       "budget": 680418.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 63,
-      "stopSplit": "4P / 59A",
-      "avgDay": "3:42",
+      "stops": 69,
+      "stopSplit": "5P / 64A",
+      "avgDay": "4:09",
       "activeDays": "8 / 9",
-      "stopEfficiency": 61.9,
+      "stopEfficiency": 63.8,
       "mix": {
         "No Contact": 17,
-        "Int/FU": 6,
-        "Rel. Check-In": 10,
-        "Training": 38,
-        "Enrolled": 8,
-        "Not Int.": 21
+        "Int/FU": 7,
+        "Rel. Check-In": 13,
+        "Training": 37,
+        "Enrolled": 7,
+        "Not Int.": 19
       },
       "ranks": {
         "attainment": 12,
@@ -508,7 +508,7 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 13,
-        "efficiency": 7,
+        "efficiency": 8,
         "merchants": 3,
         "conversion": 6,
         "stops": 13,
