@@ -70,6 +70,7 @@ TERRITORY_START = {
 TERRITORY_END = {
     "LTO-4": (2026, 6),  # Francisco Gonzalez departed; excluded June 2026 forward
     "RIC-7": (2026, 6),  # DeLon Phoenix departed; excluded June 2026 forward
+    "RIC-6": (2026, 6),  # Phillip Mason departed; excluded June 2026 forward (per Sales Ops reconciliation)
 }
 
 
@@ -254,6 +255,14 @@ def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, 
     today = date.today()
     month_complete = (today.year, today.month) > (year, month)
 
+    # Budget targets for the current month aren't loaded in Salesforce yet
+    # (roster has real actuals but every Funded Dollars Quota is blank). Without
+    # this guard the whole board reads 0.0% attainment, which looks broken rather
+    # than pending. Flag it so the UI can render "—" instead of a fake 0%.
+    roster_budget = sum(item["budget"] for item in territories)
+    roster_actual = sum(item["actual"] for item in territories)
+    budget_pending = (not month_complete) and roster_budget == 0 and roster_actual > 0
+
     totals = _build_totals(current_dir, historical_path, through_date, month_complete=month_complete)
     current_row = next(
         (row for row in totals if MONTH_NAMES[month] in row.get("period", "") and "Total" not in row.get("period", "")),
@@ -262,7 +271,14 @@ def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, 
     if current_row is None:
         current_row = next((row for row in totals if row.get("period", "").endswith("MTD")), None)
 
-    if month_complete and current_row is not None:
+    if budget_pending:
+        totals_note = (
+            f"{MONTH_NAMES[month]} {year} budget targets aren't loaded in Salesforce yet, "
+            f"so attainment shows a dash for now. Actual originations below are current "
+            f"through {_format_date_short(through_date)}; percentages will populate once "
+            f"Sales Ops sets this month's quotas."
+        )
+    elif month_complete and current_row is not None:
         totals_note = (
             f"{MONTH_NAMES[month]} {year} closed at {current_row['attainment']:.1f}% attainment. "
             f"Awaiting Sales Ops final reconciliation; numbers may shift slightly with corrections."
@@ -284,7 +300,8 @@ def build_report(snapshot_root: Path, historical_path: Path, archive_dir: Path, 
             "newMerchants": sum(item["newMerchants"] for item in territories),
             "businessDaysRemaining": biz_remaining,
             "monthStatus": "final" if month_complete else "mtd",
-            "note": _build_executive_note(territories, through_date, biz_remaining),
+            "budgetPending": budget_pending,
+            "note": _build_executive_note(territories, through_date, biz_remaining, budget_pending),
             "totalsNote": totals_note,
             "archives": archives,
         },
@@ -1025,16 +1042,27 @@ def _attach_ranks(items: list[dict]) -> None:
         item.pop("avg_hours_sort", None)
 
 
-def _build_executive_note(territories: list[dict], through_date: date, biz_remaining: int) -> str:
+def _build_executive_note(territories: list[dict], through_date: date, biz_remaining: int,
+                          budget_pending: bool = False) -> str:
     stops = sum(item["stops"] for item in territories)
     merchants = sum(item["newMerchants"] for item in territories)
-    leader = max(territories, key=lambda item: item["attainment"])
     enrollment_leader = max(territories, key=lambda item: item["newMerchants"])
-    return (
-        f"Updated budget origination data through {_format_date_long(through_date)}. "
+    base = (
+        f"Updated origination data through {_format_date_long(through_date)}. "
         f"{stops:,} stops logged, {merchants} new merchants enrolled. "
-        f"{biz_remaining} business days remain. {leader['code']} leads attainment at "
-        f"{leader['attainment']:.1f}%, while {enrollment_leader['rep']} leads new merchant volume."
+        f"{biz_remaining} business days remain. "
+    )
+    if budget_pending:
+        # Attainment is meaningless while budgets are unset — don't crown a
+        # bogus 0% "leader". Lead with enrollment volume instead.
+        return base + (
+            f"{enrollment_leader['rep']} leads new merchant volume. "
+            f"Budget attainment is pending the Salesforce quota load."
+        )
+    leader = max(territories, key=lambda item: item["attainment"])
+    return base + (
+        f"{leader['code']} leads attainment at {leader['attainment']:.1f}%, "
+        f"while {enrollment_leader['rep']} leads new merchant volume."
     )
 
 

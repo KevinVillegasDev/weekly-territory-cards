@@ -1,12 +1,13 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "July 20, 2026",
-    "stopsLogged": 1759,
+    "stopsLogged": 1709,
     "newMerchants": 42,
     "businessDaysRemaining": 9,
     "monthStatus": "mtd",
-    "note": "Updated budget origination data through July 20, 2026. 1,759 stops logged, 42 new merchants enrolled. 9 business days remain. LTO-2 leads attainment at 68.6%, while Joseph Guerra leads new merchant volume.",
-    "totalsNote": "July MTD is a partial month - 48.5% attainment through Jul 20 with 9 business days remaining.",
+    "budgetPending": false,
+    "note": "Updated origination data through July 20, 2026. 1,709 stops logged, 42 new merchants enrolled. 9 business days remain. LTO-2 leads attainment at 68.6%, while Joseph Guerra leads new merchant volume.",
+    "totalsNote": "July MTD is a partial month - 47.0% attainment through Jul 20 with 9 business days remaining.",
     "archives": [
       {
         "year": 2026,
@@ -67,22 +68,22 @@ window.weeklyTerritoryReport = {
     {
       "period": "June 2026",
       "sub": "",
-      "actual": 8340678.6,
-      "budget": 9127875.0,
-      "attainment": 91.4
+      "actual": 7767428.0,
+      "budget": 8523601.0,
+      "attainment": 91.1
     },
     {
       "period": "July MTD",
       "sub": "Through Jul 20",
-      "actual": 4744532.64,
+      "actual": 4597964.17,
       "budget": 9786646.0,
-      "attainment": 48.5
+      "attainment": 47.0
     },
     {
       "period": "YTD Total",
-      "actual": 51307578.72,
-      "budget": 58848260.0,
-      "attainment": 87.2,
+      "actual": 50587759.65,
+      "budget": 58243986.0,
+      "attainment": 86.9,
       "tone": "total"
     }
   ],
@@ -116,7 +117,7 @@ window.weeklyTerritoryReport = {
         "merchants": 2,
         "conversion": 3,
         "stops": 2,
-        "avgDay": 11
+        "avgDay": 10
       },
       "rank": 1
     },
@@ -145,7 +146,7 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 2,
-        "efficiency": 7,
+        "efficiency": 6,
         "merchants": 2,
         "conversion": 7,
         "stops": 4,
@@ -215,7 +216,7 @@ window.weeklyTerritoryReport = {
         "merchants": 3,
         "conversion": 2,
         "stops": 3,
-        "avgDay": 10
+        "avgDay": 9
       },
       "rank": 4
     },
@@ -310,11 +311,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 7,
-        "efficiency": 8,
+        "efficiency": 7,
         "merchants": 3,
         "conversion": 5,
         "stops": 3,
-        "avgDay": 12
+        "avgDay": 11
       },
       "rank": 7
     },
@@ -343,11 +344,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 8,
-        "efficiency": 10,
+        "efficiency": 9,
         "merchants": 4,
         "conversion": 4,
         "stops": 7,
-        "avgDay": 7
+        "avgDay": 6
       },
       "rank": 8
     },
@@ -380,7 +381,7 @@ window.weeklyTerritoryReport = {
         "merchants": 5,
         "conversion": 10,
         "stops": 9,
-        "avgDay": 9
+        "avgDay": 8
       },
       "rank": 9
     },
@@ -413,7 +414,7 @@ window.weeklyTerritoryReport = {
         "merchants": 4,
         "conversion": 6,
         "stops": 8,
-        "avgDay": 8
+        "avgDay": 7
       },
       "rank": 10
     },
@@ -442,11 +443,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 11,
-        "efficiency": 11,
+        "efficiency": 10,
         "merchants": 6,
         "conversion": 11,
         "stops": 10,
-        "avgDay": 13
+        "avgDay": 12
       },
       "rank": 11
     },
@@ -475,46 +476,13 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 12,
-        "efficiency": 9,
+        "efficiency": 8,
         "merchants": 6,
         "conversion": 11,
         "stops": 1,
         "avgDay": 4
       },
       "rank": 12
-    },
-    {
-      "code": "RIC-6",
-      "rep": "Phillip Mason",
-      "area": "CA - Sacramento/NorCal",
-      "status": "watch",
-      "attainment": 0.0,
-      "actual": 146568.47,
-      "budget": 0.0,
-      "newMerchants": 0,
-      "leadConversion": 0.0,
-      "stops": 50,
-      "stopSplit": "17P / 33A",
-      "avgDay": "6:00",
-      "activeDays": "4 / 4",
-      "stopEfficiency": 74.0,
-      "mix": {
-        "No Contact": 24,
-        "Int/FU": 26,
-        "Rel. Check-In": 42,
-        "Training": 4,
-        "Enrolled": 2,
-        "Not Int.": 2
-      },
-      "ranks": {
-        "attainment": 13,
-        "efficiency": 6,
-        "merchants": 6,
-        "conversion": 11,
-        "stops": 11,
-        "avgDay": 6
-      },
-      "rank": 13
     }
   ]
 };

@@ -39,8 +39,9 @@
     {
       "year": 2026,
       "month": 6,
-      "budget": 9127875.0,
-      "actual": 8340678.6
+      "budget": 8523601,
+      "actual": 7767428,
+      "locked": true
     }
   ]
 }

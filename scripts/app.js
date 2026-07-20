@@ -34,6 +34,16 @@
     return Number(value || 0).toFixed(1) + "%";
   }
 
+  // Budget attainment display. Show a dash only when a budget target is present
+  // but zero — i.e. the live month's Salesforce quota isn't loaded yet — so the
+  // board reads "pending" instead of a misleading 0.0%. Archive rows carry no
+  // budget field (their attainment is already reconciled), so they render their
+  // percentage normally.
+  function attPct(item) {
+    if (item && typeof item.budget === "number" && item.budget === 0) return "—";
+    return pct(item ? item.attainment : 0);
+  }
+
   function setText(id, value) {
     var el = document.getElementById(id);
     if (el) el.textContent = value;
@@ -127,8 +137,8 @@
         '<tr class="' + tone + '">',
         '<td><strong>' + row.period + '</strong>' + (row.sub ? '<small>' + row.sub + '</small>' : "") + '</td>',
         '<td>' + money(row.actual) + '</td>',
-        '<td>' + money(row.budget) + '</td>',
-        '<td><b>' + pct(row.attainment) + '</b></td>',
+        '<td>' + (row.budget > 0 ? money(row.budget) : "—") + '</td>',
+        '<td><b>' + attPct(row) + '</b></td>',
         '</tr>'
       ].join("");
     }).join("");
@@ -210,8 +220,8 @@
       '</div>',
       '<div class="rank-stack"><span>#' + item.rank + '</span><small>' + statusText + '</small></div>',
       '</header>',
-      '<div class="attainment-row"><span>Budget attainment</span><strong>' + pct(item.attainment) + '</strong></div>',
-      '<div class="progress-rail"><span style="width:' + Math.min(100, item.attainment) + '%"></span></div>',
+      '<div class="attainment-row"><span>Budget attainment</span><strong>' + attPct(item) + '</strong></div>',
+      '<div class="progress-rail"><span style="width:' + (item.budget > 0 ? Math.min(100, item.attainment) : 0) + '%"></span></div>',
       '<div class="hero-metrics">',
       metricBlock(item.newMerchants, "new merchants", "credited enrollments this month", item.ranks.merchants, true),
       metricBlock(pct(item.leadConversion), "lead conversion", "enrollments from prospect stops", item.ranks.conversion),
@@ -264,7 +274,7 @@
         title: "Budget %",
         sub: "Attainment vs target",
         sortValue: function (i) { return i.attainment || 0; },
-        display: function (i) { return pct(i.attainment); }
+        display: function (i) { return attPct(i); }
       },
       {
         title: "New Merchants",

@@ -2,19 +2,19 @@
   "year": 2026,
   "month": 6,
   "monthName": "June",
-  "frozenAt": "2026-07-07T20:03:28Z",
-  "locked": false,
-  "_note": "Auto-generated rankings archive. Budget %/actual/budget self-heal during the first week as late funded $ settles. To pin Sales Ops authoritative numbers, edit the values and set \"locked\": true — the pipeline will then never overwrite this file.",
+  "frozenAt": "2026-07-06T15:36:31Z",
+  "locked": true,
+  "_note": "Patched 2026-07 to Sales Ops authoritative June actuals; per-rep attainment reconciled (our snapshot's Report-6 Funded Dollars differed from Sales Ops's month-end attribution). RIC-6 (Phillip Mason) excluded — departed. locked=true so the pipeline never overwrites.",
   "totals": {
-    "actual": 8340678.6,
-    "budget": 9127875.0,
-    "attainment": 91.4
+    "actual": 7767428,
+    "budget": 8523601,
+    "attainment": 91.1
   },
   "territories": [
     {
       "code": "LTO-1",
       "rep": "Yemaira Hernandez",
-      "attainment": 128.1,
+      "attainment": 132.1,
       "newMerchants": 6,
       "leadConversion": 7.7,
       "stops": 291,
@@ -23,7 +23,7 @@
     {
       "code": "LTO-2",
       "rep": "Omar Corona",
-      "attainment": 92.8,
+      "attainment": 92.2,
       "newMerchants": 3,
       "leadConversion": 3.2,
       "stops": 269,
@@ -32,7 +32,7 @@
     {
       "code": "LTO-3",
       "rep": "Joseph Guerra",
-      "attainment": 126.6,
+      "attainment": 127.3,
       "newMerchants": 12,
       "leadConversion": 18.8,
       "stops": 225,
@@ -41,7 +41,7 @@
     {
       "code": "LTO-5",
       "rep": "Jared Midkiff",
-      "attainment": 118.8,
+      "attainment": 115.9,
       "newMerchants": 4,
       "leadConversion": 2.8,
       "stops": 284,
@@ -50,7 +50,7 @@
     {
       "code": "LTO-7",
       "rep": "Stephanie Whitlock",
-      "attainment": 94.3,
+      "attainment": 94.6,
       "newMerchants": 9,
       "leadConversion": 4.4,
       "stops": 289,
@@ -59,7 +59,7 @@
     {
       "code": "RIC-1",
       "rep": "Cesar Flores",
-      "attainment": 110.8,
+      "attainment": 73.3,
       "newMerchants": 12,
       "leadConversion": 10.4,
       "stops": 315,
@@ -68,16 +68,16 @@
     {
       "code": "RIC-2",
       "rep": "Claudia Gerhardt",
-      "attainment": 81.5,
-      "newMerchants": 2,
-      "leadConversion": 8.0,
+      "attainment": 71.5,
+      "newMerchants": 1,
+      "leadConversion": 4.0,
       "stops": 307,
       "avgDay": "5:32"
     },
     {
       "code": "RIC-4",
       "rep": "Richard Herrera",
-      "attainment": 63.9,
+      "attainment": 64.0,
       "newMerchants": 4,
       "leadConversion": 3.3,
       "stops": 309,
@@ -86,25 +86,16 @@
     {
       "code": "RIC-5",
       "rep": "Mariana Gross",
-      "attainment": 129.6,
+      "attainment": 87.1,
       "newMerchants": 12,
       "leadConversion": 22.6,
       "stops": 212,
       "avgDay": "5:10"
     },
     {
-      "code": "RIC-6",
-      "rep": "Phillip Mason",
-      "attainment": 74.2,
-      "newMerchants": 4,
-      "leadConversion": 3.0,
-      "stops": 327,
-      "avgDay": "6:08"
-    },
-    {
       "code": "RIC-8",
       "rep": "Eric Henderson",
-      "attainment": 77.8,
+      "attainment": 86.3,
       "newMerchants": 13,
       "leadConversion": 9.7,
       "stops": 326,
@@ -113,7 +104,7 @@
     {
       "code": "RIC-9",
       "rep": "Matthew MacDonald",
-      "attainment": 54.7,
+      "attainment": 73.6,
       "newMerchants": 2,
       "leadConversion": 66.7,
       "stops": 61,

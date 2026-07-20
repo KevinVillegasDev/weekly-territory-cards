@@ -310,8 +310,11 @@ The mirror of `TERRITORY_START`: the `(year, month)` a territory STOPS counting.
 TERRITORY_END = {
     "LTO-4": (2026, 6),  # Francisco Gonzalez departed; excluded June 2026 forward
     "RIC-7": (2026, 6),  # DeLon Phoenix departed; excluded June 2026 forward
+    "RIC-6": (2026, 6),  # Phillip Mason departed; excluded June 2026 forward
 }
 ```
+
+Note: `TERRITORY_END` set to the *month a rep worked* (not the month after) drops that month's production from the total too. That's a deliberate choice — by request, a departed rep's territory is excluded from the period entirely, not carried at a partial number. RIC-6 was set to June even though Phillip worked June, so the reconciled June total is 11 territories, not 12.
 
 Departed reps are intentionally **left in `TERRITORY_MAP` / `TERRITORY_AREAS`** so any still-unlocked closed month can re-render their name; `TERRITORY_END` does the gating. Excluding a departed territory also drops its (now-vacant) budget from the live totals, so team attainment isn't dragged down by an unstaffed quota.
 
@@ -511,6 +514,8 @@ Scheduled flow at Monday ~5:15 AM PT, sends an email with the Netlify URL to rep
 | Stop count's "Enrolled" classification is based on rep's note text, not SF system confirmation | Stops marked Enrolled can pre-date the actual finalized enrollment by days | Wire the SF Branch Enrollment confirmation back to its originating check-in (would also unlock real lead-to-stop attribution) |
 | `Converted from - Lead ID` only ~12% populated | Dormant cumulative attribution metric undercounts | SF admin work: ensure web-enrollment Leads merge into existing Lead records, retroactively populate the field for past conversions |
 | Roster hardcoded in `TERRITORY_MAP` | New rep additions require code edit + push | Source from a SF roster report (low priority until a transition forces it) |
+| Live per-rep **actual funded $** (from Report 6, Monthly Quota) is attributed by each merchant's *current* territory at snapshot time, not by month-end crediting | Individual territory attainment can be materially off from Sales Ops (June: RIC-5 +$338K, RIC-9 −$296K, RIC-1 +$116K) even though the company total nets close. Worst for newly-staffed territories and state-manager rollups. **Budgets match Sales Ops exactly — the gap is entirely in actuals.** | Treat the live month's per-rep % as directional; reconcile each closed month to the Sales Ops funding report and lock it (established practice for Apr/May/June). A true fix needs SF to attribute funded $ by month-end credit, matching Sales Ops. |
+| Current-month budget targets lag in Salesforce | For the first days of a month the Monthly Quota `Funded Dollars Quota` is blank, so raw attainment reads 0%. Handled: the generator sets `meta.budgetPending` and the UI shows "—" + a "targets not loaded" note instead of a misleading 0% (auto-clears when SF is populated). | None needed — cosmetic guard; resolves when Sales Ops loads quotas |
 
 ---
 
@@ -546,3 +551,4 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-06-29**: Locked the May archive + May historical-totals entry (`locked: true`) so the closed-May leaderboard is permanent even after the departed reps were removed from the dashboard roster.
 - **2026-07-06**: Jose Valencia added as RIC-3 (CA; previously unassigned), effective July 2026 via `TERRITORY_START`. Live roster now 13. Excluded from June and earlier archives. Area string is a bare `"CA"` placeholder — update with his specific sub-region when known.
 - **2026-07-06**: Confirmed Marco Garmendia (RIC-10) is deliberately EXCLUDED from this board — his new position doesn't run the usual field-stop cadence, so the stop/time/conversion rankings don't apply. Documented in `TERRITORY_MAP` comment + roster section so he isn't added by a future dashboard-roster sync. His RIC-10 volume is also out of this view's team totals.
+- **2026-07-20**: Three linked changes. (1) Added a `budgetPending` guard + UI "—" state so a new month with unloaded SF quota targets reads as "pending" rather than a broken-looking 0% attainment (`meta.budgetPending`, `attPct()` helper). (2) Phillip Mason (RIC-6) departed → `TERRITORY_END` (2026,6), excluded June forward. (3) Reconciled June to Sales Ops authoritative numbers: budgets matched exactly, but per-rep **actuals** diverged sharply (Report-6 live attribution vs Sales Ops month-end crediting — RIC-5 +$338K, RIC-9 −$296K, etc.), netting close on the total. Patched the June archive per-rep attainment + total to Sales Ops, excluded RIC-6 per request → **11-territory June at $7,767,428 / $8,523,601 = 91.1%**, and locked the June archive + historical entry. Logged the attribution gap as a standing caveat.
