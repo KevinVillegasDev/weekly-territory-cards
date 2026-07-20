@@ -270,7 +270,7 @@ TERRITORY_MAP = {
     "LTO-7": "Stephanie Whitlock",
     "RIC-1": "Cesar Flores",
     "RIC-2": "Claudia Gerhardt",
-    "RIC-3": "Jose Valencia",     # joined July 2026; territory (CA) previously unassigned
+    "RIC-3": "Jose Valencia",     # RIC-3 (CA), counted from June 2026; territory previously unassigned
     "RIC-4": "Richard Herrera",   # took over from Jeremy Moore Apr 2026
     "RIC-5": "Mariana Gross",     # joined June 2026; territory (Phoenix Metro, AZ) previously unassigned
     "RIC-6": "Phillip Mason",
@@ -296,7 +296,7 @@ A territory added to `TERRITORY_MAP` partway through the year must NOT retroacti
 TERRITORY_START = {
     "LTO-4": (2026, 5),  # Francisco Gonzalez took LTO-4 from May 2026
     "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
-    "RIC-3": (2026, 7),  # Jose Valencia took RIC-3 (CA) from July 2026
+    "RIC-3": (2026, 6),  # Jose Valencia — RIC-3 (CA) counted from June 2026 (had a real June budget + funding)
 }
 ```
 
@@ -549,6 +549,7 @@ Logo loads from `https://customerappx.easypayfinance.com/layout/images/EasyPay.p
 - **2026-06-08**: Rankings header roster count made dynamic (was hardcoded "12-rep"). Now derived from `territories.length` — live count on the current view, the archived month's count on a closed-month view.
 - **2026-06-29**: Francisco Gonzalez (LTO-4) and DeLon Phoenix (RIC-7) departed the company. Added `TERRITORY_END` (mirror of `TERRITORY_START`) excluding both from June 2026 forward; live roster now 12. They remain in `TERRITORY_MAP` and in the May (13-rep) and April (DeLon only) archives — closed months they competed in are preserved. Their vacant June budgets (~$1.11M combined) correctly drop from the live June totals.
 - **2026-06-29**: Locked the May archive + May historical-totals entry (`locked: true`) so the closed-May leaderboard is permanent even after the departed reps were removed from the dashboard roster.
-- **2026-07-06**: Jose Valencia added as RIC-3 (CA; previously unassigned), effective July 2026 via `TERRITORY_START`. Live roster now 13. Excluded from June and earlier archives. Area string is a bare `"CA"` placeholder — update with his specific sub-region when known.
+- **2026-07-06**: Jose Valencia added as RIC-3 (CA; previously unassigned) via `TERRITORY_START`. Area string is a bare `"CA"` placeholder — update with his specific sub-region when known.
+- **2026-07-20**: Moved Jose/RIC-3 `TERRITORY_START` from July to **June 2026** and added his row to the locked June archive at Sales Ops numbers ($758,946 budget / $584,600 actual / 77.0%) per request — RIC-3 had a real June budget + funding. June is now **12 territories at $8,352,028 / $9,282,547 = 90.0%** (Phillip/RIC-6 still excluded). Note: Jose's June field-activity metrics are zero (no June check-ins logged under RIC-3), so he ranks 77% on Budget % but last on the activity columns.
 - **2026-07-06**: Confirmed Marco Garmendia (RIC-10) is deliberately EXCLUDED from this board — his new position doesn't run the usual field-stop cadence, so the stop/time/conversion rankings don't apply. Documented in `TERRITORY_MAP` comment + roster section so he isn't added by a future dashboard-roster sync. His RIC-10 volume is also out of this view's team totals.
 - **2026-07-20**: Three linked changes. (1) Added a `budgetPending` guard + UI "—" state so a new month with unloaded SF quota targets reads as "pending" rather than a broken-looking 0% attainment (`meta.budgetPending`, `attPct()` helper). (2) Phillip Mason (RIC-6) departed → `TERRITORY_END` (2026,6), excluded June forward. (3) Reconciled June to Sales Ops authoritative numbers: budgets matched exactly, but per-rep **actuals** diverged sharply (Report-6 live attribution vs Sales Ops month-end crediting — RIC-5 +$338K, RIC-9 −$296K, etc.), netting close on the total. Patched the June archive per-rep attainment + total to Sales Ops, excluded RIC-6 per request → **11-territory June at $7,767,428 / $8,523,601 = 91.1%**, and locked the June archive + historical entry. Logged the attribution gap as a standing caveat.

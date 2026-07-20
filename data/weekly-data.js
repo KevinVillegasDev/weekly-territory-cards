@@ -68,9 +68,9 @@ window.weeklyTerritoryReport = {
     {
       "period": "June 2026",
       "sub": "",
-      "actual": 7767428.0,
-      "budget": 8523601.0,
-      "attainment": 91.1
+      "actual": 8352028.0,
+      "budget": 9282547.0,
+      "attainment": 90.0
     },
     {
       "period": "July MTD",
@@ -81,9 +81,9 @@ window.weeklyTerritoryReport = {
     },
     {
       "period": "YTD Total",
-      "actual": 50587759.65,
-      "budget": 58243986.0,
-      "attainment": 86.9,
+      "actual": 51172359.65,
+      "budget": 59002932.0,
+      "attainment": 86.7,
       "tone": "total"
     }
   ],

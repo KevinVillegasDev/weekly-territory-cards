@@ -58,7 +58,7 @@ TERRITORY_ALIASES = {
 TERRITORY_START = {
     "LTO-4": (2026, 5),  # Francisco Gonzalez took LTO-4 from May 2026
     "RIC-5": (2026, 6),  # Mariana Gross took RIC-5 (Phoenix Metro) from June 2026
-    "RIC-3": (2026, 7),  # Jose Valencia took RIC-3 (CA) from July 2026
+    "RIC-3": (2026, 6),  # Jose Valencia — RIC-3 (CA) counted from June 2026 (had a real June budget + funding)
 }
 
 # (year, month) a territory STOPS counting toward the roster (departure / vacancy).

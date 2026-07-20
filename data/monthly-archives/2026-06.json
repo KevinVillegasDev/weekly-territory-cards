@@ -4,11 +4,11 @@
   "monthName": "June",
   "frozenAt": "2026-07-06T15:36:31Z",
   "locked": true,
-  "_note": "Patched 2026-07 to Sales Ops authoritative June actuals; per-rep attainment reconciled (our snapshot's Report-6 Funded Dollars differed from Sales Ops's month-end attribution). RIC-6 (Phillip Mason) excluded — departed. locked=true so the pipeline never overwrites.",
+  "_note": "Patched 2026-07 to Sales Ops authoritative June actuals; per-rep attainment reconciled (our snapshot's Report-6 Funded Dollars differed from Sales Ops's month-end attribution). RIC-6 (Phillip Mason) excluded — departed. locked=true so the pipeline never overwrites. | 2026-07: added Jose Valencia (RIC-3) for June at Sales Ops numbers per request.",
   "totals": {
-    "actual": 7767428,
-    "budget": 8523601,
-    "attainment": 91.1
+    "actual": 8352028,
+    "budget": 9282547,
+    "attainment": 90.0
   },
   "territories": [
     {
@@ -73,6 +73,15 @@
       "leadConversion": 4.0,
       "stops": 307,
       "avgDay": "5:32"
+    },
+    {
+      "code": "RIC-3",
+      "rep": "Jose Valencia",
+      "attainment": 77.0,
+      "newMerchants": 0,
+      "leadConversion": 0.0,
+      "stops": 0,
+      "avgDay": "0:00"
     },
     {
       "code": "RIC-4",
