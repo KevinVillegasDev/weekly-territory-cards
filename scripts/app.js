@@ -272,7 +272,7 @@
     var metrics = [
       {
         title: "Budget %",
-        sub: "Attainment vs target",
+        sub: "Funded MTD ÷ full-month budget",
         sortValue: function (i) { return i.attainment || 0; },
         display: function (i) { return attPct(i); }
       },
