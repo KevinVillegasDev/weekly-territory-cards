@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "July 27, 2026",
-    "stopsLogged": 2463,
+    "stopsLogged": 2469,
     "newMerchants": 61,
     "businessDaysRemaining": 4,
     "monthStatus": "mtd",
     "budgetPending": false,
-    "note": "Updated origination data through July 27, 2026. 2,463 stops logged, 61 new merchants enrolled. 4 business days remain. LTO-7 leads attainment at 93.6%, while Joseph Guerra leads new merchant volume.",
+    "note": "Updated origination data through July 27, 2026. 2,469 stops logged, 61 new merchants enrolled. 4 business days remain. LTO-7 leads attainment at 93.6%, while Joseph Guerra leads new merchant volume.",
     "totalsNote": "July MTD is a partial month - 63.4% attainment through Jul 27 with 4 business days remaining.",
     "archives": [
       {
@@ -130,17 +130,17 @@ window.weeklyTerritoryReport = {
       "actual": 558212.86,
       "budget": 608630.0,
       "newMerchants": 5,
-      "leadConversion": 10.6,
-      "stops": 237,
-      "stopSplit": "47P / 190A",
-      "avgDay": "5:24",
+      "leadConversion": 10.2,
+      "stops": 239,
+      "stopSplit": "49P / 190A",
+      "avgDay": "5:25",
       "activeDays": "17 / 18",
-      "stopEfficiency": 82.7,
+      "stopEfficiency": 82.0,
       "mix": {
-        "No Contact": 9,
-        "Int/FU": 11,
-        "Rel. Check-In": 61,
-        "Training": 11,
+        "No Contact": 10,
+        "Int/FU": 10,
+        "Rel. Check-In": 62,
+        "Training": 10,
         "Enrolled": 0,
         "Not Int.": 8
       },
@@ -164,8 +164,8 @@ window.weeklyTerritoryReport = {
       "budget": 621725.0,
       "newMerchants": 10,
       "leadConversion": 23.3,
-      "stops": 216,
-      "stopSplit": "43P / 173A",
+      "stops": 217,
+      "stopSplit": "43P / 174A",
       "avgDay": "6:14",
       "activeDays": "16 / 17",
       "stopEfficiency": 80.6,
@@ -281,7 +281,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 9,
         "merchants": 4,
         "conversion": 6,
-        "stops": 9,
+        "stops": 10,
         "avgDay": 4
       },
       "rank": 6
@@ -314,7 +314,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 8,
         "merchants": 2,
         "conversion": 2,
-        "stops": 7,
+        "stops": 8,
         "avgDay": 11
       },
       "rank": 7
@@ -347,7 +347,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 3,
         "merchants": 7,
         "conversion": 11,
-        "stops": 10,
+        "stops": 11,
         "avgDay": 9
       },
       "rank": 8
@@ -380,7 +380,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 10,
         "merchants": 6,
         "conversion": 3,
-        "stops": 8,
+        "stops": 9,
         "avgDay": 5
       },
       "rank": 9
@@ -394,16 +394,16 @@ window.weeklyTerritoryReport = {
       "actual": 724304.66,
       "budget": 1489687.0,
       "newMerchants": 5,
-      "leadConversion": 6.2,
-      "stops": 211,
-      "stopSplit": "80P / 131A",
-      "avgDay": "5:35",
+      "leadConversion": 6.1,
+      "stops": 213,
+      "stopSplit": "82P / 131A",
+      "avgDay": "5:37",
       "activeDays": "15 / 15",
-      "stopEfficiency": 74.9,
+      "stopEfficiency": 75.1,
       "mix": {
         "No Contact": 20,
-        "Int/FU": 11,
-        "Rel. Check-In": 60,
+        "Int/FU": 12,
+        "Rel. Check-In": 59,
         "Training": 4,
         "Enrolled": 0,
         "Not Int.": 5
@@ -446,7 +446,7 @@ window.weeklyTerritoryReport = {
         "efficiency": 12,
         "merchants": 8,
         "conversion": 12,
-        "stops": 10,
+        "stops": 11,
         "avgDay": 12
       },
       "rank": 11
@@ -460,12 +460,12 @@ window.weeklyTerritoryReport = {
       "actual": 226142.05,
       "budget": 502016.0,
       "newMerchants": 4,
-      "leadConversion": 3.5,
-      "stops": 266,
-      "stopSplit": "115P / 151A",
-      "avgDay": "5:45",
+      "leadConversion": 3.4,
+      "stops": 267,
+      "stopSplit": "116P / 151A",
+      "avgDay": "5:47",
       "activeDays": "16 / 16",
-      "stopEfficiency": 66.2,
+      "stopEfficiency": 65.9,
       "mix": {
         "No Contact": 20,
         "Int/FU": 24,
