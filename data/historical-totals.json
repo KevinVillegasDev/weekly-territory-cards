@@ -42,6 +42,12 @@
       "budget": 9282547,
       "actual": 8352028,
       "locked": true
+    },
+    {
+      "year": 2026,
+      "month": 7,
+      "budget": 9786646.0,
+      "actual": 7732121.38
     }
   ]
 }
