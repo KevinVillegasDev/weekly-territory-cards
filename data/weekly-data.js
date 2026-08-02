@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
-    "updatedThrough": "August 1, 2026",
+    "updatedThrough": "August 2, 2026",
     "stopsLogged": 0,
     "newMerchants": 0,
     "businessDaysRemaining": 21,
     "monthStatus": "mtd",
     "budgetPending": false,
-    "note": "Updated origination data through August 1, 2026. 0 stops logged, 0 new merchants enrolled. 21 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
+    "note": "Updated origination data through August 2, 2026. 0 stops logged, 0 new merchants enrolled. 21 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
     "totalsNote": "",
     "archives": [
       {
