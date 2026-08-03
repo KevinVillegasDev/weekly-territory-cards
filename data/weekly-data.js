@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "August 3, 2026",
-    "stopsLogged": 0,
+    "stopsLogged": 18,
     "newMerchants": 0,
     "businessDaysRemaining": 20,
     "monthStatus": "mtd",
     "budgetPending": false,
-    "note": "Updated origination data through August 3, 2026. 0 stops logged, 0 new merchants enrolled. 20 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
+    "note": "Updated origination data through August 3, 2026. 18 stops logged, 0 new merchants enrolled. 20 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
     "totalsNote": "",
     "archives": [
       {
@@ -81,15 +81,15 @@ window.weeklyTerritoryReport = {
     {
       "period": "July 2026",
       "sub": "",
-      "actual": 7732121.38,
+      "actual": 8108680.1,
       "budget": 9786646.0,
-      "attainment": 79.0
+      "attainment": 82.9
     },
     {
       "period": "YTD Total",
-      "actual": 54306516.86,
+      "actual": 54683075.58,
       "budget": 59002932.0,
-      "attainment": 92.0,
+      "attainment": 92.7,
       "tone": "total"
     }
   ],
@@ -104,26 +104,26 @@ window.weeklyTerritoryReport = {
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 0,
-      "stopSplit": "0P / 0A",
-      "avgDay": "0:00",
-      "activeDays": "0 / 0",
-      "stopEfficiency": 0.0,
+      "stops": 6,
+      "stopSplit": "3P / 3A",
+      "avgDay": "2:03",
+      "activeDays": "1 / 1",
+      "stopEfficiency": 50.0,
       "mix": {
         "No Contact": 0,
         "Int/FU": 0,
-        "Rel. Check-In": 0,
+        "Rel. Check-In": 50,
         "Training": 0,
         "Enrolled": 0,
-        "Not Int.": 0
+        "Not Int.": 50
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 2,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 2,
+        "avgDay": 2
       },
       "rank": 1
     },
@@ -137,15 +137,15 @@ window.weeklyTerritoryReport = {
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 0,
-      "stopSplit": "0P / 0A",
+      "stops": 2,
+      "stopSplit": "0P / 2A",
       "avgDay": "0:00",
-      "activeDays": "0 / 0",
-      "stopEfficiency": 0.0,
+      "activeDays": "0 / 1",
+      "stopEfficiency": 100.0,
       "mix": {
         "No Contact": 0,
         "Int/FU": 0,
-        "Rel. Check-In": 0,
+        "Rel. Check-In": 100,
         "Training": 0,
         "Enrolled": 0,
         "Not Int.": 0
@@ -155,8 +155,8 @@ window.weeklyTerritoryReport = {
         "efficiency": 1,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 3,
+        "avgDay": 3
       },
       "rank": 2
     },
@@ -170,15 +170,15 @@ window.weeklyTerritoryReport = {
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 0,
-      "stopSplit": "0P / 0A",
+      "stops": 1,
+      "stopSplit": "0P / 1A",
       "avgDay": "0:00",
-      "activeDays": "0 / 0",
-      "stopEfficiency": 0.0,
+      "activeDays": "0 / 1",
+      "stopEfficiency": 100.0,
       "mix": {
         "No Contact": 0,
         "Int/FU": 0,
-        "Rel. Check-In": 0,
+        "Rel. Check-In": 100,
         "Training": 0,
         "Enrolled": 0,
         "Not Int.": 0
@@ -188,8 +188,8 @@ window.weeklyTerritoryReport = {
         "efficiency": 1,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 4,
+        "avgDay": 3
       },
       "rank": 3
     },
@@ -218,11 +218,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 5,
+        "avgDay": 3
       },
       "rank": 4
     },
@@ -236,15 +236,15 @@ window.weeklyTerritoryReport = {
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 0,
-      "stopSplit": "0P / 0A",
+      "stops": 1,
+      "stopSplit": "1P / 0A",
       "avgDay": "0:00",
-      "activeDays": "0 / 0",
-      "stopEfficiency": 0.0,
+      "activeDays": "0 / 1",
+      "stopEfficiency": 100.0,
       "mix": {
         "No Contact": 0,
         "Int/FU": 0,
-        "Rel. Check-In": 0,
+        "Rel. Check-In": 100,
         "Training": 0,
         "Enrolled": 0,
         "Not Int.": 0
@@ -254,8 +254,8 @@ window.weeklyTerritoryReport = {
         "efficiency": 1,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 4,
+        "avgDay": 3
       },
       "rank": 5
     },
@@ -284,11 +284,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 5,
+        "avgDay": 3
       },
       "rank": 6
     },
@@ -317,11 +317,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 5,
+        "avgDay": 3
       },
       "rank": 7
     },
@@ -350,11 +350,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 5,
+        "avgDay": 3
       },
       "rank": 8
     },
@@ -368,15 +368,15 @@ window.weeklyTerritoryReport = {
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 0,
-      "stopSplit": "0P / 0A",
+      "stops": 1,
+      "stopSplit": "1P / 0A",
       "avgDay": "0:00",
-      "activeDays": "0 / 0",
-      "stopEfficiency": 0.0,
+      "activeDays": "0 / 1",
+      "stopEfficiency": 100.0,
       "mix": {
         "No Contact": 0,
         "Int/FU": 0,
-        "Rel. Check-In": 0,
+        "Rel. Check-In": 100,
         "Training": 0,
         "Enrolled": 0,
         "Not Int.": 0
@@ -386,8 +386,8 @@ window.weeklyTerritoryReport = {
         "efficiency": 1,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 4,
+        "avgDay": 3
       },
       "rank": 9
     },
@@ -416,11 +416,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 5,
+        "avgDay": 3
       },
       "rank": 10
     },
@@ -434,15 +434,15 @@ window.weeklyTerritoryReport = {
       "budget": 0.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 0,
-      "stopSplit": "0P / 0A",
-      "avgDay": "0:00",
-      "activeDays": "0 / 0",
-      "stopEfficiency": 0.0,
+      "stops": 7,
+      "stopSplit": "2P / 5A",
+      "avgDay": "2:13",
+      "activeDays": "1 / 1",
+      "stopEfficiency": 100.0,
       "mix": {
         "No Contact": 0,
-        "Int/FU": 0,
-        "Rel. Check-In": 0,
+        "Int/FU": 43,
+        "Rel. Check-In": 57,
         "Training": 0,
         "Enrolled": 0,
         "Not Int.": 0
@@ -482,11 +482,11 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 1,
+        "efficiency": 3,
         "merchants": 1,
         "conversion": 1,
-        "stops": 1,
-        "avgDay": 1
+        "stops": 5,
+        "avgDay": 3
       },
       "rank": 12
     }
