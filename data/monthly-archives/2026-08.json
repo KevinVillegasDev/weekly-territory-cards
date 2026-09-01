@@ -1,0 +1,123 @@
+{
+  "year": 2026,
+  "month": 8,
+  "monthName": "August",
+  "frozenAt": "2026-09-01T17:02:56Z",
+  "locked": false,
+  "_note": "Auto-generated rankings archive. Budget %/actual/budget self-heal during the first week as late funded $ settles. To pin Sales Ops authoritative numbers, edit the values and set \"locked\": true — the pipeline will then never overwrite this file.",
+  "totals": {
+    "actual": 7027355.99,
+    "budget": 9859237.0,
+    "attainment": 71.3
+  },
+  "territories": [
+    {
+      "code": "LTO-1",
+      "rep": "Yemaira Hernandez",
+      "attainment": 91.2,
+      "newMerchants": 8,
+      "leadConversion": 8.5,
+      "stops": 243,
+      "avgDay": "5:55"
+    },
+    {
+      "code": "LTO-2",
+      "rep": "Omar Corona",
+      "attainment": 87.7,
+      "newMerchants": 5,
+      "leadConversion": 5.4,
+      "stops": 297,
+      "avgDay": "5:58"
+    },
+    {
+      "code": "LTO-3",
+      "rep": "Joseph Guerra",
+      "attainment": 91.8,
+      "newMerchants": 9,
+      "leadConversion": 13.4,
+      "stops": 241,
+      "avgDay": "5:22"
+    },
+    {
+      "code": "LTO-5",
+      "rep": "Jared Midkiff",
+      "attainment": 75.8,
+      "newMerchants": 5,
+      "leadConversion": 4.2,
+      "stops": 264,
+      "avgDay": "7:00"
+    },
+    {
+      "code": "LTO-7",
+      "rep": "Stephanie Whitlock",
+      "attainment": 81.7,
+      "newMerchants": 10,
+      "leadConversion": 4.6,
+      "stops": 300,
+      "avgDay": "7:02"
+    },
+    {
+      "code": "RIC-1",
+      "rep": "Cesar Flores",
+      "attainment": 60.5,
+      "newMerchants": 6,
+      "leadConversion": 5.0,
+      "stops": 249,
+      "avgDay": "6:12"
+    },
+    {
+      "code": "RIC-2",
+      "rep": "Claudia Gerhardt",
+      "attainment": 63.1,
+      "newMerchants": 2,
+      "leadConversion": 2.1,
+      "stops": 281,
+      "avgDay": "6:11"
+    },
+    {
+      "code": "RIC-3",
+      "rep": "Jose Valencia",
+      "attainment": 61.1,
+      "newMerchants": 7,
+      "leadConversion": 13.0,
+      "stops": 125,
+      "avgDay": "4:15"
+    },
+    {
+      "code": "RIC-4",
+      "rep": "Richard Herrera",
+      "attainment": 66.8,
+      "newMerchants": 2,
+      "leadConversion": 1.0,
+      "stops": 313,
+      "avgDay": "6:30"
+    },
+    {
+      "code": "RIC-5",
+      "rep": "Mariana Gross",
+      "attainment": 66.6,
+      "newMerchants": 4,
+      "leadConversion": 4.2,
+      "stops": 255,
+      "avgDay": "5:10"
+    },
+    {
+      "code": "RIC-8",
+      "rep": "Eric Henderson",
+      "attainment": 69.4,
+      "newMerchants": 13,
+      "leadConversion": 13.7,
+      "stops": 319,
+      "avgDay": "6:24"
+    },
+    {
+      "code": "RIC-9",
+      "rep": "Matthew MacDonald",
+      "attainment": 55.9,
+      "newMerchants": 4,
+      "leadConversion": 100.0,
+      "stops": 58,
+      "avgDay": "4:04"
+    }
+  ]
+}
