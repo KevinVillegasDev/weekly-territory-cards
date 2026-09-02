@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "September 1, 2026",
-    "stopsLogged": 164,
+    "stopsLogged": 166,
     "newMerchants": 0,
     "businessDaysRemaining": 21,
     "monthStatus": "mtd",
     "budgetPending": false,
-    "note": "Updated origination data through September 1, 2026. 164 stops logged, 0 new merchants enrolled. 21 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
+    "note": "Updated origination data through September 1, 2026. 166 stops logged, 0 new merchants enrolled. 21 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
     "totalsNote": "September MTD is a partial month - 0.0% attainment through Sep 1 with 21 business days remaining.",
     "archives": [
       {
@@ -355,17 +355,17 @@ window.weeklyTerritoryReport = {
       "budget": 654388.0,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 8,
-      "stopSplit": "8P / 0A",
-      "avgDay": "2:28",
+      "stops": 10,
+      "stopSplit": "8P / 2A",
+      "avgDay": "3:46",
       "activeDays": "1 / 1",
-      "stopEfficiency": 0.0,
+      "stopEfficiency": 20.0,
       "mix": {
-        "No Contact": 100,
+        "No Contact": 80,
         "Int/FU": 0,
         "Rel. Check-In": 0,
-        "Training": 0,
-        "Enrolled": 0,
+        "Training": 10,
+        "Enrolled": 10,
         "Not Int.": 0
       },
       "ranks": {
@@ -502,7 +502,7 @@ window.weeklyTerritoryReport = {
       },
       "ranks": {
         "attainment": 1,
-        "efficiency": 9,
+        "efficiency": 10,
         "merchants": 1,
         "conversion": 1,
         "stops": 8,
