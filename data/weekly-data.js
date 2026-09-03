@@ -1,12 +1,12 @@
 window.weeklyTerritoryReport = {
   "meta": {
     "updatedThrough": "September 2, 2026",
-    "stopsLogged": 342,
+    "stopsLogged": 343,
     "newMerchants": 0,
     "businessDaysRemaining": 20,
     "monthStatus": "mtd",
     "budgetPending": false,
-    "note": "Updated origination data through September 2, 2026. 342 stops logged, 0 new merchants enrolled. 20 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
+    "note": "Updated origination data through September 2, 2026. 343 stops logged, 0 new merchants enrolled. 20 business days remain. LTO-1 leads attainment at 0.0%, while Yemaira Hernandez leads new merchant volume.",
     "totalsNote": "September MTD is a partial month - 0.0% attainment through Sep 2 with 20 business days remaining.",
     "archives": [
       {
@@ -421,18 +421,18 @@ window.weeklyTerritoryReport = {
       "budget": 1338107.4,
       "newMerchants": 0,
       "leadConversion": 0.0,
-      "stops": 22,
-      "stopSplit": "5P / 17A",
-      "avgDay": "4:22",
+      "stops": 23,
+      "stopSplit": "5P / 18A",
+      "avgDay": "4:25",
       "activeDays": "2 / 2",
-      "stopEfficiency": 90.9,
+      "stopEfficiency": 91.3,
       "mix": {
-        "No Contact": 5,
-        "Int/FU": 9,
-        "Rel. Check-In": 67,
+        "No Contact": 4,
+        "Int/FU": 13,
+        "Rel. Check-In": 66,
         "Training": 9,
-        "Enrolled": 5,
-        "Not Int.": 5
+        "Enrolled": 4,
+        "Not Int.": 4
       },
       "ranks": {
         "attainment": 1,
